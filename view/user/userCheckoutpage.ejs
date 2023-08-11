@@ -1,0 +1,290 @@
+<%- include("./layouts/userheader.ejs") %>
+
+
+
+    <!--================Checkout Area =================-->
+    <section class="checkout_area section_gap mt-5">
+        <div class="container">
+            <div class="billing_details">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- space for address -->
+                        <div class=" p-lg-1" id="addressDetails ">
+                            <h6 class="ps-md-2 pt-lg-3">Saved Addresses</h6>
+
+                            <% if(userAdress){ %>
+                                <% userAdress.items.forEach((element)=>{ %>
+                                    <div id="<%= element._id%>" class="address-details-container"
+                                        style="background-color: #f0f0f0; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
+                                        <!-- <input type="radio" id="f-option6" name="selector"> -->
+                                        <!-- <input type="radio" onclick="transfer()" id="address<%= element._id %>"
+                                            name="selector" value="<%= element._id %>"> -->
+                                        <div class="address">
+                                            <div>
+                                                <strong>Name: </strong>
+                                                <%= element.firstName %>
+                                                    <%= element.lastName %>
+                                            </div>
+                                            <div>
+                                                <strong>Address: </strong>
+                                                <%= element.HouseName %>, <%= element.adressLine %>, <%=
+                                                            element.nearestLandMark %>, <%= element.pincode %>
+                                            </div>
+                                            <div>
+                                                <strong>City: </strong>
+                                                <%= element.city %>
+                                            </div>
+                                            <div>
+                                                <strong>State: </strong>
+                                                <%= element.state %>
+                                            </div>
+                                            <div>
+                                                <strong>Alternate Mobile: </strong>
+                                                <%= element.altMobile %>
+                                            </div>
+                                            <!-- Add more address details here if needed -->
+                                        </div>
+                                        <a href="/updateadress/?id=<%= element._id%>">haii</a>
+                                        <button class="genric-btn info small mt-2" id="cancel-btn">Update</button>
+                                        
+                                    </div>
+
+                                    <% }) %>
+                                        <% } %>
+
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <div class="creat_account">
+                                <h3>Shipping Details</h3>
+                                <input onclick="enableAdress()" type="checkbox" id="f-option3" name="selector">
+                                <label for="f-option3">Ship to a different address?</label>
+                            </div>
+
+                        </div>
+                        <div style="display: none;" id="enableAdress">
+                            <h3>Billing Details</h3>
+                            <form>
+                                <div class="col-md-6 form-group p_star">
+                                    <input type="text" class="form-control" id="firstName" name="firstName"
+                                        placeholder="First Name" required>
+
+                                </div>
+                                <div class="col-md-6 form-group p_star">
+                                    <input type="text" class="form-control" id="lastName" name="lastName"
+                                        placeholder="Last Name" required>
+
+                                </div>
+
+                                <div class="col-md-6 form-group p_star">
+                                    <input type="text" class="form-control" id="altMobile" name="altMobile"
+                                        placeholder="Alternate Mobile" required>
+
+                                </div>
+
+                                <div class="col-md-12 form-group p_star">
+                                    <input type="text" class="form-control" id="HouseName" name="HouseName"
+                                        placeholder="House Adress" required="">
+
+
+                                </div>
+                                <div class="col-md-12 form-group p_star">
+                                    <input type="text" class="form-control" id="addressLine" name="addressLine"
+                                        placeholder="Adress Line 1" required="">
+
+                                </div>
+                                <div class="col-md-12 form-group p_star">
+                                    <input type="text" class="form-control" id="nearestLandMark" name="nearestLandMark"
+                                        placeholder="Nearest Land mark" required="">
+
+                                </div>
+                                <div class="col-md-12 form-group p_star">
+                                    <input type="text" class="form-control" id="city" name="city" placeholder="City"
+                                        required="">
+
+                                </div>
+                                <div class="col-md-12 form-group p_star">
+                                    <input type="text" class="form-control" id="state" name="state" placeholder="State"
+                                        required="">
+
+
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <input type="text" class="form-control" id="pincode" name="pincode"
+                                        placeholder="Postcode/ZIP">
+                                </div>
+                                <li onclick="disbleform()" id="cancel" class="genric-btn danger circle arrow mx-auto">
+                                    Cancel</li>
+
+                                <button type="button" onclick="submitData()" class="btn btn-primary">Save
+                                    Adress</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="order_box">
+                            <h2>Your Order</h2>
+                            <ul class="list">
+                                <li><a href="#">Product <span>Total</span></a></li>
+
+                                <% if (data) { %>
+                                    <% for (let i=0; i < data.length; i++) { %>
+                                        <li><a href="#">
+                                                <%=data[i].productName%> <span>₹ <%=data[i].totalPrice%></span><span> x
+                                                        <%=data[i].productQuantity%> =
+                                                    </span> <span class="last">₹
+                                                        <%=data[i].productPrice%>
+                                                    </span>
+                                            </a></li>
+
+                                        <%}%>
+
+                                            <%}%>
+                                                <ul class="list list_2">
+                                                    <li><a href="#">Subtotal <span>₹ <%=subtotal%></span></a></li>
+                                                    <li><a href="#">Shipping <span> 0</span></a></li>
+                                                    <li><a href="#">Total ₹ <span id="total">
+                                                                <%=subtotal%>
+                                                            </span></a></li>
+                                                </ul>
+
+                                                <div class="payment_item">
+                                                    <div class="radion_btn">
+                                                        <input checked type="radio" id="f-option5" name="selector">
+                                                        <label for="f-option5">Cash on delivery</label>
+                                                        <div class="check"></div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="payment_item active">
+                                                    <div class="radion_btn">
+                                                        <input type="radio" id="f-option6" name="selector">
+                                                        <label for="f-option6">UPI </label>
+                                                        <img src="img/product/card.jpg" alt="">
+                                                        <div class="check"></div>
+                                                    </div>
+
+                                                </div>
+
+                                                <a class="primary-btn" href="#"
+                                                    onclick="confirmOrder()">Conform Order</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <dialog id="confirm-dialog">
+            <div>
+                <form action="/verify-order" method="post">
+                    <input type="text" name="addressId" id="addressId" class="d-none">
+                    <input type="text" name="paymentMethod" id="paymentMethod" class="d-none">
+                    <h4>Confirm your order</h4>
+                    <div>
+                        <h6>Delivery To:-</h6>
+                        <p id="delivery-address"></p>
+                        <h6>Payment Method:-</h6>
+                        <p class="text-danger" id="payment-method"></p>
+                        <h6>Amount to be paid</h6>
+                        <p class="text-danger" id="amount-to-pay"></p>
+                    </div>
+                    <button class="genric-btn primary small" id="confirm-btn">confirm</button>
+                </form>
+                <button class="genric-btn danger small mt-2" id="cancel-btn">cancel</button>
+            </div>
+        </dialog>
+    </section>
+    <!--================End Checkout Area =================-->
+
+    <script>
+
+    </script>
+    <script>
+        let toggle = 0;
+        function enableAdress() {
+            if (toggle === 0) {
+                document.getElementById("enableAdress").style.display = "block"
+                toggle = 1
+            } else {
+                document.getElementById("enableAdress").style.display = "none"
+                toggle = 0
+            }
+        }
+
+        function disbleform() {
+            document.getElementById("enableAdress").style.display = "none"
+            toggle = 1
+            document.getElementById("f-option3").checked = false;
+
+        }
+
+        //Add Adress
+
+        function submitData() {
+
+
+            const addres = {
+                firstName: document.getElementById("firstName").value,
+                lastName: document.getElementById("lastName").value,
+                HouseName: document.getElementById("HouseName").value,
+                altMobile: document.getElementById("altMobile").value,
+                addressLine: document.getElementById("addressLine").value,
+                city: document.getElementById("city").value,
+                state: document.getElementById("state").value,
+                pincode: document.getElementById("pincode").value,
+                nearestLandMark: document.getElementById("nearestLandMark").value
+            }
+            console.log(addres)
+            const res = fetch("/save-adress", {
+                headers: {
+                    'Content-Type': "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify(addres)
+            })
+            console.log(res)
+        }
+
+
+        const addresss = document.querySelectorAll('.address-details-container');
+        let selectedAddress = addresss[0];
+        selectedAddress.classList.add('bg-white');
+
+        for (const address of addresss) {
+            address.addEventListener('click', () => {
+                selectedAddress.classList.remove('bg-white');
+                address.classList.add('bg-white');
+                selectedAddress = address;
+            })
+        }
+
+        const confirmDialog = document.getElementById('confirm-dialog');
+        const cancelButton = document.getElementById('cancel-btn');
+        const deliveryAdress = document.getElementById("delivery-address")
+        const paymentMethod = document.getElementById("payment-method")
+        const amountToPay = document.getElementById("amount-to-pay")
+
+        const transferAddressId = document.getElementById("addressId")
+        const transferPayment = document.getElementById("paymentMethod")
+
+        function confirmOrder() {
+            deliveryAdress.innerHTML = selectedAddress.querySelector('.address').innerHTML
+            // const payment = document.querySelector('input[type = "radio"]: checked')
+            const payment = document.querySelector('input[type="radio"]:checked');
+            paymentMethod.innerText = payment.nextElementSibling.innerHTML
+            amountToPay.innerHTML = document.getElementById("total").innerHTML
+
+            transferAddressId.value = selectedAddress.id 
+            transferPayment.value = paymentMethod.innerText
+
+            confirmDialog.showModal();
+
+
+        }
+
+        cancelButton.addEventListener('click', () => {
+            confirmDialog.close();
+        })
+
+
+    </script>
+
+    <%- include("./layouts/footer.ejs") %>

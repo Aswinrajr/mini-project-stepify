@@ -1,0 +1,93 @@
+<%- include("./layouts/userheader.ejs") %>
+
+<section class="checkout_area section_gap mt-5">
+    <div class="container mt-4">
+        <div class="billing_details">
+            <div class="row">
+                <div class="col-lg-8">
+                 
+                    <form class="row contact_form" action="/updateadress?id=<%=userAdress[0]._id%>" method="post" novalidate="novalidate">
+                    
+                        <div class="col-md-6 form-group p_star">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                First Name
+                            </span>
+                            <input type="text" class="form-control" id="firstName" name="firstName" value="<%=userAdress[0].firstName%>" required="">
+                           
+                        </div>
+                        <div class="col-md-6 form-group p_star">
+                            <span class="text-gray-700 dark:text-gray-400">
+                               Last Name
+                            </span>
+                            <input type="text" class="form-control" id="lastName" name="lastName" value="<%=userAdress[0].lastName%>" required="">
+                           
+                        </div>
+
+                        <div class="col-md-6 form-group p_star">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                Alternate Mobile
+                            </span>
+                            <input type="text" class="form-control" id="altnumber" name="altMobile" value="<%=userAdress[0].altMobile%>" required="">
+                           
+                        </div>
+
+                        <div class="col-md-12 form-group p_star">
+                            <span class="text-gray-700 dark:text-gray-400">
+                              House  Name
+                            </span>
+                            <input type="text" class="form-control" id="house" name="HouseName" value="<%=userAdress[0].HouseName%>" required=""> 
+                          
+
+                        </div>
+                       
+                        <div class="col-md-12 form-group p_star">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                Address Line 1
+                            </span>
+                            <input type="text" class="form-control" id="landmark" name="addressLine" value="<%=userAdress[0].addressLine%>" required="">
+                         
+                         
+                        </div>
+                        <div class="col-md-12 form-group p_star">
+                            <span class="text-gray-700 dark:text-gray-400">
+                               Nearest Land Mark
+                            </span>
+                            <input type="text" class="form-control" id="add2" name="nearestLandMark" value="<%=userAdress[0].nearestLandMark%>" required="">
+                          
+                        </div>
+                        
+                        <div class="col-md-12 form-group p_star">
+                            <span class="text-gray-700 dark:text-gray-400">
+                              City
+                            </span>
+                            <input type="text" class="form-control" id="city" name="city" value="<%=userAdress[0].city%>" required="">
+                       
+                        </div>
+                        
+                        <div class="col-md-12 form-group p_star">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                State
+                            </span>
+                            <input type="text" class="form-control" id="state" name="state" value="<%=userAdress[0].state%>" required="">
+                          
+
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                Pincode
+                            </span>
+                            <input type="text" class="form-control" id="zip" name="pincode"
+                                value="<%=userAdress[0].pincode%>">
+                        </div>
+                        
+                       
+                        <button type="submit" class="genric-btn info circle arrow " style="align-items: end;">Save Adress</button>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include("./layouts/footer.ejs") %>

@@ -1,0 +1,57 @@
+<%- include("./layouts/userheader.ejs") %>
+    <section class="checkout_area section_gap mt-5">
+        <div class="container mt-4">
+            <div class="billing_details">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h3>Add Adress</h3>
+                        <form class="row contact_form" action="" method="post" novalidate="novalidate">
+                            <div class="col-md-6 form-group p_star">
+                                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required="">
+                               
+                            </div>
+                            <div class="col-md-6 form-group p_star">
+                                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required="">
+                               
+                            </div>
+
+                            <div class="col-md-6 form-group p_star">
+                                <input type="text" class="form-control" id="altnumber" name="altMobile" placeholder="Alternate Mobile" required="">
+                               
+                            </div>
+
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="house" name="HouseName" placeholder="House Adress" required=""> 
+                              
+
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="landmark" name="addressLine" placeholder="Adress Line 1" required="">
+                             
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="add2" name="nearestLandMark" placeholder="Nearest Land mark" required="">
+                              
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="city" name="city" placeholder="City" required="">
+                           
+                            </div>
+                            <div class="col-md-12 form-group p_star">
+                                <input type="text" class="form-control" id="state" name="state" placeholder="State" required="">
+                              
+
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="zip" name="pincode"
+                                    placeholder="Postcode/ZIP">
+                            </div>
+                           
+                            <button type="submit" class="genric-btn info circle arrow " style="align-items: end;">Save Adress</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<%- include("./layouts/footer.ejs") %>

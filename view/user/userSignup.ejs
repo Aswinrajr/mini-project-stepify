@@ -1,0 +1,95 @@
+<%- include("./layouts/header.ejs") %>
+
+
+
+    <section class="login_box_area section_gap ">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="login_box_img mt-5">
+                        <img class="img-fluid" src="../../public/assetsfile/img/p5.jpg" alt="">
+                        <div class="hover">
+                            <h4>Already have an account?</h4>
+                            <p>Continue shopping with us by choosing your perfect footwares</p>
+                            <a class="primary-btn" href="/login">Log in</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-1">
+
+                    <div class="login_form_inner">
+                        <h3>Join for shopping</h3>
+                        <div id="message">
+                            <% if(msg=="User registered successfully Please log in" ) {%>
+                                <!-- Show the error message at the top-right corner -->
+                                <div
+                                    style="position: fixed; top: 150px; right: 20px; background-color: green; color: #fff; padding: 10px; border-radius: 4px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);">
+                                    <p>
+                                        <%= msg %>
+                                    </p>
+                                </div>
+                                <%}else if(msg=="User is alredy registered please log in" ){%>
+                                    <div
+                                        style="position: fixed; top: 150px; right: 20px; background-color: #e53e3e; color: #fff; padding: 10px; border-radius: 4px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);">
+                                        <p>
+                                            <%= msg %>
+                                        </p>
+                                    </div>
+
+                                    <%}else if(msg=='Sign up Now'  ){%>
+                                        <div
+                                            style="position: fixed; top: 150px; right: 20px; background-color: #516204; color: #fff; padding: 10px; border-radius: 4px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);">
+                                            <p>
+                                                <%= msg %>
+                                            </p>
+                                        </div>
+
+                                        <%}%>
+
+                        </div>
+                        <form class="row login_form" action="/signup" method="post">
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="name" name="name"
+                                    placeholder="Enter your name" onfocus="this.placeholder = ''"
+                                    onblur="this.placeholder = 'name'" required="">
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="email" name="email"
+                                    placeholder="Enter your email" onfocus="this.placeholder = ''"
+                                    onblur="this.placeholder = 'Email'" required="">
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="text" class="form-control" id="mobile" name="mobile"
+                                    placeholder="Enter you mobile" onfocus="this.placeholder = ''"
+                                    onblur="this.placeholder = 'Password'" required="">
+                            </div>
+                            <div class="col-md-12 form-group">
+                                <input type="password" class="form-control" id="password" name="password"
+                                    placeholder="Password" onfocus="this.placeholder = ''"
+                                    onblur="this.placeholder = 'Password'" required="">
+                            </div>
+
+                            <div class="col-md-12 form-group">
+                                <button type="submit" value="submit" class="primary-btn">Sign Up</button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        function removeMessage() {
+            const MessageElement = document.getElementById('message');
+            if (MessageElement) {
+                setTimeout(() => {
+                    MessageElement.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        window.onload = removeMessage;
+    </script>
+
+    <%- include("./layouts/footer.ejs") %>

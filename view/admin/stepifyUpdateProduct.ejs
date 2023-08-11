@@ -1,0 +1,132 @@
+<%- include("./layouts/header.ejs") %>
+
+    <div class="container px-6 mx-auto grid" style="width: 50%; margin-top: 5%; font-size: 1.2rem;">
+        <form action="/admin/dashboard/product/editproduct?id=<%=product._id%>"  method="post">
+            <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
+                <div class="text-center font-semibold">
+                    <!-- Increase the font size using inline style -->
+                    <h1 class="text-3xl text-black">
+                        Add Product
+                    </h1>
+                </div>
+                <div class="row flex ">
+                    <div class="col-xl-6 ">
+                        <label class="block mt-4 text-sm">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                categoryName
+                            </span>
+                            <input type="text"
+                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                id="categoryName" name="categoryName" value="<%= product.categoryName %>"  required="">
+                        </label>
+
+                    </div>
+                    <div class="col-xl-6 mx-auto">
+                        <label class="block mt-4 text-sm">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                Brand
+                            </span>
+                            <input type="text"
+                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                id="brand" name="brand" value="<%= product.brand %>"  required="">
+                        </label>
+        
+                    </div>
+
+                </div>
+                <div class="row flex ">
+                    <div class="col-xl-6 ">
+                        <label class="block mt-4 text-sm">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                Person
+                            </span>
+                            <input type="text"
+                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                id="person" name="person" value="<%= product.person %>"  required="">
+                        </label>
+
+                    </div>
+                    <div class="col-xl-6 mx-auto">
+                        <label class="block mt-4 text-sm">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                Size
+                            </span>
+                            <input type="text"
+                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                id="size" name="size" value="<%= product.size %>" required="">
+                        </label>
+        
+                    </div>
+
+                </div>
+                <div class="row flex ">
+                    <div class="col-xl-6 ">
+                        <label class="block mt-4 text-sm">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                Color
+                            </span>
+                            <input type="text"
+                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                id="color" name="color" value="<%= product.color %>" required="">
+                        </label>
+
+                    </div>
+                    <div class="col-xl-6 mx-auto">
+                        <label class="block mt-4 text-sm">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                Price
+                            </span>
+                            <input type="text"
+                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                id="price" name="price" value="<%= product.price %>" required="">
+                        </label>
+        
+                    </div>
+
+                </div>
+                <div class="row flex ">
+                    <div class="col-xl-12 ">
+                        <label class="block mt-4 text-sm">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                Quantity
+                            </span>
+                            <input type="text"
+                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                id="quantity" name="quantity" value="<%= product.quantity %>" required="">
+                        </label>
+
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <label class="block mt-4 text-sm">
+                        <!-- <input type="text"
+                            class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                            id="pricr" name="price" placeholder="Enter the Price" required=""> -->
+                        <input type="file" class="" name="image" id="image"  accept="image/*" multiple>
+
+                    </label>
+
+                </div>
+                <div class="row ">
+                    <div class="col-xl-12 ">
+                        <label class="block mt-4 text-sm">
+                            <span class="text-gray-700 dark:text-gray-400">
+                                Description
+                            </span>
+                            <input type="text "
+                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                                id="description" name="description" value="<%= product.description %>" required="">
+                        </label>
+
+                    </div>
+                </div>      
+                <button type="submit"
+                    class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">Update
+                    Product</button>
+            </div>
+        </form>
+    </div>
+
+
+
+    <%- include("./layouts/footer.ejs") %>

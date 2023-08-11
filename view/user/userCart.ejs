@@ -1,0 +1,204 @@
+<%- include("./layouts/userheader.ejs") %>
+
+    <style>
+        /* Increase the thickness of the quantity input box */
+        .input-text.qty {
+            padding: 8px 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 60px;
+        }
+
+        /* Style the quantity increase and decrease buttons */
+        .product_count .items-count {
+            display: inline-block;
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        /* Style the quantity increase button */
+        .product_count .increase {
+            border-radius: 4px 4px 0 0;
+        }
+
+        /* Style the quantity decrease button */
+        .product_count .reduced {
+            border-radius: 0 0 4px 4px;
+        }
+    </style>
+
+
+    <section class="cart_area mt-5">
+        <div class="container mt-3">
+            <div class="cart_inner">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (data) { %>
+                                <% for (let i=0; i < data.length; i++) { %>
+                                    <tr class="cart_item_row">
+                                        <td>
+                                            <div class="media">
+                                                <div class="d-flex">
+                                                    <img src="../../public/uploads/<%= data[i].image %>"
+                                                        style="width: 80px; height: 80px;" alt="">
+                                                </div>
+                                                <div class="media-body">
+                                                    <p>
+                                                        <%= data[i].name %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <h5 class="product_price">
+                                                <%= data[i].price %>
+                                            </h5>
+                                        </td>
+                                        <td>
+                                            <div class="product_count">
+                                                <!-- <input type="text" name="qty" id="<%= data[i].id %>"
+                                                    value="<%= data[i].quantity%>" title="Quantity:"
+                                                    class="input-text qty">
+                                                <button
+                                                    class="increase items-count" type="button"><i
+                                                        class="lnr lnr-chevron-up"></i></button> -->
+
+                                                <% if(data[i].quantity<2) { %>
+                                                    <!-- <button
+                                                        onclick="decrement('<%= data[i].id %>'); sst = result.value; if( !isNaN( sst ) && sst > 0 ) result.value--;return false;"
+                                                        id="<%= data[i].id %>" class="reduced items-count" type="button"
+                                                        disabled><i class="lnr lnr-chevron-down"></i></button> -->
+                                                    <%}else{%>
+                                                        <%}%>
+                                                            <!-- <button
+                                                                id="<%= data[i].id %>" class="reduced items-count"
+                                                                type="button"><i
+                                                                    class="lnr lnr-chevron-down"></i></button> -->
+                                                            <input type="text" value="<%= data[i].quantity%>" />
+                                                            <button class="increase  incBtn" type="button"><i
+                                                                    class="lnr lnr-chevron-up"></i></button>
+
+                                                            <button id="<%= data[i].id %>" class="reduced"
+                                                                type="button"><i
+                                                                    class="lnr lnr-chevron-down"></i></button>
+
+                                            </div>
+                                        </td>
+                                        <td class="product_total" id="product_total_<%= data[i].id %>">₹
+                                            <span id="<%= data[i].id%>" class="total_price">
+                                                <%= data[i].price * data[i].quantity %>
+                                            </span>
+                                        </td>
+
+
+
+                                        <td>
+                                            <a href="/deletecart/<%= data[i].id %>"
+                                                class="genric-btn danger-border circle arrow"
+                                                onclick='remove("<%= data[i].id %>")'>Remove<span
+                                                    class="lnr lnr-arrow-right"></span></a>
+
+
+                                        </td>
+
+
+                                    </tr>
+                                    <% } %>
+                                        <% } else { %>
+                                            <tr class="cart_item_row">
+                                                <td colspan="4">
+                                                    <div class="cart_empty_message">
+                                                        <h3>Your cart is empty.</h3>
+                                                        <a href="/">Continue Shopping</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <% } %>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <a href="/checkout" class="genric-btn primary circle arrow">Proceed to Checkout<span
+                        class="lnr lnr-arrow-right"></span></a>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <script>
+        const decreaseBtns = document.querySelectorAll('.reduced');
+        const increaseBtns = document.querySelectorAll('.incBtn');
+
+
+        for (let btn of decreaseBtns) {
+            btn.addEventListener('click', () => {
+                const inp = btn.parentElement.querySelector('input');
+                if (inp.value > 1) {
+                    const totalPrice = btn.parentElement.parentElement.parentElement.querySelector('.total_price');
+                    const singleQuantityPrice = +totalPrice.innerText / +inp.value;
+                    inp.value = inp.value - 1;
+                    totalPrice.innerText = singleQuantityPrice * inp.value;
+                    //invoke fetch function
+                    updatequantity(totalPrice.id, -1);
+                }
+            })
+        }
+
+        for (let btn of increaseBtns) {
+            btn.addEventListener('click', () => {
+                const inp = btn.parentElement.querySelector('input');
+                const totalPrice = btn.parentElement.parentElement.parentElement.querySelector('.total_price');
+                const singleQuantityPrice = +totalPrice.innerText / +inp.value;
+                inp.value = +inp.value + 1;
+                totalPrice.innerText = singleQuantityPrice * inp.value;
+                updatequantity(totalPrice.id, 1)
+
+                //invoke fetch function
+            })
+        }
+
+
+        //Update quantity
+        const updatequantity = async (cartid, quantity) => {
+            console.log(cartid)
+            const url = `/updateqty/${cartid}`
+            const option = {
+                method: "put",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ quantity })
+            }
+            const res = await fetch(url, option)
+            if (res.ok) {
+                console.log("Updated")
+            } else {
+                console.log("oopsssss..............")
+            }
+        }
+
+        function remove(proId) {
+            alert("Are you want to remove from cart")
+        }
+    </script>
+
+    <%- include("./layouts/footer.ejs") %>
