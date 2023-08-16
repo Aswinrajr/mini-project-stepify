@@ -1,0 +1,111 @@
+<%- include("./layouts/userheader.ejs") %>
+
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-xl-3 col-lg-4 col-md-5 mt-5">
+            <div class="sidebar-categories mt-5">
+                <div class="head">Browse Categories</div>
+                <ul class="main-categories">
+                    
+                    <li class="main-nav-list"><a data-toggle="collapse" href="#f" aria-expanded="false" aria-controls=""><span class="lnr lnr-arrow-right"></span>All Categories</a></li>
+                    <% for (category of categories) { %>
+
+                        <li class="main-nav-list">
+                            
+                            <a data-toggle="collapse" href="?page=1&category=<%= category %>&brand=<%= selectedBrand %>&sort=<%= selectedSort %>"
+                                class="<%= category === selectedCategory ? 'selected' : '' %>"
+                                aria-expanded="false" aria-controls="">
+                                <span class="lnr lnr-arrow-right"></span><%= category %>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+            <div class="sidebar-categories mt-5">
+                <div class="head">Popular Brands</div>
+                <ul class="main-categories">
+                    <li class="main-nav-list"><a data-toggle="collapse" href="#" aria-expanded="false" aria-controls=""><span class="lnr lnr-arrow-right"></span>All Brands</a></li>
+                    <% for (brand of brands) { %>
+                        <li class="main-nav-list">
+                            <a data-toggle="collapse" href="?page=1&category=<%= selectedCategory %>&brand=<%= brand %>&sort=<%= selectedSort %>"
+                                class="<%= brand === selectedBrand ? 'selected' : '' %>"
+                                aria-expanded="false" aria-controls="">
+                                <span class="lnr lnr-arrow-right"></span><%= brand %>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="col-xl-9 col-lg-8 col-md-7 mt-5">
+            <!-- Start Filter Bar -->
+            <div class="filter-bar d-flex flex-wrap align-items-center mt-5">
+                <div class="sorting">
+                    <select id="sortOptions">
+                        <option value="default">Default</option>
+                        <option value="lowToHigh">Price: Low to High</option>
+                        <option value="highToLow">Price: High to Low</option>
+                    </select>
+                </div>
+                <div class="pagination ml-auto" id="pagination">
+                    <% for (let i=1; i <=totalPages; i++) { %>
+                        <a href="?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
+                            <%= i %>
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+                <section class="lattest-product-area pb-40 category-list">
+                    <div class="row">
+                        <!-- single product -->
+                        <% for(const product of displayedProducts) { %>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="single-product">
+                                    <img class="img-fluid" style="width: 300px;height: 300px;"
+                                        src="/public/uploads/<%= product.image[0] %>" alt="">
+                                    <div class="product-details">
+                                        <h6>
+                                            <%=product.categoryName%>
+                                        </h6>
+                                        <div class="price">
+                                            <h6>
+                                                <%=product.price%>
+                                            </h6>
+                                        </div>
+
+                                        <span>
+                                            <%=product.description%>
+                                        </span>
+
+                                        <div class="prd-bottom">
+
+                                            <a href="" class="social-info">
+                                                <span class="ti-bag"></span>
+                                                <p class="hover-text">add to bag</p>
+                                            </a>
+                                            <a href="" class="social-info">
+                                                <span class="lnr lnr-heart"></span>
+                                                <p class="hover-text">Wishlist</p>
+                                            </a>
+                                            <a href="" class="social-info">
+                                                <span class="lnr lnr-sync"></span>
+                                                <p class="hover-text">compare</p>
+                                            </a>
+                                            <a href="" class="social-info">
+                                                <span class="lnr lnr-move"></span>
+                                                <p class="hover-text">view more</p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <%}%>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+   
+<%- include("./layouts/footer.ejs") %>
