@@ -1,7 +1,7 @@
 <%- include("./layouts/header.ejs") %>
 
     <div class="container px-6 mx-auto grid" style="width: 50%; margin-top: 5%; font-size: 1.2rem;">
-        <form action="/admin/dashboard/product/editproduct?id=<%=product._id%>"  method="post">
+        <form action="/admin/product/editproduct?id=<%=product._id%>"  method="post" enctype="multipart/form-data">
             <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
                 <div class="text-center font-semibold">
                     <!-- Increase the font size using inline style -->
@@ -103,6 +103,11 @@
                             class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                             id="pricr" name="price" placeholder="Enter the Price" required=""> -->
                         <input type="file" class="" name="image" id="image"  accept="image/*" multiple>
+                        <div class="flex">
+                            <%for(let i=0;i<product.image.length;i++){%>
+                            <img style="width: 80px; height: 80px;" src="../../public/uploads/<%= product.image[i] %>" alt="Current Product Image">
+                            <%}%>
+                          </div>
 
                     </label>
 

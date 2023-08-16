@@ -5,6 +5,7 @@ const stepifyCategoryList = async (req, res) => {
     try {
         console.log("Welcome to category list");
         
+        
       const categoryData = await Category.find({});
       res.render("stepifyCategoryList", { data: categoryData });   
     } catch (err) {
@@ -29,7 +30,7 @@ const AddCategoryPage = async(req,res)=>{
         if(existCategory){
             console.log("The category is alredy exist")
             alert("Category Alredy Exist Please Add New Category")
-            res.redirect("/admin/dashboard/category/add_category")
+            res.redirect("/admin/category/add_category")
         }else{
             const newCategory = new Category({
                 categoryName:req.body.categoryName,
@@ -40,7 +41,7 @@ const AddCategoryPage = async(req,res)=>{
             if(newCategoryData){
                 console.log("New Category Added successfully")
                 alert("New Category Added Successfully")
-                res.redirect("/admin/dashboard/category")
+                res.redirect("/admin/category")
             }
             else{
                 console.log("Error in saving Category")
@@ -72,7 +73,7 @@ const updateCategory = async (req, res) => {
       await Category.findByIdAndUpdate(catId, { categoryName,brand});
       console.log("Category updated successfully")  
       alert("Category Updated Successfully")  
-      res.redirect("/admin/dashboard/category");
+      res.redirect("/admin/category");
     } catch (error) {
       console.error("Error:", error);   
     }
@@ -96,7 +97,7 @@ const unlistCategory = async (req,res)=>{
              console.log("listed data",catData)
              alert("Caregory Listed From Database")
         }
-        res.redirect("/admin/dashboard/category")
+        res.redirect("/admin/category")
         
     }catch(err){
         console.log('in unlistController : '+err.msg);

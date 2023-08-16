@@ -7,7 +7,7 @@ const userProfileController = require("../../controller/user/userProfile")
 const userAuth = require("../../middleware/userAuthValidation")
 
 
-user_route.set("view engine", "ejs")
+// user_route.set("view engine", "ejs")
 user_route.set("views", path.join(__dirname, "../../view/user"));
 
 //USER LOGIN
@@ -36,55 +36,65 @@ user_route.post("/verify-otp", userAuth.is_userLoggedOut, userController.cpVerif
 user_route.get("/reset-password", userAuth.is_userLoggedOut, userController.renderResetPassword)
 user_route.post("/set-new-password", userAuth.is_userLoggedOut, userController.setNewPassword)
 
+
+//Rendering Shop Page
+user_route.get("/shop", userProfileController.getShopProduct)
+user_route.get('/shop/filter', userProfileController.getShopProduct);
+
+
+
 //SINGLE PRODUCT VIEW
 user_route.get("/productview", userController.productView)
 
 //USER PROFILE
-user_route.get("/user-profile", userAuth.is_userLoggedIn, userProfileController.getProfile)
-user_route.post("/user-profile",userAuth.is_userLoggedIn, userProfileController.addadress)
+user_route.get("/user-profile", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.getProfile)
+user_route.post("/user-profile", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.addadress)
 
 //CART
-user_route.post("/cart", userAuth.is_userLoggedIn, userProfileController.addToCart)
-user_route.get("/cart", userAuth.is_userLoggedIn, userProfileController.loadAddtoCart)
+user_route.post("/cart", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.addToCart)
+user_route.get("/cart", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.loadAddtoCart)
 
 //Quantity update
-user_route.put("/updateqty/:cartId",userAuth.is_userLoggedIn, userProfileController.updateQuantity)
+user_route.put("/updateqty/:cartId", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.updateQuantity)
 
 //delete cartproducts
-user_route.get("/deletecart/:proId",userAuth.is_userLoggedIn, userProfileController.cartProductDelete)
+user_route.get("/deletecart/:proId", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.cartProductDelete)
 
 //PROCEED TO CHECKOUT
-user_route.get("/checkout",userAuth.is_userLoggedIn, userProfileController.proceedToCheckout)
+user_route.get("/checkout", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.proceedToCheckout)
 
 //ORDER ITEMS
-user_route.post("/verify-order",userAuth.is_userLoggedIn, userProfileController.verifyOrder)
+user_route.post("/verify-order", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.verifyOrder)
 
 //Show Order list
-user_route.get("/order",userAuth.is_userLoggedIn,userProfileController.showOrder)
+user_route.get("/order", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.showOrder)
 
 //Add Adress
-user_route.post("/save-adress",userAuth.is_userLoggedIn, userProfileController.addAdress)
+user_route.post("/save-adress", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.addAdress)
 
 //Update Adress
-user_route.get("/updateadress",userAuth.is_userLoggedIn,userProfileController.updateAdress)
-// user_route.post("/updateadress",userAuth.is_userLoggedIn,userProfileController.saveAdressData)
+user_route.get("/update-adress", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.updateAdress)
+user_route.post("/update-adress", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.saveAdressData)
+
+//delete adress
+user_route.get("/deleteadress", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.deleteAdress)
 
 //USER CHANGEPASSWORD
-user_route.get("/change-password", userAuth.is_userLoggedIn, userProfileController.changePassword)
-user_route.post("/change-password", userAuth.is_userLoggedIn, userProfileController.verifyPassword)
+user_route.get("/change-password", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.changePassword)
+user_route.post("/change-password", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.verifyPassword)
 
 
 //user cancel order
 
-user_route.get("/cancel/:orderId/:productId",userAuth.is_userLoggedIn,userProfileController.cancelOrder)
-user_route.get("/return/:orderId/:productId",userAuth.is_userLoggedIn,userProfileController.returnOrder)
+user_route.get("/cancel/:orderId/:productId", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.cancelOrder)
+user_route.get("/return/:orderId/:productId", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.returnOrder)
 
 
 
 
 
 //LOGOUT
-user_route.get("/logout", userController.logout)
+user_route.get("/logout", userAuth.is_userLoggedIn, userAuth.isBlocked, userController.logout)
 
 user_route.get("/*", userProfileController.pagenotfound)
 

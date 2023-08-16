@@ -15,7 +15,7 @@
                             <% if(userAdress){ %>
                                 <% userAdress.items.forEach((element)=>{ %>
                                     <div id="<%= element._id%>" class="address-details-container"
-                                        style="background-color: #f0f0f0; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px;">
+                                        style="background-color: #f0f0f0; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; color: black;">
                                         <!-- <input type="radio" id="f-option6" name="selector"> -->
                                         <!-- <input type="radio" onclick="transfer()" id="address<%= element._id %>"
                                             name="selector" value="<%= element._id %>"> -->
@@ -44,9 +44,12 @@
                                             </div>
                                             <!-- Add more address details here if needed -->
                                         </div>
-                                        <a href="/updateadress/?id=<%= element._id%>">haii</a>
-                                        <button class="genric-btn info small mt-2" id="cancel-btn">Update</button>
-                                        
+                                        <a href="/update-adress/?id=<%= element._id%>"> <button
+                                                class="genric-btn info small mt-2" id="cancel-btn">Update</button></a>
+                                        <a id="delete" href="/deleteadress/?id=<%= element._id%>&source=checkout"><button
+                                                class="genric-btn danger small mt-2" id="cancel-btn">Delete</button></a>
+
+
                                     </div>
 
                                     <% }) %>
@@ -63,7 +66,7 @@
                         </div>
                         <div style="display: none;" id="enableAdress">
                             <h3>Billing Details</h3>
-                            <form>
+                            <form action="/save-adress" method="post"  novalidate="novalidate">
                                 <div class="col-md-6 form-group p_star">
                                     <input type="text" class="form-control" id="firstName" name="firstName"
                                         placeholder="First Name" required>
@@ -115,7 +118,7 @@
                                 <li onclick="disbleform()" id="cancel" class="genric-btn danger circle arrow mx-auto">
                                     Cancel</li>
 
-                                <button type="button" onclick="submitData()" class="btn btn-primary">Save
+                                <button type="submit" onclick="submitData()" class="btn btn-primary">Save
                                     Adress</button>
                             </form>
                         </div>
@@ -165,8 +168,8 @@
 
                                                 </div>
 
-                                                <a class="primary-btn" href="#"
-                                                    onclick="confirmOrder()">Conform Order</a>
+                                                <a class="primary-btn" href="#" onclick="confirmOrder()">Conform
+                                                    Order</a>
                         </div>
                     </div>
                 </div>
@@ -218,30 +221,30 @@
 
         //Add Adress
 
-        function submitData() {
+        // function submitData() {
 
 
-            const addres = {
-                firstName: document.getElementById("firstName").value,
-                lastName: document.getElementById("lastName").value,
-                HouseName: document.getElementById("HouseName").value,
-                altMobile: document.getElementById("altMobile").value,
-                addressLine: document.getElementById("addressLine").value,
-                city: document.getElementById("city").value,
-                state: document.getElementById("state").value,
-                pincode: document.getElementById("pincode").value,
-                nearestLandMark: document.getElementById("nearestLandMark").value
-            }
-            console.log(addres)
-            const res = fetch("/save-adress", {
-                headers: {
-                    'Content-Type': "application/json"
-                },
-                method: "POST",
-                body: JSON.stringify(addres)
-            })
-            console.log(res)
-        }
+        //     const addres = {
+        //         firstName: document.getElementById("firstName").value,
+        //         lastName: document.getElementById("lastName").value,
+        //         HouseName: document.getElementById("HouseName").value,
+        //         altMobile: document.getElementById("altMobile").value,
+        //         addressLine: document.getElementById("addressLine").value,
+        //         city: document.getElementById("city").value,
+        //         state: document.getElementById("state").value,
+        //         pincode: document.getElementById("pincode").value,
+        //         nearestLandMark: document.getElementById("nearestLandMark").value
+        //     }
+        //     console.log(addres)
+        //     const res = fetch("/save-adress", {
+        //         headers: {
+        //             'Content-Type': "application/json"
+        //         },
+        //         method: "POST",
+        //         body: JSON.stringify(addres)
+        //     })
+        //     console.log(res)
+        // }
 
 
         const addresss = document.querySelectorAll('.address-details-container');
@@ -272,7 +275,7 @@
             paymentMethod.innerText = payment.nextElementSibling.innerHTML
             amountToPay.innerHTML = document.getElementById("total").innerHTML
 
-            transferAddressId.value = selectedAddress.id 
+            transferAddressId.value = selectedAddress.id
             transferPayment.value = paymentMethod.innerText
 
             confirmDialog.showModal();

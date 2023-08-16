@@ -1,5 +1,7 @@
 const User = require("../../model/user/userModel")
 const alert = require("alert")
+
+//List
 const listUser =async (req,res)=>{
     try{
         console.log("Welcome to User list")
@@ -29,22 +31,14 @@ const unlistuser = async (req, res) => {
             console.log("listed data", userData)
             alert("User listed")
         }
-        res.redirect("/admin/dashboard/user")
+        res.redirect("/admin/user")
 
     } catch (err) {
         console.log('in unlist userController : ' , err);
     }
 };
 
-// const loadUserData = async (req, res) => {
-//     try {
-//         console.log("Welcome to User list")
-//         const productData = await Product.find({})
-//         res.render("stepifyProductList", { data: productData })
-//     } catch (err) {
-//         console.log("Error in Listing the product data")
-//     }
-// }
+
 
 module.exports = {
     listUser,

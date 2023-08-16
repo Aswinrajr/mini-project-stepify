@@ -35,27 +35,6 @@ function generate_OTP() {
     return OTP
 }
 
-
-
-// async function sendOTPtoTwilio(OTP, usermobile) {
-//     try {
-//         console.log("In twilio", OTP, usermobile)
-//         await twilio.messages
-//             .create({
-//                 body: OTP,
-//                 to: `${usermobile}`,
-//                 from: "+18149047030"
-//             }).then((message) => {
-//                 return message
-//             })
-
-//     } catch (err) {
-//         console.log("ERROR IN TWILIO", err)
-//     }
-
-
-// }
-
 //WEBSITE HOME PAGE
 const websiteHome = async (req, res) => {
     try {
@@ -66,6 +45,7 @@ const websiteHome = async (req, res) => {
         console.log("---------------------------------------------------------------------------")
         let userData = null
         if (req.session.user_id) {
+            
 
             console.log("userExist")
             userData = await User.find({ email: req.session.user_id })
@@ -76,6 +56,7 @@ const websiteHome = async (req, res) => {
 
         } else {
             console.log("User no")
+          
 
         }
 
@@ -115,18 +96,19 @@ const userRegistration = async (req, res) => {
                 password: spassword
             })
             const userData = await user.save()
-            res.render("userSignup",{msg:"User registered successfully Please log in"})
+            res.render("userSignup", { msg: "User registered successfully Please log in" })
             // alert("User Registered Successfully")
             // res.redirect("/")
             console.log(userData)
 
-        }else{
-            res.render("userSignup",{msg:"User is alredy registered please log in"})
+        } else {
+            res.render("userSignup", { msg: "User is alredy registered please log in" })
         }
 
     } catch (err) {
         //alert('Enter the fields')
         console.log("Error in User Registration", err)
+        
         res.redirect("/signup")
 
     }
@@ -135,7 +117,7 @@ const userRegistration = async (req, res) => {
 //USER LOGIN PAGE
 const getUserLoginPage = (req, res) => {
     try {
-        res.render("userLogin",{msg:'Please Login'})
+        res.render("userLogin", { msg: 'Please Login' })
     } catch (err) {
         console.log("Error in loading the login page: ", err)
     }
@@ -288,17 +270,17 @@ const verifyUser = async (req, res) => {
                     res.redirect("/")
                 } else {
                     //alert("Please Enter The Registered Password")
-                    res.render("userLogin",{msg:"Please enter the Registered password"})
+                    res.render("userLogin", { msg: "Please enter the Registered password" })
                 }
             } else {
                 //alert("You Are blocked please contact admin")
-                res.render("userLogin",{msg:"You are Blocked please contact admin"})
+                res.render("userLogin", { msg: "You are Blocked please contact admin" })
             }
 
         } else {
             // alert("Please Sign Up")
             // res.redirect("/signup")
-            res.render("userLogin",{msg:"User is not registered please sign up"})
+            res.render("userLogin", { msg: "User is not registered please sign up" })
         }
 
 
@@ -447,6 +429,7 @@ const addToCart = async (req, res) => {
 const logout = async (req, res) => {
     req.session.destroy()
     console.log("User Logout Successfully")
+  
     res.redirect("/")
 }
 

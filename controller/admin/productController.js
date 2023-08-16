@@ -1,5 +1,8 @@
 const Product = require("../../model/admin/productModel")
-const Category = require("../../model/admin/categoryModel")
+const fs = require('fs');
+const path = require('path');
+
+
 const alert = require("alert")
 
 
@@ -59,7 +62,7 @@ const insertProductData = async (req, res) => {
             console.log("New Product Registered Successfully")
             alert("New product added")
             console.log(newProductData)
-            res.redirect("/admin/dashboard/product")
+            res.redirect("/admin/product")
         } else {
             console.log("Product Registration Failed")
             alert("Error in adding product")
@@ -81,19 +84,67 @@ const updateProductData = async (req, res) => {
     }
 
 }
+// const newUpdatedProductData = async (req, res) => {
+//     try {
+//         const proId = req.query.id;
+//         const { categoryName, brand, person, size, color, price, quantity,file, description } = req.body;
+//         const test = await Product.findByIdAndUpdate(proId, { categoryName, brand, person, size, color, price, quantity, description });
+//         console.log("Product updated successfully")
+//         alert("Product data updated successfully")
+//         console.log(test)
+//         res.redirect("/admin/product");
+//     } catch (error) {
+//         console.error("Error in product updation:", error);
+//     }
+// }
+
 const newUpdatedProductData = async (req, res) => {
     try {
         const proId = req.query.id;
         const { categoryName, brand, person, size, color, price, quantity, description } = req.body;
-        const test = await Product.findByIdAndUpdate(proId, { categoryName, brand, person, size, color, price, quantity, description });
-        console.log("Product updated successfully")
-        alert("Product data updated successfully")
-        console.log(test)
-        res.redirect("/admin/dashboard/product");
+
+        // Fetch the existing product data
+        const existingProduct = await Product.findById(proId);
+
+        // Delete old images from the server if new images are uploaded
+        if (req.files && req.files.length > 0) {
+            for (const oldImage of existingProduct.image) {
+                // Delete old image from the server
+                fs.unlinkSync(path.join(__dirname, '../../public/uploads', oldImage));
+            }
+        }
+
+        // Handle the file upload for new images
+        let updatedImage = existingProduct.image; // Initialize with existing images
+
+        if (req.files && req.files.length > 0) {
+            const uploadImages = req.files.map(file => file.filename);
+            updatedImage = uploadImages;
+        }
+
+        // Update the product details with the new data, including the image
+        const updatedProduct = await Product.findByIdAndUpdate(proId, {
+            categoryName,
+            brand,
+            person,
+            size,
+            color,
+            price,
+            quantity,
+            description,
+            image: updatedImage
+        });
+
+        console.log("Product updated successfully");
+        alert("Product data updated successfully");
+        console.log(updatedProduct);
+        res.redirect("/admin/product");
     } catch (error) {
         console.error("Error in product updation:", error);
     }
 }
+
+
 
 const unlistproduct = async (req, res) => {
     try {
@@ -111,7 +162,7 @@ const unlistproduct = async (req, res) => {
             console.log("listed data", proData)
             alert("Product listed")
         }
-        res.redirect("/admin/dashboard/product")
+        res.redirect("/admin/product")
 
     } catch (err) {
         console.log('in unlistController : ' + err.msg);

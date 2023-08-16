@@ -8,7 +8,7 @@
             xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
           </svg>
-          <a href="/admin/dashboard/product/addproduct">Add Product</a>
+          <a href="/admin/product/addproduct">Add Product</a>
         </button>
       </div>
 
@@ -94,7 +94,7 @@
 
                     <td class="px-4 py-3">
                       <div class="flex items-center space-x-4 text-sm">
-                        <a href="/admin/dashboard/product/editproduct?id=<%= data[i]._id %>">
+                        <a href="/admin/product/editproduct?id=<%= data[i]._id %>">
                           <button
                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                             aria-label="Edit">
@@ -105,7 +105,7 @@
                             </svg>
                           </button>
                         </a>
-                        <a href="/admin/dashboard/product/deleteproduct?id=<%= data[i]._id %>">
+                        <a href="/admin/product/deleteproduct?id=<%= data[i]._id %>">
                           <button
                             class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                             aria-label="Delete">

@@ -8,26 +8,31 @@ const Order = require("../../model/orderModel")
 const { CompositionSettingsContextImpl } = require("twilio/lib/rest/video/v1/compositionSettings")
 const { ConversationListInstance } = require("twilio/lib/rest/conversations/v1/conversation")
 const productModel = require("../../model/admin/productModel")
+const categoryModel = require("../../model/admin/categoryModel")
+// const e = require("express")
 
 
 
-//VIEW USER PROFILE
+//VIEW USER PROFILE ADRESS
 
 const getProfile = async (req, res) => {
     try {
         console.log("Welcome to user Profile")
-        const userdata = await User.findOne({ email: req.session.user_id, status: "Active" })
-        if (req.session.user_id) {
-            // console.log("---------------------------------------------------------------------------")
-            // console.log("userData in Add adress", userdata)
+        const userdata = await User.findOne({ email: req.session.user_id })
+        if (userdata) {
 
-            // console.log("---------------------------------------------------------------------------")
+            console.log("---------------------------------------------------------------------------")
+            let adress = userdata.address
+            console.log("userData.Adress in Add adress", adress)
+            console.log("---------------------------------------------------------------------------")
+            res.render("userProfile", { userAdress: adress })
 
 
-            res.render("userProfile")
+
 
         } else {
             res.redirect("/")
+
         }
 
 
@@ -37,11 +42,126 @@ const getProfile = async (req, res) => {
     }
 }
 
+
+//SHOP PRODUCT PAGE
+const getShopProduct = async (req, res) => {
+    try {
+        const userData = await User.findOne({ email: req.session.user_id });
+        if (userData) {
+            const products = await product.find({ isAvailable: true });
+            const categoriesData = await categoryModel.find();
+
+            const productsPerPage = 4;
+            const currentPage = parseInt(req.query.page) || 1;
+            const startIndex = (currentPage - 1) * productsPerPage;
+            const endIndex = startIndex + productsPerPage;
+
+            const uniqueCategories = new Set();
+            const uniqueBrands = new Set();
+
+            for (const category of categoriesData) {
+                uniqueCategories.add(category.categoryName);
+                uniqueBrands.add(category.brand);
+            }
+
+            const categories = Array.from(uniqueCategories);
+            const brands = Array.from(uniqueBrands);
+
+            // Filter products by selected category and brand
+            const selectedCategory = req.query.category;
+            const selectedBrand = req.query.brand;
+
+            let filteredProducts = products.filter(product => {
+                const categoryMatch = (!selectedCategory || product.categoryName === selectedCategory);
+                const brandMatch = (!selectedBrand || product.brand === selectedBrand);
+                return categoryMatch && brandMatch;
+            });
+
+            // Sort filtered products by price
+            const selectedSort = req.query.sort || "default";
+            if (selectedSort === "lowToHigh") {
+                filteredProducts.sort((a, b) => a.price - b.price);
+            } else if (selectedSort === "highToLow") {
+                filteredProducts.sort((a, b) => b.price - a.price);
+            }
+
+            const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+            // Get displayed products based on pagination
+            const displayedProducts = filteredProducts.slice(startIndex, endIndex);
+
+            console.log("Displaying products:", displayedProducts.length);
+            console.log("Products per page:", productsPerPage);
+
+            console.log("Welcome to shop");
+            res.render("stepifyShop", {
+                displayedProducts,
+                totalPages,
+                products: filteredProducts,
+                userData,
+                categories,
+                brands,
+                selectedCategory,
+                selectedBrand,
+                selectedSort,
+                currentPage
+            });
+        } else {
+            res.redirect("/");
+        }
+    } catch (err) {
+        console.log("Error in showing the shop", err);
+    }
+};
+
+
+
+
+
+
+
+
+//Delete Adress
+const deleteAdress = async (req, res) => {
+    try {
+        const userdata = await User.findOne({ email: req.session.user_id })
+        console.log("welcome to dete adress 0", userdata)
+        if (userdata) {
+            console.log("welcome to dete adress 1")
+
+            console.log("welcome to dete adress 2")
+            const adressid = req.query.id
+            let source = req.query.source
+            console.log(source)
+            console.log(adressid)
+            const updatedUser = await User.findOneAndUpdate(
+                { email: req.session.user_id, "address.items._id": adressid },
+                { $pull: { "address.items": { _id: adressid } } },
+                { new: true })
+            console.log("adress delerted successfully");
+            if (source === "add") {
+                res.redirect("/user-profile")
+            }
+            else if (source === "checkout") {
+                res.redirect("/checkout")
+            } else {
+                res.redirect("/")
+            }
+
+
+        } else {
+            res.redirect("/")
+        }
+    } catch (err) {
+        console.log("Error in deleting adress", err)
+    }
+}
+
 //Add adress
 const addadress = async (req, res) => {
     try {
-        const userdata = await User.findOne({ email: req.session.user_id, status: "Active" })
-        if (req.session.user_id) {
+        const userdata = await User.findOne({ email: req.session.user_id })
+        if (userdata) {
 
             // console.log("---------------------------------------------------------------------------")
             // console.log("Userdata in Add adress", userdata)
@@ -52,7 +172,7 @@ const addadress = async (req, res) => {
                 lastName: req.body.lastName,
                 altMobile: req.body.altMobile,
                 HouseName: req.body.HouseName,
-                adressLine: req.body.adressLine,
+                addressLine: req.body.addressLine,
                 nearestLandMark: req.body.nearestLandMark,
                 pincode: req.body.pincode,
                 city: req.body.city,
@@ -64,8 +184,7 @@ const addadress = async (req, res) => {
             console.log("Adress saved")
 
             // console.log("Adress in userData", data);
-            res.redirect("/")
-
+            res.redirect("/user-profile")
 
 
         } else {
@@ -83,12 +202,14 @@ const addadress = async (req, res) => {
 
 //CHANGE PASSWORD
 const changePassword = async (req, res) => {
-    const userData = await User.findOne({ email: req.session.user_id, status: "Active" })
+    const userData = await User.findOne({ email: req.session.user_id })
     try {
-        if (req.session.user_id) {
-            console.log("Welcome to change password")
+        if (userData) {
 
+            console.log("Welcome to change password")
             res.render("ChangePassword")
+
+
         } else {
             res.redirect("/")
         }
@@ -102,9 +223,10 @@ const changePassword = async (req, res) => {
 
 const verifyPassword = async (req, res) => {
     const user_id = req.session.user_id
-    const userData = await User.findOne({ email: user_id, status: "Active" })
+    const userData = await User.findOne({ email: user_id })
     try {
-        if (user_id) {
+
+        if (userData) {
             const oldPassword = req.body.oldPassword
             const newPassword = req.body.newPassword
             const conformPassword = req.body.conformPassword
@@ -143,6 +265,10 @@ const verifyPassword = async (req, res) => {
                 res.redirect("/")
             }
         }
+        else {
+            alert("no user data")
+            res.redirect("/")
+        }
 
 
     } catch (err) {
@@ -154,9 +280,10 @@ const verifyPassword = async (req, res) => {
 //ADD TO CART
 const addToCart = async (req, res) => {
     try {
-        const userData = await User.findOne({ email: req.session.user_id, status: "Active" })
+        const userData = await User.findOne({ email: req.session.user_id })
 
-        if (req.session.user_id) {
+        if (userData) {
+
             const proId = req.body.proid
             // console.log("ProId in Addto cart", proId)
 
@@ -195,7 +322,10 @@ const addToCart = async (req, res) => {
 
 
 
-        } else {
+
+        }
+
+        else {
             //  res.json("please Login")
             console.log("User is not loggrd in")
             // return res.status(400).send("Not Login")
@@ -206,7 +336,7 @@ const addToCart = async (req, res) => {
         console.log(err);
         // res.redirect("/")
         res.status(500).send(err.message);
-       
+
     }
 }
 
@@ -214,9 +344,12 @@ const addToCart = async (req, res) => {
 
 const loadAddtoCart = async (req, res) => {
     try {
-        const userData = await User.findOne({ email: req.session.user_id, status: "Active" })
+        const userData = await User.findOne({
+            email: req.session.user_id
+        })
 
-        if (req.session.user_id) {
+        if (userData) {
+
             console.log("Welcome to add to cart")
 
             // console.log("---------------------------------------------------------------------------")
@@ -277,7 +410,10 @@ const loadAddtoCart = async (req, res) => {
             // console.log("Product details; ", products)
             // console.log("---------------------------------------------------------------------------")
             res.render("userCart", { data: cartData })
-        } else {
+
+        }
+
+        else {
             res.redirect("/")
         }
 
@@ -292,24 +428,29 @@ const loadAddtoCart = async (req, res) => {
 //:cartId => :productId
 const updateQuantity = async (req, res) => {
     try {
+        const userData = await User.find({ email: req.session.user_id })
         console.log("welcome to update qantity")
-        if (!req.session.user_id) {
-            return res.status(400).send("please Login")
+        if (userData) {
+
+            const cartId = req.params.cartId
+            const email = req.session.user_id
+            const { quantity } = req.body;
+
+            console.log(cartId)
+            console.log(email)
+
+            const user = await User.findOneAndUpdate({ email, "cart.productId": cartId }, { $inc: { "cart.$.quantity": quantity } })
+            // console.log("---------------------------------------------------------------------------")
+            // console.log("user data in update quantity: ", user)
+            // console.log("---------------------------------------------------------------------------")
+            res.send("updated")
+
+
+        } else {
+            res.redirect("/")
         }
-        const cartId = req.params.cartId
-        const email = req.session.user_id
-        const { quantity } = req.body;
-
-        console.log(cartId)
-        console.log(email)
-
-        const user = await User.findOneAndUpdate({ email, "cart.productId": cartId }, { $inc: { "cart.$.quantity": quantity } })
-        // console.log("---------------------------------------------------------------------------")
-        // console.log("user data in update quantity: ", user)
-        // console.log("---------------------------------------------------------------------------")
-        res.send("updated")
-
-    } catch (err) {
+    }
+    catch (err) {
         console.log("Error in update quantity in cart", err)
         // res.redirect("/")
     }
@@ -318,9 +459,10 @@ const updateQuantity = async (req, res) => {
 //Delete product
 
 const cartProductDelete = async (req, res) => {
-    const userData = await User.findOne({ email: req.session.user_id, status: "Active" })
+    const userData = await User.findOne({ email: req.session.user_id })
     try {
-        if (req.session.user_id) {
+        if (userData) {
+
             console.log("welcome to delete cart")
             const proId = req.params.proId
             // console.log("---------------------------------------------------------------------------")
@@ -332,10 +474,6 @@ const cartProductDelete = async (req, res) => {
             // console.log("UserData in cart : [userData]", userData);
             // console.log("---------------------------------------------------------------------------")
             res.redirect("/cart")
-
-
-
-
 
         } else {
             res.redirect("/")
@@ -351,8 +489,9 @@ const cartProductDelete = async (req, res) => {
 
 const proceedToCheckout = async (req, res) => {
     try {
-        const userdata = await User.findOne({ email: req.session.user_id, status: "Active" })
-        if (req.session.user_id) {
+        const userdata = await User.findOne({ email: req.session.user_id })
+        if (userdata) {
+
 
             // console.log("---------------------------------------------------------------------------")
             // console.log("user data in userCart: ", userdata)
@@ -425,6 +564,9 @@ const proceedToCheckout = async (req, res) => {
 
             res.render("userCheckoutpage", { data: checkOutProduct, subtotal, userAdress })
 
+
+
+
         } else {
             res.redirect("/")
         }
@@ -440,8 +582,9 @@ const proceedToCheckout = async (req, res) => {
 const addAdress = async (req, res) => {
     try {
         console.log("Welcome to add adress in checkout")
-        const userdata = await User.findOne({ email: req.session.user_id, status: "Active" })
-        if (req.session.user_id) {
+        const userdata = await User.findOne({ email: req.session.user_id })
+        if (userdata) {
+
 
             // console.log("---------------------------------------------------------------------------")
             // console.log("Userdata in Add adress", userdata)
@@ -459,14 +602,16 @@ const addAdress = async (req, res) => {
                 city: req.body.city,
                 state: req.body.state,
             }
-            alert(adress)
+
             console.log("Adress", adress)
 
 
             const adressData = await User.updateOne({ email: req.session.user_id }, { $push: { "address.items": adress } })
             console.log("Adress saved", adressData)
-            res.json("Adress Saved")
+
             res.redirect("/checkout")
+
+
 
 
         } else {
@@ -482,25 +627,39 @@ const addAdress = async (req, res) => {
 }
 
 //update adress
-const updateAdress = async(req,res)=>{
-    try{
-        console.log("Welcome to update route",req.session.user_id)
-        const {id} = req.query
-        console.log("Adress id ",id)
-        const userData = await User.findOne({email:req.session.user_id, "address.items._id": id}, {"address.items.$": 1})
-        console.log("userData",userData.address.items)
-        const data = userData.address.items
-        console.log("userData",data)
-        res.render("updateadress",{userAdress:data})
-    }catch(err){
-        console.log("Error in Update Adress",err)
+const updateAdress = async (req, res) => {
+    try {
+        const userdata = await User.findOne({ email: req.session.user_id })
+        console.log("Welcome to update route", req.session.user_id)
+        if (userdata) {
+            const { id } = req.query
+            console.log("Adress id ", id)
+            const userData = await User.findOne({ email: req.session.user_id, "address.items._id": id }, { "address.items.$": 1 })
+            console.log("userData", userData.address.items)
+            const data = userData.address.items
+            console.log("userData", data)
+            res.render("updateadress", { userAdress: data })
+
+        } else {
+
+            res.redirect("/")
+        }
+
+    } catch (err) {
+        console.log("Error in Update Adress", err)
     }
 }
 
-const saveAdressData = async(req,res)=>{
-    try{
-        if(req.session.user_id){
-            const adress = {
+const saveAdressData = async (req, res) => {
+    try {
+        const userEmail = req.session.user_id;
+        const addressIdToUpdate = req.query.id; // Assuming you're passing the address ID in the query
+
+        const userData = await User.findOne({ email: userEmail });
+        console.log("Welcome to update adress in checkout", addressIdToUpdate, userEmail)
+        if (userData) {
+
+            const newAddress = {
                 firstName: req.body.firstName,
                 lastName: req.body.lastName,
                 altMobile: req.body.altMobile,
@@ -510,23 +669,25 @@ const saveAdressData = async(req,res)=>{
                 pincode: req.body.pincode,
                 city: req.body.city,
                 state: req.body.state,
-            }
-            
+            };
+
+            const updatedUser = await User.findOneAndUpdate(
+                { email: userEmail, "address.items._id": addressIdToUpdate },
+                { $set: { "address.items.$": newAddress } },
+                { new: true }
+            );
+            res.redirect("/checkout")
 
 
 
-            const userData = await User.findOneAndUpdate({email:req.session.user_id, "address.items._id": id}, {"address.items.$": 1},{$set:{address:adress}})
-            console.log("adress updated",UserData)
-
-
-        }else{
-            res.redirect("/")
+        } else {
+            res.redirect("/");
         }
-
-    }catch(err){
-        console.log("Error in Update adress",err)
+    } catch (err) {
+        console.log("Error in updating address", err);
     }
-}
+};
+
 
 
 
@@ -534,42 +695,48 @@ const saveAdressData = async(req,res)=>{
 
 const verifyOrder = async (req, res) => {
     try {
-        const userData = await User.findOne({ email: req.session.user_id, status: "Active" });
-        if (!req.session.user_id) return res.status(400).redirect("/");
-        console.log("Welcome to verify oreder")
+        const userData = await User.findOne({ email: req.session.user_id });
+        if (userData) {
 
-        const { addressId, paymentMethod } = req.body;
+            const { addressId, paymentMethod } = req.body;
 
-        const address = userData.address.items.find(item => item._id == addressId)
-        const userCart = userData.cart;
+            const address = userData.address.items.find(item => item._id == addressId)
+            const userCart = userData.cart;
 
-        //productid quantity price 
-        const items = []
-        for (const item of userCart) {
-            items.push({
-                ProductId: item.productId,
-                quantity: item.quantity,
-                price: item.totalPrice * item.quantity,
+            //productid quantity price 
+            const items = []
+            for (const item of userCart) {
+                items.push({
+                    ProductId: item.productId,
+                    quantity: item.quantity,
+                    price: item.totalPrice * item.quantity,
 
+                })
+            }
+
+            const deliveryAddress = `${address.firstName} ${address.lastName},\n ${address.altMobile},\n ${address.HouseName},\n ${address.addressLine},\n${address.city}, ${address.state},\n${address.nearestLandMark},\n${address.pincode}`;
+
+
+            await Order.create({
+                userId: userData._id,
+                userMobile: address.altMobile,
+                deliveryAddress,
+                items,
+                paymentMethod
             })
+            // res.redirect("/conform-order")
+            res.render("orderConform")
+            // res.send("Order saved")
+            // console.log("UserData in conform order", userData);
+            // console.log("userAddress in conform order", userAddress);
+            // console.log("userCart in conform order", userCart);
+
+
+
+        } else {
+
+            res.redirect("/")
         }
-
-        const deliveryAddress = `${address.firstName} ${address.lastName},\n ${address.altMobile},\n ${address.HouseName},\n ${address.addressLine},\n${address.city}, ${address.state},\n${address.nearestLandMark},\n${address.pincode}`;
-
-
-        await Order.create({
-            userId: userData._id,
-            userMobile: address.altMobile,
-            deliveryAddress,
-            items,
-            paymentMethod
-        })
-        // res.redirect("/conform-order")
-        res.render("orderConform")
-        // res.send("Order saved")
-        // console.log("UserData in conform order", userData);
-        // console.log("userAddress in conform order", userAddress);
-        // console.log("userCart in conform order", userCart);
     } catch (err) {
 
         console.log("Error in verify order", err);
@@ -581,10 +748,11 @@ const verifyOrder = async (req, res) => {
 //USER ORDER LIST
 const showOrder = async (req, res) => {
     try {
-        const userData = await User.findOne({ email: req.session.user_id, status: "Active" })
+        const userData = await User.findOne({ email: req.session.user_id })
         // console.log("UserData", userData)
 
-        if (req.session.user_id) {
+        if (userData) {
+
             // console.log("userId", userData._id)
 
             const orderData = await Order.find({ userId: userData._id }, { deliveryAddress: 1, paymentMethod: 1, items: 1, createdAt: 1 }).sort({ createdAt: -1 })
@@ -620,6 +788,8 @@ const showOrder = async (req, res) => {
 
             res.render("userOrderList", { userData, combinedData });
 
+
+
         } else {
             res.redirect("/");
         }
@@ -634,14 +804,22 @@ const showOrder = async (req, res) => {
 //CANCEL ORDER
 const cancelOrder = async (req, res) => {
     try {
-        console.log("Welcome to cancel order")
-        const { orderId, productId } = req.params;
-        console.log("orderId: ", orderId, "productId: ", productId)
+        const userData = await User.findOne({ email: req.session.user_id })
+        console.log("Welcome to cancl order", userData)
+        if (userData) {
 
-        const ocancel = await Order.findOneAndUpdate({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.status": "Cancel" } })
-        console.log("ocancel", ocancel)
-        res.redirect("/order")
+            console.log("Welcome to cancel order inside if")
+            const { orderId, productId } = req.params;
+            console.log("orderId: ", orderId, "productId: ", productId)
 
+            const ocancel = await Order.findOneAndUpdate({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.status": "Cancel" } })
+            console.log("ocancel", ocancel)
+            res.redirect("/order")
+
+
+        } else {
+            res.redirect("/")
+        }
     } catch (err) {
         console.log("Error in cancel order", err)
         // res.redirect("/")
@@ -650,13 +828,15 @@ const cancelOrder = async (req, res) => {
 
 const returnOrder = async (req, res) => {
     try {
-        const userData = await User.findOne({ email: req.session.user_id, status: "Active" })
-        if (req.session.user_id) {
+        const userData = await User.findOne({ email: req.session.user_id })
+        if (userData) {
+
             console.log("Welcome to return order")
             const { orderId, productId } = req.params;
             console.log("orderId: ", orderId, "productId: ", productId)
             await Order.updateOne({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.status": "Return" } })
             res.redirect("/order")
+
         } else {
             res.redirect("/")
         }
@@ -675,6 +855,7 @@ const pagenotfound = (req, res) => {
 
 module.exports = {
     getProfile,
+    deleteAdress,
     saveAdressData,
     changePassword,
     verifyPassword,
@@ -692,7 +873,9 @@ module.exports = {
     showOrder,
 
     cancelOrder,
-    returnOrder
+    returnOrder,
+
+    getShopProduct
 
 
 
