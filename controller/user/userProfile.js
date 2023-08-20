@@ -1,4 +1,5 @@
 const User = require("../../model/user/userModel")
+const couponSchema = require("../../model/couponModel")
 const bcrypt = require("bcrypt")
 const alert = require("alert")
 
@@ -9,7 +10,7 @@ const { CompositionSettingsContextImpl } = require("twilio/lib/rest/video/v1/com
 const { ConversationListInstance } = require("twilio/lib/rest/conversations/v1/conversation")
 const productModel = require("../../model/admin/productModel")
 const categoryModel = require("../../model/admin/categoryModel")
-// const e = require("express")
+
 
 
 
@@ -26,16 +27,10 @@ const getProfile = async (req, res) => {
             console.log("userData.Adress in Add adress", adress)
             console.log("---------------------------------------------------------------------------")
             res.render("userProfile", { userAdress: adress })
-
-
-
-
         } else {
             res.redirect("/")
 
         }
-
-
     } catch (err) {
         console.log("Error in loading user Profile", err)
         // res.redirect("/")
@@ -48,13 +43,24 @@ const getShopProduct = async (req, res) => {
     try {
         const userData = await User.findOne({ email: req.session.user_id });
         if (userData) {
-            const products = await product.find({ isAvailable: true });
-            const categoriesData = await categoryModel.find();
 
-            const productsPerPage = 4;
+            const categoriesData = await categoryModel.find();
+            const products = await product.find({ isAvailable: true });
+
+            const productsPerPage = 3;
             const currentPage = parseInt(req.query.page) || 1;
             const startIndex = (currentPage - 1) * productsPerPage;
             const endIndex = startIndex + productsPerPage;
+            const totalPage = Math.floor(products.length / productsPerPage) + 1
+
+            const displayedProducts = products.slice(startIndex, endIndex);
+
+
+            console.log("---------------------------------------------------------------------------")
+            console.log("totalPage: ", totalPage)
+            console.log("---------------------------------------------------------------------------")
+
+
 
             const uniqueCategories = new Set();
             const uniqueBrands = new Set();
@@ -67,44 +73,14 @@ const getShopProduct = async (req, res) => {
             const categories = Array.from(uniqueCategories);
             const brands = Array.from(uniqueBrands);
 
-            // Filter products by selected category and brand
-            const selectedCategory = req.query.category;
-            const selectedBrand = req.query.brand;
-
-            let filteredProducts = products.filter(product => {
-                const categoryMatch = (!selectedCategory || product.categoryName === selectedCategory);
-                const brandMatch = (!selectedBrand || product.brand === selectedBrand);
-                return categoryMatch && brandMatch;
-            });
-
-            // Sort filtered products by price
-            const selectedSort = req.query.sort || "default";
-            if (selectedSort === "lowToHigh") {
-                filteredProducts.sort((a, b) => a.price - b.price);
-            } else if (selectedSort === "highToLow") {
-                filteredProducts.sort((a, b) => b.price - a.price);
-            }
-
-            const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-
-            // Get displayed products based on pagination
-            const displayedProducts = filteredProducts.slice(startIndex, endIndex);
-
-            console.log("Displaying products:", displayedProducts.length);
-            console.log("Products per page:", productsPerPage);
-
             console.log("Welcome to shop");
             res.render("stepifyShop", {
-                displayedProducts,
-                totalPages,
-                products: filteredProducts,
                 userData,
                 categories,
                 brands,
-                selectedCategory,
-                selectedBrand,
-                selectedSort,
-                currentPage
+                products: displayedProducts,
+                totalPage,
+                currentPage,
             });
         } else {
             res.redirect("/");
@@ -115,9 +91,84 @@ const getShopProduct = async (req, res) => {
 };
 
 
+//Getting data from front end
+
+const filterProduct = async (req, res) => {
+    try {
+        const userData = await User.findOne({ email: req.session.user_id });
+        if (userData) {
+            const { selectedCategories, selectedBrand, sortValue, pages } = req.body;
+
+            console.log("pages", pages)
+
+            let query = { isAvailable: true };
+
+            // Add selected categories to the query
+            if (selectedCategories && selectedCategories.length > 0) {
+                query.categoryName = { $in: selectedCategories };
+            }
+
+            // Add selected brands to the query
+            if (selectedBrand && selectedBrand.length > 0) {
+                query.brand = { $in: selectedBrand };
+            }
+
+            // Get sorting options
+            let sortOption = {};
+
+            if (sortValue === 1) {
+                sortOption = { price: 1 }; // Low to High
+            } else if (sortValue === -1) {
+                sortOption = { price: -1 }; // High to Low
+            }
+            console.log("query: ", query)
+
+            // Fetch products from the database using the constructed query and sorting options
+
+            const itemsPerPage = 3;
+            // const page = parseInt(req.query.page) || 1;
+            const skip = (pages - 1) * itemsPerPage;
+
+            const filteredProducts = await product
+                .find(query)
+                .sort(sortOption)
+                .skip(skip)
+                .limit(itemsPerPage);
+
+            const totalCount = await product.countDocuments(query);
+            const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+            console.log("count of filtered product ", totalCount)
+            console.log("count of filtered totalPages", totalPages)
+
+            res.status(200).json({
+                success: true,
+                filteredProducts,
+                totalPages,
+                totalCount,
+                pages
+            });
 
 
 
+        } else {
+            res.redirect("/");
+        }
+    } catch (err) {
+        console.log("Error in getting data from frontend:", err);
+        res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+};
+
+const getCount = async (req, res) => {
+    try {
+        const data = req.body
+        console.log("Data in data: ", data)
+
+    } catch (err) {
+        console.log("Error in fetching the count", err)
+    }
+}
 
 
 
@@ -489,8 +540,12 @@ const cartProductDelete = async (req, res) => {
 
 const proceedToCheckout = async (req, res) => {
     try {
+        const validCoupon = await couponSchema.find({ status: "Valid" })
         const userdata = await User.findOne({ email: req.session.user_id })
         if (userdata) {
+            console.log("..........................................................")
+            console.log("Coupon Data in the user: ", validCoupon)
+            console.log("..........................................................")
 
 
             // console.log("---------------------------------------------------------------------------")
@@ -562,10 +617,7 @@ const proceedToCheckout = async (req, res) => {
             // console.log("Checkoutdetails", checkOutProduct)
 
 
-            res.render("userCheckoutpage", { data: checkOutProduct, subtotal, userAdress })
-
-
-
+            res.render("userCheckoutpage", { data: checkOutProduct, subtotal, userAdress, validCoupon })
 
         } else {
             res.redirect("/")
@@ -574,6 +626,63 @@ const proceedToCheckout = async (req, res) => {
     } catch (err) {
         console.log("error in proceed to checkout", err)
         // res.redirect("/")
+    }
+}
+
+const validateCoupon = async (req, res) => {
+    try {
+        const couponArray = []
+        console.log("welcome to user Checkout Page")
+        const { couponCode } = req.body;
+        console.log("Coupon Code in Validate copupon: ", couponCode)
+        //  console.log("subtotal in Validate copupon: ",subtotal)
+        const existCoupon = await couponSchema.findOne({couponCode:couponCode})
+        console.log("Coupon found in database copupon: ",existCoupon)
+        if(existCoupon){
+
+            let currentDate = new Date();
+            currentDate =currentDate.toISOString().split('T')[0]
+
+            const validFromDate = existCoupon.validFrom.toISOString().split('T')[0];
+            const validUntilDate = existCoupon.validUntil.toISOString().split('T')[0];
+
+     
+
+            console.log("currentDate : ",currentDate)
+            console.log("validFrom : ",validFrom)
+            console.log("validUntil : ",validUntil)
+            console.log("validFromDate : ",validFromDate)
+            console.log("validUntilDate : ",validUntilDate)
+
+            if(validFromDate<=currentDate && currentDate <= validUntilDate){
+
+                console.log("Date validdation sucesss inside if")
+
+                if(couponArray.length===0){
+                    couponArray.push(couponCode)
+                    console.log("couponArray :",couponArray)
+                }else{
+                    console.log('Coupon Arry is not empty')
+                }
+
+
+            }else{
+
+                return res.json({ message: "Coupon is Expired" });
+
+            }
+
+
+
+
+        }else{
+              return res.json({ message: "Coupon not found." });
+        }
+        res.send("haii")
+
+
+    } catch (err) {
+        console.log("Error in vaidating the coupon in user checkout", err)
     }
 }
 
@@ -716,7 +825,6 @@ const verifyOrder = async (req, res) => {
 
             const deliveryAddress = `${address.firstName} ${address.lastName},\n ${address.altMobile},\n ${address.HouseName},\n ${address.addressLine},\n${address.city}, ${address.state},\n${address.nearestLandMark},\n${address.pincode}`;
 
-
             await Order.create({
                 userId: userData._id,
                 userMobile: address.altMobile,
@@ -724,12 +832,10 @@ const verifyOrder = async (req, res) => {
                 items,
                 paymentMethod
             })
-            // res.redirect("/conform-order")
+
+
             res.render("orderConform")
-            // res.send("Order saved")
-            // console.log("UserData in conform order", userData);
-            // console.log("userAddress in conform order", userAddress);
-            // console.log("userCart in conform order", userCart);
+
 
 
 
@@ -864,6 +970,7 @@ module.exports = {
     updateQuantity,
     cartProductDelete,
     proceedToCheckout,
+    validateCoupon,
     addadress,
     pagenotfound,
     addAdress,
@@ -875,7 +982,11 @@ module.exports = {
     cancelOrder,
     returnOrder,
 
-    getShopProduct
+    getShopProduct,
+    filterProduct,
+    getCount
+
+
 
 
 

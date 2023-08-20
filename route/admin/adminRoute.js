@@ -11,6 +11,7 @@ const adminUserController = require("../../controller/admin/adminUserController"
 const orderController  = require("../../controller/admin/orderController")
 const upload = require("../../middleware/multer")
 const authControl = require("../../middleware/authValidation")
+const couponControl = require("../../controller/admin/couponController")
 
 // admin_route.set("view engine", "ejs")
 admin_route.set("views", path.join(__dirname, "../../view/admin"));
@@ -63,13 +64,11 @@ admin_route.get("/product/editproduct",authControl.is_adminLoggedIn,productContr
 admin_route.post("/product/editproduct",authControl.is_adminLoggedIn,upload.array("image",3),productController.newUpdatedProductData)
 
 //Unlist product Data
-
 admin_route.get("/product/deleteproduct",authControl.is_adminLoggedIn,productController.unlistproduct)
 admin_route.post("/product/deleteproduct",authControl.is_adminLoggedIn,productController.loadProductData)
 
 //USER CONTROLLER
 admin_route.get("/user",authControl.is_adminLoggedIn,adminUserController.listUser)
-
 admin_route.get("/user/deleteuser",authControl.is_adminLoggedIn,adminUserController.unlistuser)
 admin_route.post("/user/deleteuser",authControl.is_adminLoggedIn,adminUserController.listUser)
 
@@ -80,6 +79,15 @@ admin_route.get("/order",authControl.is_adminLoggedIn,orderController.orderList)
 admin_route.get('/delivered/:orderId/:productId',authControl.is_adminLoggedIn,orderController.orderDelivered)
 admin_route.get('/shipped/:orderId/:productId',authControl.is_adminLoggedIn,orderController.orderShipped)
 // admin_route.post("/shipped",orderController.orderShipped)
+
+//Coupon Control
+admin_route.get("/coupon",authControl.is_adminLoggedIn,couponControl.getCoupon)
+admin_route.post("/coupon",authControl.is_adminLoggedIn,couponControl.saveCoupon)
+
+//Listing Coupons
+admin_route.get("/coupon/list-coupon/:id",authControl.is_adminLoggedIn,couponControl.listCoupon)
+
+
 
 //Logout
 admin_route.get("/logout",authControl.is_adminLoggedIn,adminController.adminLogout)

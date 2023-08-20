@@ -84,19 +84,7 @@ const updateProductData = async (req, res) => {
     }
 
 }
-// const newUpdatedProductData = async (req, res) => {
-//     try {
-//         const proId = req.query.id;
-//         const { categoryName, brand, person, size, color, price, quantity,file, description } = req.body;
-//         const test = await Product.findByIdAndUpdate(proId, { categoryName, brand, person, size, color, price, quantity, description });
-//         console.log("Product updated successfully")
-//         alert("Product data updated successfully")
-//         console.log(test)
-//         res.redirect("/admin/product");
-//     } catch (error) {
-//         console.error("Error in product updation:", error);
-//     }
-// }
+
 
 const newUpdatedProductData = async (req, res) => {
     try {

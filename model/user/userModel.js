@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const product = require("../../model/admin/productModel")
+const Coupon = require("../../model/couponModel")
+
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -84,6 +86,10 @@ const userSchema = new mongoose.Schema({
          
         }]
     },
+  
 })
 
-module.exports = mongoose.model("User", userSchema)
+module.exports = mongoose.model("User", userSchema)  // userCoupons:[{
+    //     type:mongoose.Schema.Types.ObjectId,
+    //     ref:Coupon
+    // }]

@@ -1,340 +1,210 @@
 <%- include("./layouts/userheader.ejs") %>
 
-    <!--================Checkout Area =================-->
-    <section class="checkout_area section_gap mt-5">
-        <div class="container">
-            <div class="billing_details">
-                <div class="row">
-                    <div class="col-lg-8">
-                        <!-- space for address -->
-                        <h6 class="ps-md-2 pt-lg-3">Saved Addresses</h6>
-                        <div class=" p-lg-1" id="addressDetails" style="background-color: #f0f0f0;">
 
-                                <% if(userAdress){ %>
-                                    <% userAdress.items.forEach((element)=>{ %>
+    <div class="container mt-5">
 
-                                        <div class=" row d-flex ps-lg-3 section-top-border p-3">
-                                            <div class="col-md-10 p-lg-1" id="profileDetails">
+        <div class="row ">
+            <div class="col-xl-3 col-lg-4 col-md-5 mt-5">
+                <div class="sidebar-categories mt-5">
+                    <div class="head">Browse Categories</div>
+                    <ul class="main-categories">
+                        <li class="main-nav-list"><a data-toggle="collapse" href="#f" aria-expanded="false"
+                                aria-controls=""><span class="lnr lnr-arrow-right"></span>All Categories</a></li>
+                        <% for (category of categories) { %>
+                            <li class="main-nav-list"><a data-toggle="collapse"
+                                    href="?page=1&category=<%= category %>&brand=<%= selectedBrand %>&sort=<%= selectedSort %>"
+                                    aria-expanded="false" aria-controls=""><span class="lnr lnr-arrow-right"></span>
+                                    <%= category %>
+                                </a></li>
+                            <% } %>
+                    </ul>
+                </div>
+                <div class="sidebar-categories mt-5">
+                    <div class="head">Popular Brands</div>
+                    <ul class="main-categories">
+                        <li class="main-nav-list"><a data-toggle="collapse" href="#" aria-expanded="false"
+                                aria-controls=""><span class="lnr lnr-arrow-right"></span>All Brands</a></li>
+                        <% for (brand of brands) { %>
 
-                                                <div class="container d-flex list-unstyled">
-                                                    <div class="primary-radio">
-                                                        <input type="checkbox" id="default-radio">
-                                                        <label for="default-radio"></label>
-                                                    </div>
+                            <li class="main-nav-list"><a data-toggle="collapse"
+                                    href="?page=1&category=<%= selectedCategory %>&brand=<%= brand %>&sort=<%= selectedSort %>"
+                                    aria-expanded="false" aria-controls=""><span class="lnr lnr-arrow-right"></span>
+                                    <%= brand %>
+                                </a></li>
+                            <% } %>
+                    </ul>
+                </div>
 
-                                                    <span class="justify-content-start mx-3">
+            </div>
 
-                                                        <%= element.firstName%>
-                                                            <%= element.lastName %>,
-                                                    </span>
-                                                </div>
-                                                <div class="container d-flex list-unstyled">
-                                                    <span>
-                                                        <%= element.HouseName %>,
-                                                    </span>
-                                                    <span>
-                                                        <%= element.adressLine %>,
-                                                    </span>
-                                                    <span>
-                                                        <%= element.nearestLandMark %>,
-                                                    </span>
-                                                    <span>
-                                                        <%= element.pincode %>
-                                                    </span>
-                                                </div>
+            <div class="col-xl-9 col-lg-8 col-md-7 mt-5">
+                <!-- Start Filter Bar -->
+                <div class="filter-bar d-flex flex-wrap align-items-center mt-5">
+                    <div class="sorting">
+                        <select id="sortOptions">
+                            <option value="default">Default</option>
+                            <option value="lowToHigh">Price: Low to High</option>
+                            <option value="highToLow">Price: High to Low</option>
+                        </select>
 
-                                                <div class="container d-flex list-unstyled">
-                                                    <span>
-                                                        <%= element.city %>,
-                                                    </span>
-                                                    <span class="ps-1">
-                                                        <%= element.state %>,
-                                                    </span>
-                                                    <span class="ps-1">
-                                                        <%= element.altMobile %>
-                                                    </span>
-                                                </div>
-                                                <button class="genric-btn info circle arrow" type="submit"
-                                                    onclick="editAddress('<%= JSON.stringify(element)  %>')">
-                                                    Edit
-                                                </button>
-                                                <button class="genric-btn danger circle arrow" type="submit"
-                                                    onclick="editAddress('<%= JSON.stringify(element)  %>')">
-                                                    delete
-                                                </button>
+                    </div>
 
-
-                                            </div>
+                    <div class="pagination ml-auto" id="pagination">
+                        <% for (let i=1; i <=totalPages; i++) { %>
+                            <a href="?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
+                                <%= i %>
+                            </a>
+                            <% } %>
+                    </div>
+                </div>
+                <section class="lattest-product-area pb-40 category-list">
+                    <div class="row">
+                        <!-- single product -->
+                        <% for(const product of displayedProducts) { %>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="single-product">
+                                    <img class="img-fluid" style="width: 300px;height: 300px;"
+                                        src="/public/uploads/<%= product.image[0] %>" alt="">
+                                    <div class="product-details">
+                                        <h6>
+                                            <%=product.categoryName%>
+                                        </h6>
+                                        <div class="price">
+                                            <h6>
+                                                <%=product.price%>
+                                            </h6>
                                         </div>
-                                        <!-- <div>
-                                <button class="genric-btn info circle arrow" type="submit"
-                                onclick="editAddress('<%= JSON.stringify(element)  %>')">
-                                Edit
-                            </button>
-                            <button class="genric-btn danger circle arrow" type="submit"
-                            onclick="editAddress('<%= JSON.stringify(element)  %>')">
-                            delete
-                        </button>
-                        
-                    </div> -->
 
-                    
-                    <% }) %>
-                    <% } %>
-                        </div>
-                        <div class="col-md-12 form-group">
-                            <div class="creat_account">
-                                <h3>Shipping Details</h3>
-                                <input onclick="enableAdress()" type="checkbox" id="f-option3" name="selector">
-                                <label for="f-option3">Ship to a different address?</label>
+                                        <span>
+                                            <%=product.description%>
+                                        </span>
+
+                                        <div class="prd-bottom">
+
+                                            <a href="" class="social-info">
+                                                <span class="ti-bag"></span>
+                                                <p class="hover-text">add to bag</p>
+                                            </a>
+                                            <a href="" class="social-info">
+                                                <span class="lnr lnr-heart"></span>
+                                                <p class="hover-text">Wishlist</p>
+                                            </a>
+                                            <a href="" class="social-info">
+                                                <span class="lnr lnr-sync"></span>
+                                                <p class="hover-text">compare</p>
+                                            </a>
+                                            <a href="" class="social-info">
+                                                <span class="lnr lnr-move"></span>
+                                                <p class="hover-text">view more</p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-
-                        </div>
-                        <div style="display: none;" id="enableAdress">
-                            <h3>Billing Details</h3>
-                            <form>
-                                <div class="col-md-6 form-group p_star">
-                                    <input type="text" class="form-control" id="firstName" name="firstName"
-                                        placeholder="First Name" required>
-
-                                </div>
-                                <div class="col-md-6 form-group p_star">
-                                    <input type="text" class="form-control" id="lastName" name="lastName"
-                                        placeholder="Last Name" required>
-
-                                </div>
-
-                                <div class="col-md-6 form-group p_star">
-                                    <input type="text" class="form-control" id="altMobile" name="altMobile"
-                                        placeholder="Alternate Mobile" required>
-
-                                </div>
-
-                                <div class="col-md-12 form-group p_star">
-                                    <input type="text" class="form-control" id="HouseName" name="HouseName"
-                                        placeholder="House Adress" required="">
-
-
-                                </div>
-                                <div class="col-md-12 form-group p_star">
-                                    <input type="text" class="form-control" id="adressLine" name="adressLine"
-                                        placeholder="Adress Line 1" required="">
-
-                                </div>
-                                <div class="col-md-12 form-group p_star">
-                                    <input type="text" class="form-control" id="nearestLandMark" name="nearestLandMark"
-                                        placeholder="Nearest Land mark" required="">
-
-                                </div>
-                                <div class="col-md-12 form-group p_star">
-                                    <input type="text" class="form-control" id="city" name="city" placeholder="City"
-                                        required="">
-
-                                </div>
-                                <div class="col-md-12 form-group p_star">
-                                    <input type="text" class="form-control" id="state" name="state" placeholder="State"
-                                        required="">
-
-
-                                </div>
-                                <div class="col-md-12 form-group">
-                                    <input type="text" class="form-control" id="pincode" name="pincode"
-                                        placeholder="Postcode/ZIP">
-                                </div>
-                                <li onclick="disbleform()" id="cancel" class="genric-btn danger circle arrow mx-auto">
-                                    Cancel</li>
-
-                                <button type="button" onclick="submitData()" class="btn btn-primary">Save
-                                    Adress</button>
-                            </form>
-                        </div>
+                            <%}%>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="order_box">
-                            <h2>Your Order</h2>
-                            <ul class="list">
-                                <li><a href="#">Product <span>Total</span></a></li>
-
-                                <% if (data) { %>
-                                    <% for (let i=0; i < data.length; i++) { %>
-                                        <li><a href="#">
-                                                <%=data[i].productName%> <span>₹ <%=data[i].totalPrice%></span><span> x
-                                                        <%=data[i].productQuantity%> =
-                                                    </span> <span class="last">₹
-                                                        <%=data[i].productPrice%>
-                                                    </span>
-                                            </a></li>
-
-                                        <%}%>
-
-                                            <%}%>
-                                                <ul class="list list_2">
-                                                    <li><a href="#">Subtotal <span>₹ <%=subtotal%></span></a></li>
-                                                    <li><a href="#">Shipping <span> 0</span></a></li>
-                                                    <li><a href="#">Total <span>₹ <%=subtotal%></span></a></li>
-                                                </ul>
-
-                                                <div class="payment_item">
-                                                    <div class="radion_btn">
-                                                        <input type="radio" id="f-option5" name="selector">
-                                                        <label for="f-option5">Cash on delivery</label>
-                                                        <div class="check"></div>
-                                                    </div>
-
-                                                </div>
-                                                <div class="payment_item active">
-                                                    <div class="radion_btn">
-                                                        <input type="radio" id="f-option6" name="selector">
-                                                        <label for="f-option6">UPI </label>
-                                                        <img src="img/product/card.jpg" alt="">
-                                                        <div class="check"></div>
-                                                    </div>
-
-                                                </div>
-
-                                                <a class="primary-btn" href="#">Conform Order</a>
-                        </div>
-                    </div>
-                </div>
+                </section>
             </div>
         </div>
-    </section>
-    <!--================End Checkout Area =================-->
 
-    <template id="address-temp">
-        <div class=" row d-flex ps-lg-3 section-top-border p-3">
-            <div class="col-md-10 p-lg-1" id="profileDetails">
+    </div>
 
-                <div class="container d-flex list-unstyled">
-                    <div class="primary-radio">
-                        <input type="checkbox" id="default-radio">
-                        <label for="default-radio"></label>
-                    </div>
-
-                    <span class="justify-content-start mx-3">
-
-                        <span class="firstName"></span>
-                        <span class="lastName"></span>
-                    </span>
-                </div>
-                <div class="container d-flex list-unstyled">
-                    <span class="houseName"></span>,
-                    <span class="address"></span>,
-                    <span class="landmark"></span>,
-                    <span class="pincode"></span>
-                </div>
-
-                <div class="container d-flex list-unstyled">
-                    <span class="city"></span>
-                    <span class="ps-1 state"></span>
-                    <span class="ps-1 altMobile"></span>
-                </div>
-                <button class="genric-btn info circle arrow" type="submit">
-                    Edit
-                </button>
-            </div>
-        </div>
-    </template>
-
-    <script>
-        const addressTemp = document.getElementById('address-temp')
-        let toggle = 0;
-        function enableAdress() {
-
-
-            if (toggle === 0) {
-                document.getElementById("enableAdress").style.display = "block"
-                toggle = 1
-            } else {
-                document.getElementById("enableAdress").style.display = "none"
-                toggle = 0
-
-            }
-
-        }
-
-        function disbleform() {
-            document.getElementById("enableAdress").style.display = "none"
-            toggle = 1
-            document.getElementById("f-option3").checked = false;
-
-        }
-
-        //Add Adress
-
-        function submitData() {
-
-
-            const addres = {
-                firstName: document.getElementById("firstName").value,
-                lastName: document.getElementById("lastName").value,
-                HouseName: document.getElementById("HouseName").value,
-                altMobile: document.getElementById("altMobile").value,
-                adressLine: document.getElementById("adressLine").value,
-                city: document.getElementById("city").value,
-                pincode: document.getElementById("pincode").value,
-                nearestLandMark: document.getElementById("nearestLandMark").value
-            }
-            console.log(addres)
-            const res = fetch("/save-adress", {
-                headers: {
-                    'Content-Type': "application/json"
-                },
-                method: "POST",
-                body: JSON.stringify(addres)
-            })
-            console.log(res)
-
-
-        }
-
-
-
-        const buildAddress = (add) => {
-            for(const address of add) {
-                const newAddress = addressTemp.content.cloneNode(true);
-
-                //newAdres.querySelecory('.firstnae').innerText = addr..dinss
-
-                //div declare
-                //div.appenchile(newadd)
-            }
-        }
-
-
-        async function fetchAddresss () {
-            const url = '/getaddress';
-            const res = await fetch(url, {method: "GET"})
-            if(res.ok) {
-                const data = await res.json()
-                console.log(data);
-                buildAddress(data)
-            }
-        }
-
-
-
-        fetchAddresss()
-
-    </script>
 
     <%- include("./layouts/footer.ejs") %>
 
-<!-- 
-    middleware -->
-    <!-- // app.use(function (req, res, next) {
-        //     res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-        //     next();
-        // });
-        // app.use(session({
-        //     secret: "uuidv4",
-        //     resave: false,
-        //     saveUninitialized: true
-        // }))
-        
-        // app.use((req, res, next) => {
-        //     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-        //     res.setHeader('Pragma', 'no-cache');
-        //     res.setHeader('Expires', '0');
-        //     next();
-        // }); -->
+
+
+    // SHOP PRODUCT PAGE
+const getShopProduct = async (req, res) => {
+    try {
+        const userData = await User.findOne({ email: req.session.user_id });
+        if (userData) {
+            const products = await product.find({ isAvailable: true });
+            const categoriesData = await categoryModel.find();
+
+            const uniqueCategories = new Set();
+            const uniqueBrands = new Set();
+
+            for (const category of categoriesData) {
+                uniqueCategories.add(category.categoryName);
+                uniqueBrands.add(category.brand);
+            }
+
+            const categories = Array.from(uniqueCategories);
+            const brands = Array.from(uniqueBrands);
+
+            const productsPerPage = 4;
+            const currentPage = parseInt(req.query.page) || 1;
+            const startIndex = (currentPage - 1) * productsPerPage;
+            const endIndex = startIndex + productsPerPage;
+
+            const displayedProducts = products.slice(startIndex, endIndex);
+
+            console.log("Welcome to shop");
+            res.render("stepifyShop", {
+                totalPages: Math.ceil(products.length / productsPerPage),
+                userData,
+                categories,
+                brands,
+                products: displayedProducts,
+                currentPage
+            });
+        } else {
+            res.redirect("/");
+        }
+    } catch (err) {
+        console.log("Error in showing the shop", err);
+    }
+};
+
+// Getting data from frontend
+const filterProduct = async (req, res) => {
+    try {
+        const userData = await User.findOne({ email: req.session.user_id });
+        if (userData) {
+            const { selectedCategories, selectedBrand, sortValue } = req.body;
+
+            let query = { isAvailable: true }; // Default query
+
+            if (selectedCategories && selectedCategories.length > 0) {
+                query.categoryName = { $in: selectedCategories };
+            }
+
+            if (selectedBrand && selectedBrand.length > 0) {
+                query.brand = { $in: selectedBrand };
+            }
+
+            let sortOption = {};
+
+            if (sortValue === 1) {
+                sortOption = { price: 1 }; // Low to High
+            } else if (sortValue === -1) {
+                sortOption = { price: -1 }; // High to Low
+            }
+
+            const itemsPerPage = 4;
+            const page = parseInt(req.query.page) || 1;
+            const skip = (page - 1) * itemsPerPage;
+
+            const filteredProducts = await product
+                .find(query)
+                .sort(sortOption)
+                .skip(skip)
+                .limit(itemsPerPage);
+
+            const totalCount = await product.countDocuments(query);
+            const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+            res.status(200).json({
+                success: true,
+                filteredProducts,
+                totalPages
+            });
+        } else {
+            res.redirect("/");
+        }
+    } catch (err) {
+        console.log("Error in getting data from frontend:", err);
+        res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+};
