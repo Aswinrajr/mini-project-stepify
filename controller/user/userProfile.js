@@ -337,7 +337,6 @@ const addToCart = async (req, res) => {
 
             const proId = req.body.proid
             // console.log("ProId in Addto cart", proId)
-
             // console.log("---------------------------------------------------------------------------")
             // console.log("UserData", userData)
             // console.log("---------------------------------------------------------------------------")
@@ -392,7 +391,6 @@ const addToCart = async (req, res) => {
 }
 
 //LOARD ADD TO CART
-
 const loadAddtoCart = async (req, res) => {
     try {
         const userData = await User.findOne({
@@ -631,60 +629,60 @@ const proceedToCheckout = async (req, res) => {
 
 const validateCoupon = async (req, res) => {
     try {
-        const couponArray = []
-        console.log("welcome to user Checkout Page")
+        console.log("Welcome to the user Checkout Page");
         const { couponCode } = req.body;
-        console.log("Coupon Code in Validate copupon: ", couponCode)
-        //  console.log("subtotal in Validate copupon: ",subtotal)
-        const existCoupon = await couponSchema.findOne({couponCode:couponCode})
-        console.log("Coupon found in database copupon: ",existCoupon)
-        if(existCoupon){
+        console.log("Coupon Code in Validate coupon: ", couponCode);
 
-            let currentDate = new Date();
-            currentDate =currentDate.toISOString().split('T')[0]
+        const existCoupon = await couponSchema.findOne({ couponCode: couponCode });
+        console.log("existCoupon: ", existCoupon)
+
+        if (existCoupon) {
+            const currentDate = new Date();
+            const isoCurrentDate = currentDate.toISOString().split('T')[0];
 
             const validFromDate = existCoupon.validFrom.toISOString().split('T')[0];
             const validUntilDate = existCoupon.validUntil.toISOString().split('T')[0];
 
-     
+            console.log("isoCurrentDate: ", isoCurrentDate)
+            console.log("validUntilDate: ", validUntilDate)
+            console.log("validFromDate: ", validFromDate)
 
-            console.log("currentDate : ",currentDate)
-            console.log("validFrom : ",validFrom)
-            console.log("validUntil : ",validUntil)
-            console.log("validFromDate : ",validFromDate)
-            console.log("validUntilDate : ",validUntilDate)
+            if (validFromDate <= isoCurrentDate) {
+                console.log("Date validation success inside if");
 
-            if(validFromDate<=currentDate && currentDate <= validUntilDate){
+                const userData = await User.findOne({
+                    email: req.session.user_id,
+                    userCoupens: { $elemMatch: { couponId: existCoupon._id } }
+                });
 
-                console.log("Date validdation sucesss inside if")
+                if (userData) {
+                    console.log("Coupon is already used by this user.");
+                    return res.status(400).json({ error: "Coupon is already used." }); // Sending an error response
+                } else {
 
-                if(couponArray.length===0){
-                    couponArray.push(couponCode)
-                    console.log("couponArray :",couponArray)
-                }else{
-                    console.log('Coupon Arry is not empty')
+
+                    console.log("Exist Coupon: ", existCoupon.amount)
+                    // res.json({amount:existCoupon.amount})
+
+
+
+                    console.log("Coupon Validated Succesfully", existCoupon.amount)
+
+                    return res.json({ message: "Coupon validated successfully.", amount: existCoupon.amount });
                 }
-
-
-            }else{
-
-                return res.json({ message: "Coupon is Expired" });
-
+            } else {
+                console.log("Coupon is Expired")
+                return res.json({ err: "Coupon is Expired" });
             }
-
-
-
-
-        }else{
-              return res.json({ message: "Coupon not found." });
+        } else {
+            console.log("Coupon not found.")
+            return res.json({ err: "Coupon not found." });
         }
-        res.send("haii")
-
-
     } catch (err) {
-        console.log("Error in vaidating the coupon in user checkout", err)
+        console.log("Error in validating the coupon in user checkout", err);
+        // res.status(500).json({ err: "An error occurred while validating the coupon." });
     }
-}
+};
 
 //Add adress in checkout
 
@@ -807,10 +805,15 @@ const verifyOrder = async (req, res) => {
         const userData = await User.findOne({ email: req.session.user_id });
         if (userData) {
 
-            const { addressId, paymentMethod } = req.body;
+            const { addressId, paymentMethod, usedCouponCode } = req.body;
 
             const address = userData.address.items.find(item => item._id == addressId)
             const userCart = userData.cart;
+
+            const newCoupon = await couponSchema.findOne({ couponCode: usedCouponCode })
+            console.log("Inside verify order: ", newCoupon)
+
+            console.log("User Coupons", usedCouponCode)
 
             //productid quantity price 
             const items = []
@@ -830,8 +833,23 @@ const verifyOrder = async (req, res) => {
                 userMobile: address.altMobile,
                 deliveryAddress,
                 items,
-                paymentMethod
+                paymentMethod,
+                usedCouponCode
             })
+
+            //   Update user's used coupons and push the coupon details
+            const user = await User.findOneAndUpdate(
+                { email: req.session.user_id },
+                {
+                    $push: {
+                        userCoupens: {
+                            couponId: newCoupon._id,
+                            couponCode: newCoupon.couponCode
+                        }
+                    }
+                }
+            );
+            console.log("USER dATA BASE:", user)
 
 
             res.render("orderConform")

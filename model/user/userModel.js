@@ -86,10 +86,18 @@ const userSchema = new mongoose.Schema({
          
         }]
     },
+    userCoupens:[{
+        couponId:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"Coupon"
+        },
+        couponCode:{
+            type:String,
+            required:true
+        }
+
+    }]
   
 })
 
-module.exports = mongoose.model("User", userSchema)  // userCoupons:[{
-    //     type:mongoose.Schema.Types.ObjectId,
-    //     ref:Coupon
-    // }]
+module.exports = mongoose.model("User", userSchema)  

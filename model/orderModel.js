@@ -45,6 +45,11 @@ const orderData = mongoose.Schema({
         type:String,
         required:true
     },
+    usedCoupon:{
+        type:String,
+        
+
+    },
     createdAt: {
         type: Date,
         default: Date.now()
