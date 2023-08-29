@@ -1,4 +1,5 @@
 const User = require("../model/user/userModel")
+const alert = require("alert")
 
 
 //Is_user session :True (login)
@@ -34,6 +35,7 @@ const isBlocked = async (req, res, next) => {
                 if (err) {
                     console.error('Error destroying session:', err);
                 }
+                alert("You are Blocked Please contact admin")
                 res.redirect("/?message=You are blocked. Please contact admin.");
             });
         } else {

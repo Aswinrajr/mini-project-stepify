@@ -10,6 +10,8 @@ const { CompositionSettingsContextImpl } = require("twilio/lib/rest/video/v1/com
 const { ConversationListInstance } = require("twilio/lib/rest/conversations/v1/conversation")
 const productModel = require("../../model/admin/productModel")
 const categoryModel = require("../../model/admin/categoryModel")
+const order = require("../../model/orderModel")
+
 
 
 
@@ -611,8 +613,17 @@ const proceedToCheckout = async (req, res) => {
 
 
             // console.log("---------------------checkoutdata---------------------------------")
+            console.log("---------------------checkoutdata---------------------------------")
+            console.log("Checkoutdetails", checkOutProduct)
+            console.log("---------------------checkoutdata---------------------------------")
+            console.log("subtotal", subtotal)
+            console.log("---------------------checkoutdata---------------------------------")
+            console.log("userAdress", userAdress)
+            console.log("---------------------checkoutdata---------------------------------")
+            console.log("validCoupon", validCoupon)
+            console.log("---------------------checkoutdata---------------------------------")
 
-            // console.log("Checkoutdetails", checkOutProduct)
+            console.log(typeof (subtotal))
 
 
             res.render("userCheckoutpage", { data: checkOutProduct, subtotal, userAdress, validCoupon })
@@ -663,12 +674,8 @@ const validateCoupon = async (req, res) => {
 
                     console.log("Exist Coupon: ", existCoupon.amount)
                     // res.json({amount:existCoupon.amount})
-
-
-
-                    console.log("Coupon Validated Succesfully", existCoupon.amount)
-
-                    return res.json({ message: "Coupon validated successfully.", amount: existCoupon.amount });
+                    console.log("Coupon Validated Succesfully", existCoupon.amount,existCoupon.couponCode)
+                    return res.json({ message: "Coupon validated successfully.", amount: existCoupon.amount,code:existCoupon.couponCode});
                 }
             } else {
                 console.log("Coupon is Expired")
@@ -683,6 +690,26 @@ const validateCoupon = async (req, res) => {
         // res.status(500).json({ err: "An error occurred while validating the coupon." });
     }
 };
+
+//Veryfy online payment
+const verifyOnlinePayment = async (req, res) => {
+    try {
+        const userData = await User.findOne({ email: req.session.user_id });
+        console.log("User Data in Online payment:", userData);
+        if (userData) {
+            console.log("user data", userData)
+
+
+
+        } else {
+            res.redirect("/");
+        }
+    } catch (err) {
+        console.log("Error in VerifyOnline payment: ", err);
+    }
+};
+
+
 
 //Add adress in checkout
 
@@ -810,6 +837,7 @@ const verifyOrder = async (req, res) => {
             const address = userData.address.items.find(item => item._id == addressId)
             const userCart = userData.cart;
 
+
             const newCoupon = await couponSchema.findOne({ couponCode: usedCouponCode })
             console.log("Inside verify order: ", newCoupon)
 
@@ -838,18 +866,34 @@ const verifyOrder = async (req, res) => {
             })
 
             //   Update user's used coupons and push the coupon details
-            const user = await User.findOneAndUpdate(
-                { email: req.session.user_id },
-                {
-                    $push: {
-                        userCoupens: {
-                            couponId: newCoupon._id,
-                            couponCode: newCoupon.couponCode
+            if (newCoupon) {
+                const user = await User.findOneAndUpdate(
+                    { email: req.session.user_id },
+                    {
+                        $push: {
+                            userCoupens: {
+                                couponId: newCoupon._id,
+                                couponCode: newCoupon.couponCode
+                            }
                         }
                     }
-                }
-            );
-            console.log("USER dATA BASE:", user)
+                );
+                console.log("USER dATA BASE:", user)
+            } else {
+                // const user = await User.findOneAndUpdate(
+                //     { email: req.session.user_id },
+                //     {
+                //         $push: {
+                //             userCoupens: {
+                //                 couponId: "No Coupon Applied",
+                //                 couponCode: "No Coupon Applied"
+                //             }
+                //         }
+                //     }
+                // );
+
+                console.log("No coupons used")
+            }
 
 
             res.render("orderConform")
@@ -868,6 +912,8 @@ const verifyOrder = async (req, res) => {
         // res.redirect("/")
     }
 };
+
+
 
 //USER ORDER LIST
 const showOrder = async (req, res) => {
@@ -898,7 +944,7 @@ const showOrder = async (req, res) => {
                         categoryName: product.categoryName[0],
                         productImage: product.image[0],
                         status: item.status,
-                        createdAt: order.createdAt,
+                        createdAt: order.createdAt.toISOString().split('T')[0],
                         productId: item.ProductId
                     };
                 });
@@ -971,41 +1017,100 @@ const returnOrder = async (req, res) => {
     }
 }
 
+const OrderRazorpay = async (req, res) => {
+    const userData = await User.findOne({ email: req.session.user_id })
+    console.log("In /online - payment")
+    try {
+
+        if (userData) {
+            const paymentData = req.body;
+            if (paymentData) {
+                console.log("Payment Data in cart:", paymentData)
+
+                const adressId = userData.address.items.find(item => item._id == paymentData.addressId)
+                console.log("Adress Id: ",adressId)
+                
+                const cart = userData.cart
+                console.log("User Cart in Razorpay: ", cart)
+                const proId = userData.cart.find(item => item.productId)
+                console.log("Product Id in user cart",proId)
+
+                const items = []
+                for (const item of cart) {
+                    items.push({
+                        ProductId: item.productId,
+                        quantity: item.quantity,
+                        price: item.totalPrice * item.quantity,
+    
+                    })
+                }
+                console.log("Items: ",items)
+               const order =  await Order.create({
+                    userId :userData._id,
+                    userMobile:adressId.altMobile,
+                    deliveryAddress:adressId,
+                    items,
+                    paymentMethod:paymentData.paymentmode,
+                   
+
+                })
+                console.log("Order Placed Successfully",order)
+
+            } 
+            else {
+                console.log('No payment data')
+            }
+
+
+
+        }else{
+            console.log("No user data")
+        }
+
+    } catch (err) {
+        console.log("error in raorpay save",err)
+    }
+}
 
 const pagenotfound = (req, res) => {
-    res.render("pageNotFound")
-}
+        res.render("pageNotFound")
+    }
 
 
-module.exports = {
-    getProfile,
-    deleteAdress,
-    saveAdressData,
-    changePassword,
-    verifyPassword,
-    addToCart,
-    loadAddtoCart,
-    updateQuantity,
-    cartProductDelete,
-    proceedToCheckout,
-    validateCoupon,
-    addadress,
-    pagenotfound,
-    addAdress,
-    updateAdress,
-    verifyOrder,
+    module.exports = {
+        getProfile,
+        deleteAdress,
+        saveAdressData,
+        changePassword,
+        verifyPassword,
+        addToCart,
+        loadAddtoCart,
+        updateQuantity,
+        cartProductDelete,
+        proceedToCheckout,
+        validateCoupon,
+        addadress,
+        pagenotfound,
+        addAdress,
+        updateAdress,
+        verifyOrder,
 
-    showOrder,
+        showOrder,
 
-    cancelOrder,
-    returnOrder,
+        cancelOrder,
+        returnOrder,
 
-    getShopProduct,
-    filterProduct,
-    getCount
+        getShopProduct,
+        filterProduct,
+        getCount,
+
+        verifyOnlinePayment,
+        //verifyRazorpay
+
+        OrderRazorpay
 
 
 
 
 
-}
+    }

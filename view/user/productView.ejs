@@ -88,11 +88,13 @@
                     <!-- Zoom -->
                     <script
                         src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
+
                     <script>
 
                         $(document).ready(function () {
                             $('#zoom-image').elevateZoom();
                         });
+
 
                         function changeImage(image) {
                             const proImage = document.getElementById("zoom-image")
@@ -123,7 +125,7 @@
                                 goToCart.href = "/cart"
                             }
                             else {
-                              
+
                                 const err = await res.text()
                                 console.log(err)
                                 if (err === 'Not Login') location.href = '/login';

@@ -45,7 +45,7 @@ const orderData = mongoose.Schema({
         type:String,
         required:true
     },
-    usedCoupon:{
+    usedCouponCode:{
         type:String,
         
 

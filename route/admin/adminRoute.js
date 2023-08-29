@@ -74,6 +74,7 @@ admin_route.post("/user/deleteuser",authControl.is_adminLoggedIn,adminUserContro
 
 //ORDER CONTROLLER
 admin_route.get("/order",authControl.is_adminLoggedIn,orderController.orderList)
+admin_route.get("/order/:orderId",authControl.is_adminLoggedIn,orderController.viewOrders)
 
 //Change order status
 admin_route.get('/delivered/:orderId/:productId',authControl.is_adminLoggedIn,orderController.orderDelivered)

@@ -1,210 +1,499 @@
 <%- include("./layouts/userheader.ejs") %>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
 
 
-    <div class="container mt-5">
 
-        <div class="row ">
-            <div class="col-xl-3 col-lg-4 col-md-5 mt-5">
-                <div class="sidebar-categories mt-5">
-                    <div class="head">Browse Categories</div>
-                    <ul class="main-categories">
-                        <li class="main-nav-list"><a data-toggle="collapse" href="#f" aria-expanded="false"
-                                aria-controls=""><span class="lnr lnr-arrow-right"></span>All Categories</a></li>
-                        <% for (category of categories) { %>
-                            <li class="main-nav-list"><a data-toggle="collapse"
-                                    href="?page=1&category=<%= category %>&brand=<%= selectedBrand %>&sort=<%= selectedSort %>"
-                                    aria-expanded="false" aria-controls=""><span class="lnr lnr-arrow-right"></span>
-                                    <%= category %>
-                                </a></li>
-                            <% } %>
-                    </ul>
-                </div>
-                <div class="sidebar-categories mt-5">
-                    <div class="head">Popular Brands</div>
-                    <ul class="main-categories">
-                        <li class="main-nav-list"><a data-toggle="collapse" href="#" aria-expanded="false"
-                                aria-controls=""><span class="lnr lnr-arrow-right"></span>All Brands</a></li>
-                        <% for (brand of brands) { %>
 
-                            <li class="main-nav-list"><a data-toggle="collapse"
-                                    href="?page=1&category=<%= selectedCategory %>&brand=<%= brand %>&sort=<%= selectedSort %>"
-                                    aria-expanded="false" aria-controls=""><span class="lnr lnr-arrow-right"></span>
-                                    <%= brand %>
-                                </a></li>
-                            <% } %>
-                    </ul>
-                </div>
 
-            </div>
 
-            <div class="col-xl-9 col-lg-8 col-md-7 mt-5">
-                <!-- Start Filter Bar -->
-                <div class="filter-bar d-flex flex-wrap align-items-center mt-5">
-                    <div class="sorting">
-                        <select id="sortOptions">
-                            <option value="default">Default</option>
-                            <option value="lowToHigh">Price: Low to High</option>
-                            <option value="highToLow">Price: High to Low</option>
-                        </select>
+    <!--================Checkout Area =================-->
+    <section class="checkout_area section_gap mt-5">
 
+        <div class="container">
+
+
+            <%if(validCoupon.length>0 && validCoupon){%>
+                <div class="cupon_area">
+                    <div class="check_title">
+
+                        <h2 style="color:red">Surprise !! You have a coupon here: <a onclick="showCoupon()"
+                                id="displayDiv" style="color: green;cursor: pointer;">Click to Redeem</a></h2>
                     </div>
+                    <div id="couponDialog" class="dialog" style="display: none;">
+                        <%for(let coupon of validCoupon){%>
+                            <div class="dialog-content">
 
-                    <div class="pagination ml-auto" id="pagination">
-                        <% for (let i=1; i <=totalPages; i++) { %>
-                            <a href="?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
-                                <%= i %>
-                            </a>
-                            <% } %>
-                    </div>
-                </div>
-                <section class="lattest-product-area pb-40 category-list">
-                    <div class="row">
-                        <!-- single product -->
-                        <% for(const product of displayedProducts) { %>
-                            <div class="col-lg-4 col-md-6">
-                                <div class="single-product">
-                                    <img class="img-fluid" style="width: 300px;height: 300px;"
-                                        src="/public/uploads/<%= product.image[0] %>" alt="">
-                                    <div class="product-details">
-                                        <h6>
-                                            <%=product.categoryName%>
-                                        </h6>
-                                        <div class="price">
-                                            <h6>
-                                                <%=product.price%>
-                                            </h6>
-                                        </div>
-
-                                        <span>
-                                            <%=product.description%>
-                                        </span>
-
-                                        <div class="prd-bottom">
-
-                                            <a href="" class="social-info">
-                                                <span class="ti-bag"></span>
-                                                <p class="hover-text">add to bag</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-heart"></span>
-                                                <p class="hover-text">Wishlist</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-sync"></span>
-                                                <p class="hover-text">compare</p>
-                                            </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-move"></span>
-                                                <p class="hover-text">view more</p>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                                <h4 id="couponCode" style="color: green;margin-top: 15px; margin-left: 40px;"><span
+                                        style="color: black;">Coupon Code:</span>
+                                    <%=coupon.couponCode%>
+                                </h4>
                             </div>
                             <%}%>
                     </div>
-                </section>
-            </div>
+                    <input type="text" id="couponName" placeholder="Enter coupon code">
+                    <button class="tp_btn" href="" id="applybtn" onclick='applyCoupon()'>Apply Coupon</button>
+                </div>
+                <%}else{%>
+                    <h1 style="font-size: 24px; color: red; text-align: center; margin: 20px 0;">No coupons</h1>
+
+                    <%}%>
+
+
+
+
+
+                        <div class="billing_details">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <!-- space for address -->
+                                    <div class=" p-lg-1" id="addressDetails ">
+                                        <h6 class="ps-md-2 pt-lg-3">Saved Addresses</h6>
+
+                                        <% if(userAdress){ %>
+                                            <% userAdress.items.forEach((element)=>{ %>
+                                                <div id="<%= element._id%>" class="address-details-container"
+                                                    style="background-color: #f0f0f0; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; color: black;">
+                                                    <!-- <input type="radio" id="f-option6" name="selector"> -->
+                                                    <!-- <input type="radio" onclick="transfer()" id="address<%= element._id %>"
+                                            name="selector" value="<%= element._id %>"> -->
+                                                    <div class="address" onclick='TrasferAdress("<%= element._id%>")'>
+                                                        <div>
+                                                            <strong>Name: </strong>
+                                                            <%= element.firstName %>
+                                                                <%= element.lastName %>
+                                                        </div>
+                                                        <div>
+                                                            <strong>Address: </strong>
+                                                            <%= element.HouseName %>, <%= element.adressLine %>, <%=
+                                                                        element.nearestLandMark %>, <%= element.pincode
+                                                                            %>
+                                                        </div>
+                                                        <div>
+                                                            <strong>City: </strong>
+                                                            <%= element.city %>
+                                                        </div>
+                                                        <div>
+                                                            <strong>State: </strong>
+                                                            <%= element.state %>
+                                                        </div>
+                                                        <div>
+                                                            <strong>Alternate Mobile: </strong>
+                                                            <%= element.altMobile %>
+                                                        </div>
+                                                        <!-- Add more address details here if needed -->
+                                                    </div>
+                                                    <a href="/update-adress/?id=<%= element._id%>"> <button
+                                                            class="genric-btn info small mt-2"
+                                                            id="cancel-btn">Update</button></a>
+                                                    <a id="delete"
+                                                        href="/deleteadress/?id=<%= element._id%>&source=checkout"><button
+                                                            class="genric-btn danger small mt-2"
+                                                            id="cancel-btn">Delete</button></a>
+
+
+
+
+                                                </div>
+
+                                                <% }) %>
+                                                    <% } %>
+
+                                    </div>
+                                    <div class="col-md-12 form-group">
+                                        <div class="creat_account">
+                                            <h3>Shipping Details</h3>
+                                            <input onclick="enableAdress()" type="checkbox" id="f-option3"
+                                                name="selector">
+                                            <label for="f-option3">Ship to a different address?</label>
+                                        </div>
+
+                                    </div>
+                                    <div style="display: none;" id="enableAdress">
+                                        <h3>Billing Details</h3>
+                                        <form action="/save-adress" method="post" novalidate="novalidate">
+                                            <div class="col-md-6 form-group p_star">
+                                                <input type="text" class="form-control" id="firstName" name="firstName"
+                                                    placeholder="First Name" required>
+
+                                            </div>
+                                            <div class="col-md-6 form-group p_star">
+                                                <input type="text" class="form-control" id="lastName" name="lastName"
+                                                    placeholder="Last Name" required>
+
+                                            </div>
+
+                                            <div class="col-md-6 form-group p_star">
+                                                <input type="text" class="form-control" id="altMobile" name="altMobile"
+                                                    placeholder="Alternate Mobile" required>
+
+                                            </div>
+
+                                            <div class="col-md-12 form-group p_star">
+                                                <input type="text" class="form-control" id="HouseName" name="HouseName"
+                                                    placeholder="House Adress" required="">
+
+
+                                            </div>
+                                            <div class="col-md-12 form-group p_star">
+                                                <input type="text" class="form-control" id="addressLine"
+                                                    name="addressLine" placeholder="Adress Line 1" required="">
+
+                                            </div>
+                                            <div class="col-md-12 form-group p_star">
+                                                <input type="text" class="form-control" id="nearestLandMark"
+                                                    name="nearestLandMark" placeholder="Nearest Land mark" required="">
+
+                                            </div>
+                                            <div class="col-md-12 form-group p_star">
+                                                <input type="text" class="form-control" id="city" name="city"
+                                                    placeholder="City" required="">
+
+                                            </div>
+                                            <div class="col-md-12 form-group p_star">
+                                                <input type="text" class="form-control" id="state" name="state"
+                                                    placeholder="State" required="">
+
+
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <input type="text" class="form-control" id="pincode" name="pincode"
+                                                    placeholder="Postcode/ZIP">
+                                            </div>
+                                            <li onclick="disbleform()" id="cancel"
+                                                class="genric-btn danger circle arrow mx-auto">
+                                                Cancel</li>
+
+                                            <button type="submit" onclick="submitData()" class="btn btn-primary">Save
+                                                Adress</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 mb-5">
+                                    <div class="order_box mb-5">
+                                        <% let totalAmount%>
+                                            <h2>Your Order</h2>
+                                            <ul class="list">
+                                                <li><a href="#">Product <span>Total</span></a></li>
+
+                                                <% if (data) { %>
+
+
+                                                    <% for (let i=0; i < data.length; i++) { %>
+                                                        <li><a href="#">
+                                                                <%=data[i].productName%> <span>₹ <%=data[i].totalPrice%>
+                                                                    </span><span> x
+                                                                        <%=data[i].productQuantity%> =
+                                                                    </span> <span class="last">₹
+                                                                        <%=data[i].productPrice%>
+                                                                    </span>
+                                                            </a></li>
+
+                                                        <%}%>
+
+                                                            <%}%>
+                                                                <ul class="list list_2">
+                                                                    <li><a href="#">Subtotal <span>₹ <%=subtotal%>
+                                                                            </span></a></li>
+                                                                </ul>
+
+                                                                <ul class="list list_2">
+                                                                    <% if (data.amount) { %>
+
+                                                                        <li><a href="#">Coupon <span>₹ <%= data.amount
+                                                                                        %></span></a>
+                                                                        </li>
+                                                                        <li><a href="#">Total ₹ <span id="total">
+                                                                                    <%= totalAmount=subtotal -
+                                                                                        data.amount %>
+                                                                                </span></a></li>
+                                                                        <input type="number"
+                                                                            value="<%= subtotal - data.amount %>"
+                                                                            id="grandTotal">
+                                                                        <h1>coupon</h1>
+                                                                        <% } else { %>
+                                                                            <li><a href="#">Coupon <span
+                                                                                        id="coupon-amount">₹
+                                                                                        0</span></a>
+                                                                            </li>
+                                                                            <li><a href="#">Total ₹ <span id="total">
+                                                                                        <%= totalAmount=subtotal %>
+                                                                                    </span></a></li>
+
+                                                                            <% } %>
+                                                                                <li><a href="#">Shipping
+                                                                                        <span>0</span></a></li>
+                                                                </ul>
+                                                                <form action="" method="post">
+
+
+                                                                    <div class="payment_item">
+                                                                        <div class="radion_btn">
+                                                                            <input checked type="radio" id="f-option5"
+                                                                                name="selector"
+                                                                                onclick='selected("COD")'>
+                                                                            <label for="f-option5">Cash on
+                                                                                delivery</label>
+                                                                            <div class="check"></div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                    <a class="primary-btn" id="codPayment" href="#"
+                                                                        onclick="confirmOrder()">Conform
+                                                                        Order</a>
+                                                                    <div class="payment_item active">
+                                                                        <div class="radion_btn">
+                                                                            <input type="radio" id="f-option6"
+                                                                                name="selector"
+                                                                                onclick='selected("onlinePayment")'>
+                                                                            <label for="f-option6">UPI </label>
+                                                                            <img src="img/product/card.jpg" alt="">
+                                                                            <div class="check"></div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                    <a href="#" class="primary-btn" id=""
+                                                                        style="display:none;">Conform
+                                                                        razorpay</a>
+
+                                                                    <a href="#" class="primary-btn" id="razorpayPayment"
+                                                                        onclick='triggerRazorpayPayment(" <%= totalAmount  %>")'
+                                                                        style="display: none;">Conform
+                                                                        Razorpay</a>
+                                                                </form>
+
+
+
+
+
+
+
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
         </div>
+        <dialog id="confirm-dialog">
+            <div>
+                <form action="/verify-order" method="post">
+                    <input type="text" name="addressId" id="addressId" class="d-none">
+                    <input type="text" name="paymentMethod" id="paymentMethod" class="d-none">
+                    <input type="text" name="usedCouponCode" id="used-coupon-code" class="d-none">
+                    <h4>Confirm your order</h4>
+                    <div>
+                        <h6>Delivery To:-</h6>
+                        <p id="delivery-address"></p>
+                        <h6>Payment Method:-</h6>
+                        <p class="text-danger" id="payment-method"></p>
+                        <p id="used-coupon" class="text-success"></p>
+                        <h6>Amount to be paid</h6>
+                        <p class="text-danger" id="amount-to-pay"></p>
+                    </div>
+                    <button class="genric-btn primary small" id="confirm-btn">confirm</button>
+                </form>
+                <button class="genric-btn danger small mt-2" id="cancel-btns">Cancel</button>
+            </div>
+        </dialog>
 
-    </div>
+
+        <!--================End Checkout Area =================-->
+        <script>
+            function triggerRazorpayPayment(amount) {
+
+                var options = {
+                    key: 'rzp_test_RffDiBBa2HI6Mw',
+                    amount: amount * 100, // Amount in paise (Indian currency)
+                    name: 'Stepify',
+                    description: 'Payment for Order',
+                    image: "/public/usercss/img/logo.png",
+                    handler: function (response) {
+                        // This function will be executed after successful payment
+                        // You should make an AJAX request to your server to verify the payment
+                        // You can use the 'response.razorpay_payment_id' and 'response.razorpay_order_id' for verification
+                    },
+                    prefill: {
+                        name: 'Admin',
+                        email: 'admin@example.com',
+                        contact: '+919876543210',
+                    },
+                };
+                var rzp1 = new Razorpay(options);
+                rzp1.open();
+            }
+        </script>
 
 
-    <%- include("./layouts/footer.ejs") %>
+        <script>
 
 
 
-    // SHOP PRODUCT PAGE
-const getShopProduct = async (req, res) => {
-    try {
-        const userData = await User.findOne({ email: req.session.user_id });
-        if (userData) {
-            const products = await product.find({ isAvailable: true });
-            const categoriesData = await categoryModel.find();
 
-            const uniqueCategories = new Set();
-            const uniqueBrands = new Set();
+            function selected(mode) {
+                const codPayment = document.getElementById("codPayment")
+                const upipayment = document.getElementById("razorpayPayment")
+                console.log("upipayment: ", upipayment)
+                console.log("codPayment", codPayment, "what: ", mode)
+                if (mode === "onlinePayment") {
+                    codPayment.style.display = "none";
+                    upipayment.style.display = "block";
 
-            for (const category of categoriesData) {
-                uniqueCategories.add(category.categoryName);
-                uniqueBrands.add(category.brand);
+                } else {
+                    codPayment.style.display = "block";
+                    upipayment.style.display = "none";
+                }
             }
 
-            const categories = Array.from(uniqueCategories);
-            const brands = Array.from(uniqueBrands);
 
-            const productsPerPage = 4;
-            const currentPage = parseInt(req.query.page) || 1;
-            const startIndex = (currentPage - 1) * productsPerPage;
-            const endIndex = startIndex + productsPerPage;
-
-            const displayedProducts = products.slice(startIndex, endIndex);
-
-            console.log("Welcome to shop");
-            res.render("stepifyShop", {
-                totalPages: Math.ceil(products.length / productsPerPage),
-                userData,
-                categories,
-                brands,
-                products: displayedProducts,
-                currentPage
-            });
-        } else {
-            res.redirect("/");
-        }
-    } catch (err) {
-        console.log("Error in showing the shop", err);
-    }
-};
-
-// Getting data from frontend
-const filterProduct = async (req, res) => {
-    try {
-        const userData = await User.findOne({ email: req.session.user_id });
-        if (userData) {
-            const { selectedCategories, selectedBrand, sortValue } = req.body;
-
-            let query = { isAvailable: true }; // Default query
-
-            if (selectedCategories && selectedCategories.length > 0) {
-                query.categoryName = { $in: selectedCategories };
+            //Show coupon in the user side list
+            function showCoupon() {
+                const dispalyCoupon = document.getElementById("couponDialog")
+                dispalyCoupon.style.display = 'block';
+            }
+            async function showCoupon() {
+                const displayCoupon = document.getElementById("couponDialog");
+                displayCoupon.style.display = 'block';
             }
 
-            if (selectedBrand && selectedBrand.length > 0) {
-                query.brand = { $in: selectedBrand };
+            //apply coupon
+            async function applyCoupon() {
+                const couponCode = document.getElementById("couponName").value;
+                event.preventDefault();
+                const url = `/validate-coupon`;
+
+                const options = {
+                    method: "post",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ couponCode })
+                };
+
+
+                try {
+                    const response = await fetch(url, options);
+                    const data = await response.json();
+
+                    if (data.amount) {
+                        // If coupon is used
+                        const couponAmountElement = document.getElementById("coupon-amount");
+                        couponAmountElement.textContent = `₹ ${data.amount}`;
+                        const totalAmountElement = document.getElementById("total");
+                        const subtotal = parseFloat(totalAmountElement.textContent);
+                        const updatedTotal = subtotal - data.amount;
+                        totalAmountElement.textContent = `₹ ${updatedTotal}`;
+
+                        // Enable the confirm order button since coupon is used
+                        const confirmButton = document.getElementById("confirm-btn");
+                        confirmButton.disabled = false;
+
+                        // Store the used coupon code in a hidden input
+                        const usedCouponInput = document.getElementById("used-coupon-code");
+                        usedCouponInput.value = couponCode;
+                    } else {
+                        // If coupon is not used
+                        const couponAmountElement = document.getElementById("coupon-amount");
+                        couponAmountElement.textContent = `₹ 0`;
+                        const totalAmountElement = document.getElementById("total");
+                        totalAmountElement.textContent = `₹ ${subtotal}`;
+
+                        // Disable the confirm order button since coupon is not used
+                        const confirmButton = document.getElementById("confirm-btn");
+                        confirmButton.disabled = true;
+                    }
+                } catch (error) {
+                    console.error("Error applying coupon:", error);
+                }
             }
 
-            let sortOption = {};
 
-            if (sortValue === 1) {
-                sortOption = { price: 1 }; // Low to High
-            } else if (sortValue === -1) {
-                sortOption = { price: -1 }; // High to Low
+
+            let toggle = 0;
+            function enableAdress() {
+                if (toggle === 0) {
+                    document.getElementById("enableAdress").style.display = "block"
+                    toggle = 1
+                } else {
+                    document.getElementById("enableAdress").style.display = "none"
+                    toggle = 0
+                }
             }
 
-            const itemsPerPage = 4;
-            const page = parseInt(req.query.page) || 1;
-            const skip = (page - 1) * itemsPerPage;
 
-            const filteredProducts = await product
-                .find(query)
-                .sort(sortOption)
-                .skip(skip)
-                .limit(itemsPerPage);
+            //Adress fields
+            function disbleform() {
+                document.getElementById("enableAdress").style.display = "none"
+                toggle = 1
+                document.getElementById("f-option3").checked = false;
 
-            const totalCount = await product.countDocuments(query);
-            const totalPages = Math.ceil(totalCount / itemsPerPage);
+            }
 
-            res.status(200).json({
-                success: true,
-                filteredProducts,
-                totalPages
-            });
-        } else {
-            res.redirect("/");
-        }
-    } catch (err) {
-        console.log("Error in getting data from frontend:", err);
-        res.status(500).json({ success: false, error: "Internal Server Error" });
-    }
-};
+            const addresss = document.querySelectorAll('.address-details-container');
+            let selectedAddress = addresss[0];
+            selectedAddress.classList.add('bg-white');
+
+            for (const address of addresss) {
+                address.addEventListener('click', () => {
+                    selectedAddress.classList.remove('bg-white');
+                    address.classList.add('bg-white');
+                    selectedAddress = address;
+                })
+            }
+
+            const confirmDialog = document.getElementById('confirm-dialog');
+            const cancelButton = document.getElementById('cancel-btns');
+            const deliveryAdress = document.getElementById("delivery-address")
+            const paymentMethod = document.getElementById("payment-method")
+
+            const amountToPay = document.getElementById("amount-to-pay")
+
+            const usedCouponCodeElement = document.getElementById("couponName");
+            const usedCouponCode = usedCouponCodeElement.textContent;
+
+            // Display the used coupon code in the dialog
+            const usedCouponElement = document.getElementById("used-coupon");
+            usedCouponElement.textContent = `Used Coupon: ${usedCouponCode}`;
+
+            const transferAddressId = document.getElementById("addressId")
+            const transferPayment = document.getElementById("paymentMethod")
+
+
+            function confirmOrder() {
+                const deliveryAddress = selectedAddress.querySelector('.address').innerHTML;
+                const payment = document.querySelector('input[type="radio"]:checked');
+                const paymentMethodText = payment.nextElementSibling.innerHTML;
+
+                const amountToPayText = document.getElementById("total").innerHTML;
+
+                // Get the used coupon code from the hidden input field
+                const usedCouponCode = document.getElementById("used-coupon-code").value;
+
+                deliveryAdress.innerHTML = deliveryAddress;
+
+
+
+
+
+                paymentMethod.innerText = paymentMethodText;
+                amountToPay.innerHTML = amountToPayText;
+
+                // Display the used coupon code in the dialog
+                const usedCouponText = usedCouponCode ? `Used Coupon: ${usedCouponCode}` : "No Coupon Used";
+                const usedCouponElement = document.getElementById("used-coupon");
+                usedCouponElement.innerText = usedCouponText;
+
+                transferAddressId.value = selectedAddress.id;
+                transferPayment.value = paymentMethod.innerText;
+
+
+
+                confirmDialog.showModal();
+            }
+            cancelButton.addEventListener('click', () => {
+                confirmDialog.close();
+            })
+        </script>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
+        <%- include("./layouts/footer.ejs") %>

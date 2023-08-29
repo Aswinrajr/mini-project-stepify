@@ -5,6 +5,7 @@ const path = require('path')
 const userController = require("../../controller/user/userController")
 const userProfileController = require("../../controller/user/userProfile")
 const userAuth = require("../../middleware/userAuthValidation")
+const razorpayController = require('../../controller/user/razorpayControler');
 
 
 // user_route.set("view engine", "ejs")
@@ -78,6 +79,12 @@ user_route.put("/updateqty/:cartId", userAuth.is_userLoggedIn, userAuth.isBlocke
 //PROCEED TO CHECKOUT
 user_route.get("/checkout", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.proceedToCheckout)
 user_route.post("/validate-coupon",userAuth.is_userLoggedIn,userAuth.isBlocked,userProfileController.validateCoupon)
+user_route.get("/verify-payment",userAuth.is_userLoggedIn,userAuth.isBlocked,userProfileController.verifyOnlinePayment)
+user_route.post("/online-payment",userAuth.is_userLoggedIn,userAuth.isBlocked,userProfileController.OrderRazorpay)
+// user_route.post("/verify-razorpay-payment",userAuth.is_userLoggedIn,userAuth.isBlocked,userProfileController.verifyRazorpay)
+
+// user_route.post('/create-razorpay-order', razorpayController.createOrder)
+// user_route.post('/verify-razorpay-payment', razorpayController.verifyPayment);
 
 //ORDER ITEMS
 user_route.post("/verify-order", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.verifyOrder)
