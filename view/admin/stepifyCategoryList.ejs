@@ -1,7 +1,7 @@
 <%- include("./layouts/header.ejs") %>
 <div class="w-full overflow-hidden rounded-lg shadow-xs">
-  <div class="w-full overflow-x-auto">
-    <div class="flex h-full justify-end mb-4 mr-4">
+  <div class="w-full h-full overflow-x-auto">
+    <div class="flex  justify-end mb-4 mr-4">
       <button
         class="flex items-center mt-4 mr-3 px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
         <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -12,12 +12,12 @@
     </div>
 
     <div class="p-5">
-      <table class="w-full whitespace-no-wrap" style="font-family: Arial, sans-serif; font-size: 14px;">
+      <table class="w-full" style="font-family: Arial, sans-serif; font-size: 14px;">
         <thead>
           <tr
             class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
             <th class="px-4 py-3">Sl No</th>
-            <th class="px-4 py-3">Category Id</th>
+            <!-- <th class="px-4 py-3">Category Id</th> -->
             <th class="px-4 py-3">Category Name</th>
             <th class="px-4 py-3">Brand</th>
             <th class="px-4 py-3">Is Available</th>
@@ -35,13 +35,13 @@
                 </p>
               </div>
             </td>
-            <td class="px-4 py-3">
+            <!-- <td class="px-4 py-3">
               <div class="flex items-center text-sm ">
                 <p class="font-semibold">
                   <%= data[i]._id %>
                 </p>
               </div>
-            </td>
+            </td> -->
             <td class="px-4 py-3 text-sm ">
               <p class="font-semibold">
                 <%= data[i].categoryName %>

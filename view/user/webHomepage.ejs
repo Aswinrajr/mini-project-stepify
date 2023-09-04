@@ -40,7 +40,6 @@
 						</div>
 					</section>
 					<!-- End banner Area -->
-
 					<!-- start features Area -->
 					<section class="features-area section_gap">
 						<div class="container">
@@ -88,7 +87,6 @@
 							</div>
 						</div>
 					</section>
-
 					<!-- end features Area -->
 					<!-- start product Area -->
 					<section class=" active-product">
@@ -98,12 +96,11 @@
 								<div class="row justify-content-center">
 									<div class="col-lg-6 text-center">
 										<div class="section-title">
-											<h1> Men's Collections</h1>
+											<h1> Premium Collections</h1>
 											<p></p>
 										</div>
 									</div>
 								</div>
-
 								<div class="row">
 									<% for(const product of products) { %>
 										<!-- single product -->
@@ -113,21 +110,20 @@
 														src="/public/uploads/<%= product.image[0] %>" alt=""
 														style="width: 300px;height: 300px;"></a>
 												<div class="product-details">
-													<h6>
+													<span><%=product.brand%></span>
+													<h5>
 														<%= product.categoryName %>
-													</h6>
-													
+													</h5>
 													<div class="price">
-														<h6>₹ <%= product.price %>
-														</h6><br>
-														<h6 class="">Size: <%= product.size%></h6>
-														
-													</div>
-													
+														<h5>Price: ₹ <%= product.price %>
+														</h5>
+														<span>Person : <%=product.person%></span><br>
+														<span class="">Size: <%= product.size%>
+														</span>
 
+													</div>
 													<% if(userData){%>
 														<div class="prd-bottom">
-
 															<a href="" class="social-info">
 																<span class="ti-bag"></span>
 																<p class="hover-text">add to bag</p>
@@ -136,7 +132,6 @@
 																<span class="lnr lnr-heart"></span>
 																<p class="hover-text">Wishlist</p>
 															</a>
-
 														</div>
 														<%}%>
 												</div>
@@ -147,120 +142,5 @@
 							</div>
 						</div>
 						</div>
-
 					</section>
-					
-					<!-- <section class=" active-product">
-					
-						<div class="">
-							<div class="container">
-								<div class="row justify-content-center">
-									<div class="col-lg-6 text-center">
-										<div class="section-title">
-											<h1> Kid's Collections</h1>
-											<p></p>
-										</div>
-									</div>
-								</div>
-
-								<div class="row">
-									<% for(const product of products) { %>
-										
-										<div class="col-lg-3 col-md-6">
-											<div class="single-product ">
-												<a href="/productview?id=<%=product._id%>"><img class="img-fluid"
-														src="/public/uploads/<%= product.image[0] %>" alt=""
-														style="width: 300px;height: 300px;"></a>
-												<div class="product-details">
-													<h6>
-														<%= product.categoryName %>
-													</h6>
-													<div class="price">
-														<h6>₹<%= product.price %>
-														</h6>
-														
-													</div>
-
-													<% if(userData){%>
-														<div class="prd-bottom">
-
-															<a href="" class="social-info">
-																<span class="ti-bag"></span>
-																<p class="hover-text">add to bag</p>
-															</a>
-															<a href="" class="social-info">
-																<span class="lnr lnr-heart"></span>
-																<p class="hover-text">Wishlist</p>
-															</a>
-
-														</div>
-														<%}%>
-												</div>
-											</div>
-										</div>
-										<% } %>
-								</div>
-							</div>
-						</div>
-						</div>
-
-					</section> -->
-					<!-- <section class=" active-product">
-						
-						<div class="">
-							<div class="container">
-								<div class="row justify-content-center">
-									<div class="col-lg-6 text-center">
-										<div class="section-title">
-											<h1> Women's Collections</h1>
-											<p></p>
-										</div>
-									</div>
-								</div>
-
-								<div class="row">
-									<% for(const product of products) { %>
-										
-										<div class="col-lg-3 col-md-6">
-											<div class="single-product ">
-												<a href="/productview?id=<%=product._id%>"><img class="img-fluid"
-														src="/public/uploads/<%= product.image[0] %>" alt=""
-														style="width: 300px;height: 300px;"></a>
-												<div class="product-details">
-													<h6>
-														<%= product.categoryName %>
-													</h6>
-													<div class="price">
-														<h6>₹<%= product.price %>
-														</h6>
-														
-													</div>
-
-													<% if(userData){%>
-														<div class="prd-bottom">
-
-															<a href="" class="social-info">
-																<span class="ti-bag"></span>
-																<p class="hover-text">add to bag</p>
-															</a>
-															<a href="" class="social-info">
-																<span class="lnr lnr-heart"></span>
-																<p class="hover-text">Wishlist</p>
-															</a>
-
-														</div>
-														<%}%>
-												</div>
-											</div>
-										</div>
-										<% } %>
-								</div>
-							</div>
-						</div>
-						</div>
-
-					</section> -->
-					<!-- end product Area -->
-					<!-- Start brand Area -->
-
 					<%- include("./layouts/footer.ejs") %>

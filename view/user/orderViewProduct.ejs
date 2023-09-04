@@ -1,7 +1,7 @@
-<%- include("./layouts/header.ejs") %>
-
+<%- include("./layouts/userheader.ejs") %>
 
     <style>
+       
         .order_box {
             border: 1px solid #ccc;
             padding: 20px;
@@ -57,7 +57,7 @@
             position: absolute;
             height: 100%;
             border-radius: 10px;
-
+           
             transition: width 0.3s ease-in-out;
         }
     </style>
@@ -71,7 +71,7 @@
                             <h4>Order ID: <%=data._id%>
                             </h4>
                             <p>Expected Delivery: <span style="color: #ff0000;">
-                                    <%=data.expectedDeliveryDate.toISOString().split('T')[0]%>
+                                    <%=deliveryDate%>
                                 </span></p>
                         </div>
                         <hr class="horizontal_line">
@@ -95,22 +95,15 @@
                                                     <%if(item.status==="confirmed"){%>
                                                         <div class="progress-status" style="width: 0%;"></div>
                                                         <%}else if(item.status==="Shipped" ){%>
-                                                            <div class="progress-status"
-                                                                style="width: 30%; background-color: #007bff;"></div>
+                                                            <div class="progress-status" style="width: 30%; background-color: #007bff;"></div>
 
                                                             <%}else if(item.status==="Out of Delivery" ){%>
-                                                                <div class="progress-status"
-                                                                    style="width: 80%; background-color: #c3f50c;">
-                                                                </div>
+                                                                <div class="progress-status" style="width: 80%; background-color: #c3f50c;"></div>
 
                                                                 <%}else if(item.status==="Cancel" ){%>
-                                                                    <div class="progress-status"
-                                                                        style="width: 100%; background-color: #f83802;">
-                                                                    </div>
-                                                                    <%}else if(item.status==="Delivered" ){%>
-                                                                        <div class="progress-status"
-                                                                            style="width: 100%; background-color: #05d60f;">
-                                                                        </div>
+                                                                    <div class="progress-status" style="width: 100%; background-color: #f83802;"></div>
+                                                                    <%}else if(item.status==="Delivered"){%>
+                                                                        <div class="progress-status" style="width: 100%; background-color: #05d60f;"></div> 
                                                                         <%}%>
 
                                                 </div>
@@ -118,28 +111,29 @@
 
 
 
-                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;"
-                                                    class="">
-                                                    <a id="toShipped"
-                                                        href="/admin/shipped/<%=data._id%>/<%=item.ProductId%>"
-                                                        class="genric-btn"
-                                                        style="padding: 6px 12px; font-size: 12px; background-color: #f2fa08; color: rgb(7, 7, 7); border: none; border-radius: 5px; cursor: pointer;"
-                                                        id="mark-shipped-button"
-                                                        onclick="markShipped('<%= data._id %>')">Mark Shipped</a>
-                                                    <a id="changestatus"
-                                                        href="/admin/delivered/<%=data._id%>/<%=item.ProductId%>"
-                                                        class="genric-btn"
-                                                        style="padding: 6px 12px; font-size: 12px; background-color: #07f90c; color: rgb(8, 8, 8); border: none; border-radius: 5px; cursor: pointer;"
-                                                        id="mark-delivered-button"
-                                                        onclick="markDelivered('<%= data._id %>')">Mark Delivered</a>
-                                                </div>
+                                                <% if( item.status=="Delivered" ) {%>
+                                                    <a href="/return/<%=data._id%>/<%=item.ProductId%>"
+                                                        class="genric-btn danger small mt-2 text-white"
+                                                        id="cancel-btn">Return</a>
+                                                    <%}else if(item.status=="confirmed" || item.status=="Shipped" ){%>
+                                                        <a href="/cancel/<%=data._id%>/<%= item.ProductId%>"
+                                                            class="genric-btn danger small mt-2 text-dark"
+                                                            id="cancel-btn">Cancel
+                                                            Order</a>
+
+                                                        <%}else{%>
+                                                            <a href="#" class="genric-btn disable radius mt-2">Disable</a>
+
+                                                            <%}%>
+                                                            <a href="/invoice?id=<%= data._id %> "><span class="genric-btn info small mt-2 text-dark">Download Invoice</span></a>
                                             </div>
+                                         
                                         </div>
+                                        
                                         <hr class="horizontal_line">
                                         <% }); %>
 
                                 </div>
-
 
                             </div>
                         </div>
@@ -148,7 +142,6 @@
             </div>
         </div>
     </section>
-
 
 
     <%- include("./layouts/footer.ejs") %>

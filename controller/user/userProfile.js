@@ -2,22 +2,22 @@ const User = require("../../model/user/userModel")
 const couponSchema = require("../../model/couponModel")
 const bcrypt = require("bcrypt")
 const alert = require("alert")
-
 const product = require("../../model/admin/productModel")
 const Order = require("../../model/orderModel")
-
 const { CompositionSettingsContextImpl } = require("twilio/lib/rest/video/v1/compositionSettings")
 const { ConversationListInstance } = require("twilio/lib/rest/conversations/v1/conversation")
 const productModel = require("../../model/admin/productModel")
 const categoryModel = require("../../model/admin/categoryModel")
 const order = require("../../model/orderModel")
+const easyinvoice = require("easyinvoice")
 
+// const PDFDocument = require('pdfkit');
+// const fs = require('fs');
 
 
 
 
 //VIEW USER PROFILE ADRESS
-
 const getProfile = async (req, res) => {
     try {
         console.log("Welcome to user Profile")
@@ -35,10 +35,30 @@ const getProfile = async (req, res) => {
         }
     } catch (err) {
         console.log("Error in loading user Profile", err)
-        // res.redirect("/")
+
     }
 }
 
+//Search
+const searchProductHome = async (req, res) => {
+    const query = req.query.query;
+    const userData = await User.findOne({ email: req.session.user_id })
+    try {
+        const products = await productModel.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { brand: { $regex: query, $options: 'i' } },
+                { categoryName: { $regex: query, $options: 'i' } },
+            ],
+        });
+
+        res.render('webHomepage', { products, userData });
+    } catch (err) {
+        console.error(err);
+
+    }
+
+}
 
 //SHOP PRODUCT PAGE
 const getShopProduct = async (req, res) => {
@@ -351,17 +371,18 @@ const addToCart = async (req, res) => {
 
             } else {
                 const proData = await product.findById(proId)
-                //const proData = await product.find({_id:proId,"userData.cart":"Listed"})
-                // console.log("Product data in add to cart :  ", proData)
+                // const proData = await product.find({_id:proId,"userData.cart":"Listed"})
+                console.log("Product data in add to cart :  ", proData)
                 const cartProduct = {
                     productId: proData._id,
-                    totalPrice: proData.price
+                    totalPrice: proData.price,
+                    image: proData.image[0]
                 }
-                // console.log("---------------------------------------------------------------------------")
+                console.log("---------------------------------------------------------------------------")
 
-                // console.log("CartProduct in add to cart : ", cartProduct)
+                console.log("CartProduct in add to cart : ", cartProduct)
 
-                // console.log("---------------------------------------------------------------------------")
+                console.log("---------------------------------------------------------------------------")
                 const userData = await User.updateOne({ email: req.session.user_id }, { $push: { cart: cartProduct } })
                 // console.log("---------------------------------------------------------------------------")
 
@@ -387,7 +408,7 @@ const addToCart = async (req, res) => {
     } catch (err) {
         console.log(err);
         // res.redirect("/")
-        res.status(500).send(err.message);
+
 
     }
 }
@@ -402,6 +423,7 @@ const loadAddtoCart = async (req, res) => {
         if (userData) {
 
             console.log("Welcome to add to cart")
+            let cartTotal = 0;
 
             // console.log("---------------------------------------------------------------------------")
             // console.log("UserData in load Add to cart: ", userData)
@@ -409,7 +431,7 @@ const loadAddtoCart = async (req, res) => {
             const cartDetails = userData.cart
             const adress = userData.address
             // console.log("---------------------------------------------------------------------------")
-            // console.log("User Cart Details in load add to cart : ", cartDetails)
+            console.log("User Cart Details in load add to cart : ", cartDetails)
             // console.log("User Adress data", adress)
 
 
@@ -444,12 +466,15 @@ const loadAddtoCart = async (req, res) => {
                     price: productdata[0].price,
                     status: productdata[0].status,
                     quantity: data.quantity,
+                    total: data.quantity * productdata[0].price,
 
 
                 }
-                // console.log("---------------------------------------------------------------------------")
-                // console.log("CardData in load to cart", cart)
-                // console.log("---------------------------------------------------------------------------")
+                cartTotal = cartTotal + cart.total
+                console.log("---------------------------------------------------------------------------")
+                console.log("CardData in load to cart", cart)
+                console.log("Total amount in cart = ", cartTotal)
+                console.log("---------------------------------------------------------------------------")
 
 
 
@@ -460,7 +485,7 @@ const loadAddtoCart = async (req, res) => {
 
             // console.log("Product details; ", products)
             // console.log("---------------------------------------------------------------------------")
-            res.render("userCart", { data: cartData })
+            res.render("userCart", { data: cartData, totalPrice: cartTotal })
 
         }
 
@@ -477,35 +502,81 @@ const loadAddtoCart = async (req, res) => {
 
 //Update quantity
 //:cartId => :productId
+// const updateQuantity = async (req, res) => {
+//     try {
+//         const userData = await User.find({ email: req.session.user_id })
+//         console.log("welcome to update qantity")
+//         if (userData) {
+
+//             const cartId = req.params.cartId
+//             const email = req.session.user_id
+//             const { quantity } = req.body;
+//             let cartTotalPrice = 0;
+//             console.log("Quantity: ",quantity)
+
+//             console.log(cartId)
+//             console.log(email)
+
+//             const user = await User.findOneAndUpdate(
+//                 { email, "cart.productId": cartId },
+//                 { $inc: { "cart.$.quantity": quantity } },
+//                 { new: true } // This option returns the updated document
+//               );
+//             console.log("------------------------------ user.cart---------------------------------------------")
+//             console.log("user data in update quantity: ", user.cart)
+
+//             for (const item of user.cart) {
+//                 cartTotalPrice += item.quantity * item.totalPrice;
+//             }
+//             console.log("Total price in the cart : ",cartTotalPrice)
+
+
+
+//             console.log("----------------------------------- user.cart----------------------------------------")
+//             res.json(cartTotalPrice)
+
+
+//         } else {
+//             res.redirect("/")
+//         }
+//     }
+//     catch (err) {
+//         console.log("Error in update quantity in cart", err)
+//         // res.redirect("/")
+//     }
+// }
+
 const updateQuantity = async (req, res) => {
     try {
-        const userData = await User.find({ email: req.session.user_id })
-        console.log("welcome to update qantity")
-        if (userData) {
+        const email = req.session.user_id;
+        const cartId = req.params.cartId;
+        const { quantity } = req.body;
 
-            const cartId = req.params.cartId
-            const email = req.session.user_id
-            const { quantity } = req.body;
+        const user = await User.findOneAndUpdate(
+            { email, "cart.productId": cartId },
+            { $inc: { "cart.$.quantity": quantity } },
+            { new: true } // This option returns the updated document
+        );
 
-            console.log(cartId)
-            console.log(email)
+        if (user) {
+            let cartTotalPrice = 0;
+            for (const item of user.cart) {
+                cartTotalPrice += item.quantity * item.totalPrice;
+            }
 
-            const user = await User.findOneAndUpdate({ email, "cart.productId": cartId }, { $inc: { "cart.$.quantity": quantity } })
-            // console.log("---------------------------------------------------------------------------")
-            // console.log("user data in update quantity: ", user)
-            // console.log("---------------------------------------------------------------------------")
-            res.send("updated")
+            console.log("Updated Cart:", user.cart);
+            console.log("Total price in the cart:", cartTotalPrice);
 
-
+            res.json({ cart: user.cart, totalPrice: cartTotalPrice });
         } else {
-            res.redirect("/")
+            res.json({ error: "User or cart item not found." });
         }
+    } catch (err) {
+        console.log("Error in updating quantity in cart:", err);
+        res.status(500).json({ error: "An error occurred." });
     }
-    catch (err) {
-        console.log("Error in update quantity in cart", err)
-        // res.redirect("/")
-    }
-}
+};
+
 
 //Delete product
 
@@ -674,8 +745,8 @@ const validateCoupon = async (req, res) => {
 
                     console.log("Exist Coupon: ", existCoupon.amount)
                     // res.json({amount:existCoupon.amount})
-                    console.log("Coupon Validated Succesfully", existCoupon.amount,existCoupon.couponCode)
-                    return res.json({ message: "Coupon validated successfully.", amount: existCoupon.amount,code:existCoupon.couponCode});
+                    console.log("Coupon Validated Succesfully", existCoupon.amount, existCoupon.couponCode)
+                    return res.json({ message: "Coupon validated successfully.", amount: existCoupon.amount, code: existCoupon.couponCode });
                 }
             } else {
                 console.log("Coupon is Expired")
@@ -766,13 +837,13 @@ const updateAdress = async (req, res) => {
         const userdata = await User.findOne({ email: req.session.user_id })
         console.log("Welcome to update route", req.session.user_id)
         if (userdata) {
-            const { id } = req.query
-            console.log("Adress id ", id)
+            const { id, source } = req.query
+            console.log("Adress id ", id, "source: ", source)
             const userData = await User.findOne({ email: req.session.user_id, "address.items._id": id }, { "address.items.$": 1 })
             console.log("userData", userData.address.items)
             const data = userData.address.items
             console.log("userData", data)
-            res.render("updateadress", { userAdress: data })
+            res.render("updateadress", { userAdress: data, source })
 
         } else {
 
@@ -788,6 +859,9 @@ const saveAdressData = async (req, res) => {
     try {
         const userEmail = req.session.user_id;
         const addressIdToUpdate = req.query.id; // Assuming you're passing the address ID in the query
+        let source = req.query.source
+        console.log("source : ", source)
+        console.log("req.query.source : ", req.query.source)
 
         const userData = await User.findOne({ email: userEmail });
         console.log("Welcome to update adress in checkout", addressIdToUpdate, userEmail)
@@ -810,7 +884,15 @@ const saveAdressData = async (req, res) => {
                 { $set: { "address.items.$": newAddress } },
                 { new: true }
             );
-            res.redirect("/checkout")
+            if (source == "add") {
+                res.redirect("/user-profile")
+            } else if (source == "checkout") {
+                res.redirect("/checkout")
+            } else {
+                console.log("In update else")
+                res.redirect("/")
+            }
+
 
 
 
@@ -825,23 +907,35 @@ const saveAdressData = async (req, res) => {
 
 
 
-
-
 const verifyOrder = async (req, res) => {
     try {
         const userData = await User.findOne({ email: req.session.user_id });
         if (userData) {
 
-            const { addressId, paymentMethod, usedCouponCode } = req.body;
+            const { addressId, paymentMethod, usedCouponCode,amounttopay } = req.body;
+
+            console.log("addressId: ",addressId,"paymentMethod: ",paymentMethod,"usedCouponCode: ",usedCouponCode,"amounttopay: ",amounttopay)
+            
 
             const address = userData.address.items.find(item => item._id == addressId)
             const userCart = userData.cart;
+            const orderDate = new Date();
+            console.log("userCart: ", userCart)
 
+            const expectedDeliveryDate = new Date(orderDate);
+            expectedDeliveryDate.setDate(orderDate.getDate() + 7);
 
             const newCoupon = await couponSchema.findOne({ couponCode: usedCouponCode })
             console.log("Inside verify order: ", newCoupon)
-
             console.log("User Coupons", usedCouponCode)
+            let couponAmount ;
+            if(newCoupon){
+
+                 couponAmount = newCoupon.amount
+            }else{
+                couponAmount = 0
+
+            }
 
             //productid quantity price 
             const items = []
@@ -849,8 +943,8 @@ const verifyOrder = async (req, res) => {
                 items.push({
                     ProductId: item.productId,
                     quantity: item.quantity,
-                    price: item.totalPrice * item.quantity,
-
+                    price: (item.totalPrice * item.quantity)-couponAmount,
+                    image: item.image
                 })
             }
 
@@ -862,10 +956,13 @@ const verifyOrder = async (req, res) => {
                 deliveryAddress,
                 items,
                 paymentMethod,
-                usedCouponCode
+                usedCouponCode,
+                expectedDeliveryDate: expectedDeliveryDate.toISOString().split('T')[0],
             })
+            userData.cart = []
+            await userData.save()
 
-            //   Update user's used coupons and push the coupon details
+
             if (newCoupon) {
                 const user = await User.findOneAndUpdate(
                     { email: req.session.user_id },
@@ -880,38 +977,35 @@ const verifyOrder = async (req, res) => {
                 );
                 console.log("USER dATA BASE:", user)
             } else {
-                // const user = await User.findOneAndUpdate(
-                //     { email: req.session.user_id },
-                //     {
-                //         $push: {
-                //             userCoupens: {
-                //                 couponId: "No Coupon Applied",
-                //                 couponCode: "No Coupon Applied"
-                //             }
-                //         }
-                //     }
-                // );
-
                 console.log("No coupons used")
             }
 
-
             res.render("orderConform")
 
-
-
-
         } else {
-
             res.redirect("/")
         }
     } catch (err) {
-
         console.log("Error in verify order", err);
-        res.status(500).send(err)
-        // res.redirect("/")
+        res.status(500).send(err);
     }
 };
+
+//confirmation
+const verifyOrderConform = async (req, res) => {
+    try {
+        if (req.session.user_id) {
+            res.render("orderConform")
+
+        } else {
+            res.redirect("/")
+        }
+
+    } catch (err) {
+        console.log("Error in Conform page", err)
+    }
+}
+
 
 
 
@@ -919,56 +1013,66 @@ const verifyOrder = async (req, res) => {
 const showOrder = async (req, res) => {
     try {
         const userData = await User.findOne({ email: req.session.user_id })
-        // console.log("UserData", userData)
 
         if (userData) {
-
-            // console.log("userId", userData._id)
-
-            const orderData = await Order.find({ userId: userData._id }, { deliveryAddress: 1, paymentMethod: 1, items: 1, createdAt: 1 }).sort({ createdAt: -1 })
-            // console.log("------------------------------------------------------------------------------------------------------")
-            // console.log("HAII ORDER DATA", orderData)
-            // console.log("------------------------------------------------------------------------------------------------------")
-
+            const orderData = await Order.find({ userId: userData._id }, { deliveryAddress: 1, paymentMethod: 1, items: 1, createdAt: 1, expectedDeliveryDate: 1 }).sort({ createdAt: -1 })
             const productIds = orderData.flatMap(order => order.items.map(item => item.ProductId));
             const products = await productModel.find({ _id: { $in: productIds } });
+            console.log("----------------------------------------------------------")
+            console.log("orderData: ",orderData,"productIds: ",productIds,"products: ",products)
+
+            console.log("----------------------------------------------------------")
 
             const combinedData = orderData.flatMap(order => {
                 const combinedItems = order.items.map(item => {
                     const product = products.find(product => product._id.equals(item.ProductId));
-                    // console.log("status undo nokkan",product)
                     return {
                         orderId: order._id,
                         paymentMethod: order.paymentMethod,
                         deliveryAddress: order.deliveryAddress,
                         categoryName: product.categoryName[0],
+                        brand: product.brand,
                         productImage: product.image[0],
                         status: item.status,
                         createdAt: order.createdAt.toISOString().split('T')[0],
-                        productId: item.ProductId
+                        productId: item.ProductId,
+                        expectedDeliveryDate: order.expectedDeliveryDate ? order.expectedDeliveryDate.toISOString().split('T')[0] : null,
                     };
                 });
 
                 return combinedItems;
             });
-
-            console.log("------------------------------------------------------------------------------------------------------");
-            console.log("Combined Data:", combinedData);
-            console.log("------------------------------------------------------------------------------------------------------");
+            console.log("Combined data: ", combinedData)
 
             res.render("userOrderList", { userData, combinedData });
-
-
-
         } else {
             res.redirect("/");
         }
 
     } catch (err) {
         console.log("Error in Showing the User order list", err);
-        // res.redirect("/")
     }
 }
+//Order List onclick
+const viewOrder = async (req, res) => {
+    try {
+        console.log("Welcome to orderList onclick");
+        const orderId = req.query.orderId;
+        console.log("OrderId: ", orderId);
+        const orderData = await Order.findOne({ _id: orderId });
+        console.log("Order Data: ", orderData);
+
+
+
+        const deliveryDate = orderData.expectedDeliveryDate.toISOString().split('T')[0];
+
+        res.render("orderViewProduct", { data: orderData, deliveryDate });
+    } catch (err) {
+        console.log("Error in showing the Order details: ", err);
+    }
+};
+
+
 
 
 //CANCEL ORDER
@@ -1018,99 +1122,297 @@ const returnOrder = async (req, res) => {
 }
 
 const OrderRazorpay = async (req, res) => {
-    const userData = await User.findOne({ email: req.session.user_id })
-    console.log("In /online - payment")
     try {
+        // Find user data based on the session user ID
+        const userData = await User.findOne({ email: req.session.user_id });
 
-        if (userData) {
-            const paymentData = req.body;
-            if (paymentData) {
-                console.log("Payment Data in cart:", paymentData)
-
-                const adressId = userData.address.items.find(item => item._id == paymentData.addressId)
-                console.log("Adress Id: ",adressId)
-                
-                const cart = userData.cart
-                console.log("User Cart in Razorpay: ", cart)
-                const proId = userData.cart.find(item => item.productId)
-                console.log("Product Id in user cart",proId)
-
-                const items = []
-                for (const item of cart) {
-                    items.push({
-                        ProductId: item.productId,
-                        quantity: item.quantity,
-                        price: item.totalPrice * item.quantity,
-    
-                    })
-                }
-                console.log("Items: ",items)
-               const order =  await Order.create({
-                    userId :userData._id,
-                    userMobile:adressId.altMobile,
-                    deliveryAddress:adressId,
-                    items,
-                    paymentMethod:paymentData.paymentmode,
-                   
-
-                })
-                console.log("Order Placed Successfully",order)
-
-            } 
-            else {
-                console.log('No payment data')
-            }
-
-
-
-        }else{
-            console.log("No user data")
+        if (!userData) {
+            console.log("User data not found");
+            return res.status(404).send("User not found");
         }
 
+        // Extract payment data from the request body
+        const transferData = req.body;
+        console.log("trasferData: ",transferData);
+        const paymentData = transferData.paymentData
+        const coupon = transferData.onlineCouponUsed.code
+        console.log("Coupon used in online payment: ",coupon)
+        const couponData  = await couponSchema.findOne({couponCode:coupon})
+        console.log("Coupondata in deduction: ",couponData)
+        let amountDeducted=0;
+        if(couponData){
+            amountDeducted = couponData.amount
+        }else{
+            amountDeducted=0
+
+        }
+        console.log("Amount to dedict is : ",amountDeducted)
+
+        
+        if (!paymentData) {
+            console.log("No payment data provided");
+            return res.status(400).send("No payment data provided");
+        }
+
+        console.log("Payment Data in cart:", paymentData);
+
+        // Find the selected delivery address based on addressId
+        const addressId = userData.address.items.find(item => item._id == paymentData.addressId);
+        console.log("Address Id: ", addressId);
+
+        const deliveryAddress = `${addressId.firstName} ${addressId.lastName},\n ${addressId.altMobile},\n ${addressId.HouseName},\n ${addressId.addressLine},\n${addressId.city}, ${addressId.state},\n${addressId.nearestLandMark},\n${addressId.pincode}`;
+        console.log("deliveryAddress: ",deliveryAddress)
+
+        // Extract the user's cart
+        const cart = userData.cart;
+        console.log("User Cart in Razorpay: ", cart);
+
+        // Extract product IDs from the user's cart
+        const productIds = cart.map(item => item.productId);
+        console.log("Product IDs in user's cart", productIds);
+
+        // Calculate order-related dates
+        const orderDate = new Date();
+        const expectedDeliveryDate = new Date(orderDate);
+        expectedDeliveryDate.setDate(orderDate.getDate() + 7);
+
+        // Create an array of items for the order
+        const items = cart.map(item => ({
+            ProductId: item.productId,
+            quantity: item.quantity,
+            price:( item.totalPrice * item.quantity)-amountDeducted,
+            image: item.image,
+        }));
+        console.log("Items: ", items);
+
+        // Create a new order document
+        const order = await Order.create({
+            userId: userData._id,
+            userMobile: addressId.altMobile,
+            deliveryAddress: deliveryAddress,
+            items,
+            usedCouponCode:coupon,
+            paymentMethod: paymentData.paymentmode,
+            expectedDeliveryDate: expectedDeliveryDate.toISOString().split('T')[0],
+        });
+        if (couponData) {
+            const user = await User.findOneAndUpdate(
+                { email: req.session.user_id },
+                {
+                    $push: {
+                        userCoupens: {
+                            couponId: couponData._id,
+                            couponCode: couponData.couponCode
+                        }
+                    }
+                }
+            );
+            console.log("USER dATA BASE:", user)
+        } else {
+            console.log("No coupons used")
+        }
+        console.log("Order Placed Successfully", order);
+
+        // Clear the user's cart
+        userData.cart = [];
+        await userData.save();
+
+        // Send a success response
+        res.status(200).json({ status: "success", message: "Payment successful" });
+
     } catch (err) {
-        console.log("error in raorpay save",err)
+        console.error("Error in Razorpay payment processing", err);
+
     }
 }
 
+
+
+
+//Invoice
+
+
+//---------------------------------invoice....................................
+
+const generateInvoice = async (order, productDetails, subTotal, address, orderCanceled, orderStatus) => {
+    try {
+        const invoiceOptions = {
+            documentTitle: 'Invoice',
+            currency: 'INR',
+            taxNotation: 'GST',
+            // marginTop: 25,
+            // marginRight: 25,
+            // marginLeft: 25,
+            // marginBottom: 25,
+            images: {
+                logo: '', 
+            },
+            sender: {
+                company: 'Stepify',
+                address: '5th Avenue Kozhikode',
+                zip: '693105',
+                city: 'Kozhikode',
+                country: 'Kerala',
+                phone: '7589641475',
+            },
+            client: {
+                company:"Delivery Adress",
+                address: order.deliveryAddress,
+         
+            },
+            information: {
+                Number: "hello",
+                Date: order.createdAt.toLocaleDateString(), // Order date
+                'Delivery-Date': order.expectedDeliveryDate.toLocaleDateString(), // Expected delivery date
+            },
+            contents:{
+                order_id:order._id,
+                Date_of_order:order.createdAt.toLocaleDateString(),
+                'Delivery-Date': order.expectedDeliveryDate.toLocaleDateString(),
+
+            },
+            products: [],
+            bottomNotice: `Order ${orderStatus}: ${orderCanceled ? 'Canceled' : 'Confirmed'}`,
+            subtotal: subTotal,
+            total: subTotal,
+        };
+
+        // Add products to the invoice
+        productDetails.forEach((data) => {
+            invoiceOptions.products.push({
+                quantity: data.quantity,
+                description: `${data.brand} - ${data.categoryId}`, 
+            
+                price: data.price,
+            });
+        });
+
+        const result = await easyinvoice.createInvoice(invoiceOptions);
+        const pdfBuffer = Buffer.from(result.pdf, 'base64');
+
+        return pdfBuffer;
+    } catch (error) {
+        console.log('Error generating invoice:', error);
+        throw error;
+    }
+};
+
+
+
+
+const pdf = async (req, res) => {
+    try {
+        const orderId = req.query.id;
+        const userDetails = await User.findOne({ email: req.session.user_id });
+        const orderData = await Order.findOne({ _id: orderId });
+
+        const orderProducts = orderData.items;
+
+
+        const productDetails = await Promise.all(orderProducts.map(async (orderProduct) => {
+            const productInfo = await productModel.findOne({ _id: orderProduct.ProductId });
+
+            return {
+                categoryId: productInfo.categoryName[0], 
+                brand:productInfo.brand,
+                quantity: orderProduct.quantity, 
+                price: orderProduct.price,
+               
+            };
+        }));
+
+        // Calculate subTotal
+        const subTotal = orderProducts.reduce((total, item) => {
+            return total + item.price;
+        }, 0);
+
+        // Assuming you have specific fields for orderCancellation and orderStatus in orderData
+        const orderCanceled = orderData.cancel;
+        const orderStatus = orderData.status;
+
+        const invoiceBuffer = await generateInvoice(
+            orderData,
+            productDetails,
+            subTotal,
+            userDetails.address,
+            orderCanceled,
+            orderStatus
+        );
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
+        res.send(invoiceBuffer);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+//Wallet
+const getWallet = async(req,res)=>{
+    try{
+        if(req.session.user_id){
+            res.render("userWallet")
+        }else{
+            res.redirect("/")
+        }
+
+    }catch(err){
+        console.log("Error in rendering the wallet",err)
+    }
+}
+
+
+
+
 const pagenotfound = (req, res) => {
-        res.render("pageNotFound")
-    }
+    res.render("pageNotFound")
+}
 
 
-    module.exports = {
-        getProfile,
-        deleteAdress,
-        saveAdressData,
-        changePassword,
-        verifyPassword,
-        addToCart,
-        loadAddtoCart,
-        updateQuantity,
-        cartProductDelete,
-        proceedToCheckout,
-        validateCoupon,
-        addadress,
-        pagenotfound,
-        addAdress,
-        updateAdress,
-        verifyOrder,
+module.exports = {
+    getProfile,
+    deleteAdress,
+    saveAdressData,
+    changePassword,
+    verifyPassword,
+    addToCart,
+    loadAddtoCart,
+    updateQuantity,
+    cartProductDelete,
+    proceedToCheckout,
+    validateCoupon,
+    addadress,
+    pagenotfound,
+    addAdress,
+    updateAdress,
+    verifyOrder,
 
-        showOrder,
+    showOrder,
 
-        cancelOrder,
-        returnOrder,
+    cancelOrder,
+    returnOrder,
 
-        getShopProduct,
-        filterProduct,
-        getCount,
+    getShopProduct,
+    filterProduct,
+    getCount,
 
-        verifyOnlinePayment,
-        //verifyRazorpay
+    verifyOnlinePayment,
+    //verifyRazorpay
 
-        OrderRazorpay
+    OrderRazorpay,
+    searchProductHome,
+    viewOrder,
+
+    // orderInvoice,
+    verifyOrderConform,
+    pdf,
+
+    getWallet
 
 
 
 
 
-    }
+
+}

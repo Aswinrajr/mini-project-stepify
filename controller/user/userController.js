@@ -22,7 +22,6 @@ const securePassword = async (password) => {
 }
 
 // TO GENERATE OTP
-
 function generate_OTP() {
     console.log("in generate OTP")
     const digit = "0123456789"
@@ -35,6 +34,26 @@ function generate_OTP() {
     return OTP
 }
 
+//Search
+const searchProducts = async (req, res) => {
+    const query = req.query.query;
+    const userData = await User.findOne({email:req.session.user_id})
+    try {
+        const products = await productModel.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } }, 
+                { brand: { $regex: query, $options: 'i' } }, 
+                { categoryName: { $regex: query, $options: 'i' } }, 
+            ],
+        });
+
+        res.render('webHomepage', { products, userData}); 
+    } catch (err) {
+        console.error(err);
+      
+    }
+
+}
 //WEBSITE HOME PAGE
 const websiteHome = async (req, res) => {
     try {
@@ -45,7 +64,7 @@ const websiteHome = async (req, res) => {
         console.log("---------------------------------------------------------------------------")
         let userData = null
         if (req.session.user_id) {
-            
+
 
             console.log("userExist")
             userData = await User.find({ email: req.session.user_id })
@@ -56,7 +75,7 @@ const websiteHome = async (req, res) => {
 
         } else {
             console.log("User no")
-          
+
 
         }
 
@@ -108,7 +127,7 @@ const userRegistration = async (req, res) => {
     } catch (err) {
         //alert('Enter the fields')
         console.log("Error in User Registration", err)
-        
+
         res.redirect("/signup")
 
     }
@@ -266,20 +285,19 @@ const verifyUser = async (req, res) => {
                 if (matchPassword) {
                     req.session.user_id = userData.email
                     console.log("Welcome to User Profile")
-                    // res.render("webHomepage",{products,userData})
+                  
                     res.redirect("/")
                 } else {
-                    //alert("Please Enter The Registered Password")
+                  
                     res.render("userLogin", { msg: "Please enter the Registered password" })
                 }
             } else {
-                //alert("You Are blocked please contact admin")
+                
                 res.render("userLogin", { msg: "You are Blocked please contact admin" })
             }
 
         } else {
-            // alert("Please Sign Up")
-            // res.redirect("/signup")
+          
             res.render("userLogin", { msg: "User is not registered please sign up" })
         }
 
@@ -367,6 +385,7 @@ const productView = async (req, res) => {
     try {
         const proId = req.query.id
         let existincart = false;
+        let isLoggedIn = false;
 
         console.log("in product view : [proId]", proId)
         let userData = null
@@ -385,10 +404,13 @@ const productView = async (req, res) => {
                     existincart = true
                 }
             })
+            isLoggedIn = true;
 
-        } else {
+        } 
+        else {
             console.log("No user")
             alert("Please Login to Continue Shopping")
+          
         }
         console.log("---------------------------------------------------------------------------")
         console.log("products in cart exist/not: [proId]", proId)
@@ -402,7 +424,7 @@ const productView = async (req, res) => {
         console.log("---------------------------------------------------------------------------")
         console.log("user data in product view :[userData]: ", userData)
         console.log("---------------------------------------------------------------------------")
-        res.render("productView", { proData, userData, existincart })
+        res.render("productView", { proData, userData, existincart,isLoggedIn  })
 
     } catch (err) {
         console.log("Error in product View", err)
@@ -429,7 +451,7 @@ const addToCart = async (req, res) => {
 const logout = async (req, res) => {
     req.session.destroy()
     console.log("User Logout Successfully")
-  
+
     res.redirect("/")
 }
 
@@ -452,5 +474,6 @@ module.exports = {
     renderEnterOTP,
     cpVerifyOTP,
     renderResetPassword,
-    setNewPassword
+    setNewPassword,
+    searchProducts
 }

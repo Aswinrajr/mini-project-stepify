@@ -1,175 +1,181 @@
-<% if(userData){%>
-    <%- include("./layouts/userheader.ejs") %>
-        <%}else{%>
-            <%- include("./layouts/header.ejs") %>
-                <%}%>
+<%- include("./layouts/userheader.ejs") %>
 
 
+    <style>
+        table.table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table.table th,
+        table.table td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        table.table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .cart_item_row {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart_item_row:last-child {
+            border-bottom: none;
+        }
 
 
-                    <!-- Include your CSS files here -->
-                    <style>
-                        /* Additional styles for the table */
-                        table.table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin-top: 20px;
-                        }
-
-                        table.table th,
-                        table.table td {
-                            padding: 10px;
-                            text-align: left;
-                        }
-
-                        table.table th {
-                            background-color: #f2f2f2;
-                            font-weight: bold;
-                        }
-
-                        /* Style for the cart items */
-                        .cart_item_row {
-                            border-bottom: 1px solid #ddd;
-                        }
-
-                        .cart_item_row:last-child {
-                            border-bottom: none;
-                        }
-
-                        /* Style for the product image */
-                        .product_image {
-                            width: 80px;
-                            height: 80px;
-                        }
-
-                        /* Style for the order details */
-                        .order_details {
-                            padding-left: 20px;
-                        }
-
-                        /* Style for status */
-                        .status {
-                            font-weight: bold;
-                        }
-                    </style>
-
-                    <body>
-                        <!-- Your HTML content here -->
-                        <% if(userData){%>
-                            <%- include("./layouts/userheader.ejs") %>
-                                <%}else{%>
-                                    <%- include("./layouts/header.ejs") %>
-                                        <%}%>
-
-                                            <section class="cart_area mt-5">
-                                                <div class="container mt-3">
-                                                    <div class="cart_inner">
-                                                        <div class="table-responsive">
-                                                            <table class="table"
-                                                                style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th scope="col"
-                                                                            style="padding: 10px; text-align: left; background-color: #f2f2f2; font-weight: bold;">
-                                                                            Product</th>
-                                                                        <th scope="col"
-                                                                            style="padding: 10px; text-align: left; background-color: #f2f2f2; font-weight: bold;">
-                                                                            Status</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    <% if (combinedData) { %>
-                                                                        <% combinedData.forEach(item=> { %>
-                                                                            <tr class="cart_item_row"
-                                                                                style="border-bottom: 1px solid #ddd; color: black;">
-                                                                                <td>
-                                                                                    <div class="media">
-                                                                                        <div class="d-flex">
-                                                                                            <img src="../../public/uploads/<%= item.productImage %>"
-                                                                                                class="product_image"
-                                                                                                alt="Product Image"
-                                                                                                style="width: 80px; height: 80px;">
-                                                                                        </div>
-                                                                                        <div class="media-body order_details"
-                                                                                            style="padding-left: 20px;">
-                                                                                            <p><strong>Order
-                                                                                                    ID:</strong>
-                                                                                                <%= item.orderId %>
-                                                                                            </p>
-                                                                                            <p><strong>Delivery
-                                                                                                    Address:</strong>
-                                                                                                <%= item.deliveryAddress
-                                                                                                    %>
-                                                                                            </p>
-                                                                                            <p><strong>Payment
-                                                                                                    Method:</strong>
-                                                                                                <%= item.paymentMethod
-                                                                                                    %>
-                                                                                            </p>
-                                                                                            <p><strong>Category:</strong>
-                                                                                                <%= item.categoryName %>
-                                                                                            </p>
-                                                                                            <p><strong>Date of
-                                                                                                    Order:</strong>
-                                                                                                <%= item.createdAt %>
-                                                                                            </p>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </td>
-                                                                                <td class="status"
-                                                                                    style="font-weight: bold;">
-
-                                                                                    <%if(item.status=="Shipped" ){%>
-                                                                                        <span class="text-info">
-                                                                                            <%= item.status %>
-                                                                                        </span>
-                                                                                        <%}else
-                                                                                            if(item.status=="Delivered"
-                                                                                            ){%>
-                                                                                            <span class="text-success">
-                                                                                                <%= item.status %>
-                                                                                            </span>
-                                                                                            <%}else{%>
-                                                                                                <span>
-                                                                                                    <%= item.status %>
-                                                                                                </span>
-                                                                                                <%}%>
+        .product_image {
+            width: 80px;
+            height: 80px;
+        }
 
 
-                                                                                                    <% if(
-                                                                                                        item.status=="Delivered"
-                                                                                                        ) {%>
-                                                                                                        <a href="/return/<%=item.orderId%>/<%=item.productId%>" class="genric-btn danger small mt-2 text-white"
-                                                                                                            id="cancel-btn">Return</a>
-                                                                                                        <%}else if(item.status=="confirmed" || item.status =="Shipped"){%>
-                                                                                                            <a href="/cancel/<%=item.orderId%>/<%= item.productId%>"
-                                                                                                                class="genric-btn danger small mt-2 text-white"
-                                                                                                                id="cancel-btn">Cancel
-                                                                                                                Order</a>
+        .order_details {
+            padding-left: 20px;
+        }
 
-                                                                                                            <%}else{%>
-                                                                                                                <a href="#" class="genric-btn disable radius">Disable</a>
 
-                                                                                                                <%}%>
-                                                                                </td>
-                                                                            </tr>
-                                                                            <% }); %>
-                                                                                <% } else { %>
-                                                                                    <tr>
-                                                                                        <td colspan="2">No orders
-                                                                                            available.</td>
-                                                                                    </tr>
-                                                                                    <% } %>
-                                                                </tbody>
-                                                            </table>
+        .status {
+            font-weight: bold;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .cart_empty_message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            animation: bounce 1s infinite;
+        }
+    </style>
+
+    <body>
+        <section class="cart_area mt-5">
+            <div class="container mt-3">
+                <div class="cart_inner">
+                    <div class="table-responsive">
+                        <% if (combinedData.length>0) { %>
+                            <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"
+                                            style="padding: 10px; text-align: left; background-color: #f2f2f2; font-weight: bold;">
+                                            Product</th>
+
+                                        <th scope="col"
+                                            style="padding: 10px; text-align: left; background-color: #f2f2f2; font-weight: bold;">
+                                            Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% combinedData.forEach(item=> { %>
+                                        <tr class="cart_item_row">
+                                            <td>
+                                                <a href="/view-order?orderId=<%=item.orderId%>"
+                                                    style="border-bottom: 1px solid #ddd; color: black;">
+                                                    <div class="media">
+                                                        <div class="d-flex">
+                                                            <img src="../../public/uploads/<%= item.productImage %>"
+                                                                class="product_image" alt="Product Image"
+                                                                style="width: 80px; height: 80px;">
+                                                        </div>
+                                                        <div class="media-body order_details"
+                                                            style="padding-left: 20px;">
+                                                            <p><strong>Order
+                                                                    ID:</strong>
+                                                                <%= item.orderId %>
+                                                            </p>
+                                                            <p><strong>Category Name
+                                                                :</strong>
+                                                            <%= item.categoryName%>
+                                                        </p>
+                                                            <p><strong>Payment
+                                                                    Method:</strong>
+                                                                <%= item.paymentMethod %>
+                                                            </p>
+                                                            <p><strong>Brand:</strong>
+                                                                <%= item.brand %>
+                                                            </p>
+                                                            <p><strong>Date of
+                                                                    Order:</strong>
+                                                                <%= item.createdAt %>
+                                                            </p>
+                                                            <%if(item.status!="Cancel"||item.status!="Return"){%>
+                                                            <p><strong>
+                                                                    Expected delivery Date:</strong>
+                                                                <%= item.expectedDeliveryDate %>
+                                                            </p>
+                                                            <%}else{%>
+                                                                <%if(item.status==="Return"){%>
+                                                                    <p><strong>
+                                                                        Expected Pick Up Date:</strong>
+                                                                  
+                                                                </p>
+                                                                    <%}%>
+                                                            <%}%>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            </section>
+                                                </a>
+                                            </td>
+                                            <td class="status" style="font-weight: bold;">
+
+                                                <%if(item.status=="Shipped" ){%>
+                                                    <span class="text-info">
+                                                        <%= item.status %>
+                                                    </span>
+                                                    <%}else if(item.status=="Delivered" ){%>
+                                                        <span class="text-success">
+                                                            <%= item.status %>
+                                                        </span>
+                                                        <%}else if(item.status=="Cancel" ){%>
+                                                            <span class="text-danger">
+                                                                <%= item.status %>
+                                                            </span>
+                                                            <%}else{%>
+                                                                <span class="text-info">
+                                                                    <%= item.status %>
+                                                                </span>
+                                                                <%}%>
+
+
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+
+                                </tbody>
+                            </table>
+                            <% } else { %>
+
+                                <div class="cart_empty_message mt-5">
+                                    <h3>Not Orderd Yet.</h3>
+                                    <a href="/">Continue Shopping</a>
+                                </div>
+
+                                <% } %>
+                    </div>
+                </div>
+            </div>
+        </section>
 
 
 
 
 
 
-                                            <%- include("./layouts/footer.ejs") %>
+        <%- include("./layouts/footer.ejs") %>

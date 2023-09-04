@@ -47,6 +47,7 @@
             background-color: white;
             color: black;
         }
+
         .update-link:hover {
             background-color: white;
             color: black;
@@ -89,9 +90,11 @@
                                             <%= element.altMobile %>
                                         </div>
                                     </div>
-                                    
+
                                     <a id="delete" href="/deleteadress/?id=<%= element._id%>&source=add"
                                         class="update-link">Delete</a>
+                                    <a href="/update-adress/?id=<%= element._id%>&source=add" class="update-link"
+                                        >Update</a>
                                 </div>
                                 <% }) %>
                                     <% } %>

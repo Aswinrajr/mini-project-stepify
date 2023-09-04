@@ -29,6 +29,9 @@ const orderData = mongoose.Schema({
             type: Number,
             require: true
         },
+        image:{
+            type:String
+        },
 
         status: {
             type: String,
@@ -54,6 +57,11 @@ const orderData = mongoose.Schema({
         type: Date,
         default: Date.now()
     },
+    expectedDeliveryDate: {
+        type: Date,
+        require: true
+    },
+ 
 })
 
 const order = mongoose.model("Order", orderData)

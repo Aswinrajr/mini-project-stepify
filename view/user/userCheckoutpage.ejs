@@ -85,8 +85,9 @@
                                                         </div>
                                                         <!-- Add more address details here if needed -->
                                                     </div>
-                                                    <a href="/update-adress/?id=<%= element._id%>"> <button
-                                                            class="genric-btn info small mt-2"
+
+                                                    <a href="/update-adress/?id=<%= element._id%>&source=checkout">
+                                                        <button class="genric-btn info small mt-2"
                                                             id="cancel-btn">Update</button></a>
                                                     <a id="delete"
                                                         href="/deleteadress/?id=<%= element._id%>&source=checkout"><button
@@ -234,8 +235,8 @@
                                                                                 <input checked type="radio"
                                                                                     id="f-option5" name="selector"
                                                                                     onclick='selected("COD")'>
-                                                                                <label for="f-option5">Cash on
-                                                                                    delivery</label>
+                                                                                <label for="f-option5">Cash on delivery</label>
+                                                                                    
                                                                                 <div class="check"></div>
                                                                             </div>
 
@@ -284,6 +285,7 @@
                 <form action="/verify-order" method="post">
                     <input type="text" name="addressId" id="addressId" class="d-none">
                     <input type="text" name="paymentMethod" id="paymentMethod" class="d-none">
+                    <input type="text" name="amounttopay" id="amount-to-pay" class="d-none">
                     <input type="text" name="usedCouponCode" id="used-coupon-code" class="d-none">
                     <h4>Confirm your order</h4>
                     <div>
@@ -304,6 +306,7 @@
 
         <!--================End Checkout Area =================-->
         <script>
+            let onlineCouponUsed;
 
             function TrasferAdress(addressId) {
                 console.log("Adress id in clicking the adress: ", addressId)
@@ -319,7 +322,9 @@
 
             function triggerRazorpayPayment() {
                 const amounttopay = document.getElementById("total");
-                const amount = parseFloat(amounttopay.textContent) * 100; // Amount in paise
+                const amount = parseFloat(amounttopay.textContent) * 100; 
+                console.log("Amount To pay: ",amount)
+
                 const selectedAddressId = document.getElementById("selectedAddressId").value;
                 console.log("selectedAddressId: ", selectedAddressId)
 
@@ -338,7 +343,7 @@
                                 addressId: selectedAddressId,
                                 razorpay_payment_id: response.razorpay_payment_id,
                                 razorpay_order_id: "In order Id",
-                              
+
 
                             };
                             verifyPayment(paymentData);
@@ -359,33 +364,100 @@
                 rzp1.open();
             }
 
+            // async function verifyPayment(paymentData) {
+            //     console.log("got the payment data", paymentData)
+            //     const url = "/online-payment"
+
+            //     const options = {
+            //         method: "post",
+            //         headers: {
+            //             "Content-Type": "application/json"
+            //         },
+            //         body: JSON.stringify(paymentData)
+            //     };
+
+            //     try {
+            //         const response = await fetch(url, options);
+            //         console.log("Responce in fetch:", response)
+            //         if (response.ok) {
+            //             // Payment successfully verified on your server
+            //             const reply = await response.json()
+            //             console.log("Payment verified:", reply);
+            //         } else {
+            //             // Payment verification failed on your server
+            //             console.log("Payment verification failed");
+            //         }
+            //     } catch (error) {
+            //         console.error("Error verifying payment:", error);
+            //     }
+            // }
+
+
             async function verifyPayment(paymentData) {
-                console.log("got the payment data", paymentData)
-                const url = "/online-payment"
+                console.log("got the payment data", paymentData);
+                const url = "/online-payment";
+                const transferData = {
+                    paymentData,
+                    onlineCouponUsed
+
+                }
 
                 const options = {
                     method: "post",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(paymentData)
+                    body: JSON.stringify(transferData)
                 };
 
                 try {
                     const response = await fetch(url, options);
-                    console.log("Responce in fetch:", response)
+                    console.log("Response in fetch:", response);
+
                     if (response.ok) {
                         // Payment successfully verified on your server
-                        const reply = await response.json()
+                        const reply = await response.json();
                         console.log("Payment verified:", reply);
+
+                        // Show a success SweetAlert
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Payment Successful',
+                            text: 'Your payment has been successfully processed.',
+                            confirmButtonColor: '#3085d6',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            // Redirect or perform any other action upon success if needed
+                            if (result.isConfirmed) {
+                                window.location.href = '/verify-order'; // Replace with your success page URL
+                            }
+                        });
                     } else {
                         // Payment verification failed on your server
                         console.log("Payment verification failed");
+
+                        // Show a failure SweetAlert
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Failed',
+                            text: 'There was an issue processing your payment. Please try again later.',
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            // Redirect to the cart page upon confirmation
+                            if (result.isConfirmed) {
+                                window.location.href = '/cart'; // Replace with your cart page URL
+                            }
+                        })
                     }
                 } catch (error) {
                     console.error("Error verifying payment:", error);
+
+
+
                 }
             }
+
 
 
 
@@ -439,6 +511,8 @@
 
 
                     if (data.amount) {
+                        onlineCouponUsed = data
+                        console.log("onlineCouponUsed: ",onlineCouponUsed)
                         // If coupon is used
                         const couponAmountElement = document.getElementById("coupon-amount");
                         couponAmountElement.textContent = `₹ ${data.amount}`;

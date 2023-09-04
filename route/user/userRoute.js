@@ -2,10 +2,13 @@ const express = require('express')
 const user_route = express()
 const path = require('path')
 
+const Product = require("../../model/admin/productModel")
 const userController = require("../../controller/user/userController")
 const userProfileController = require("../../controller/user/userProfile")
 const userAuth = require("../../middleware/userAuthValidation")
 const razorpayController = require('../../controller/user/razorpayControler');
+
+
 
 
 // user_route.set("view engine", "ejs")
@@ -83,20 +86,32 @@ user_route.get("/verify-payment",userAuth.is_userLoggedIn,userAuth.isBlocked,use
 user_route.post("/online-payment",userAuth.is_userLoggedIn,userAuth.isBlocked,userProfileController.OrderRazorpay)
 // user_route.post("/verify-razorpay-payment",userAuth.is_userLoggedIn,userAuth.isBlocked,userProfileController.verifyRazorpay)
 
-// user_route.post('/create-razorpay-order', razorpayController.createOrder)
-// user_route.post('/verify-razorpay-payment', razorpayController.verifyPayment);
+
 
 //ORDER ITEMS
+user_route.get("/verify-order", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.verifyOrderConform)
 user_route.post("/verify-order", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.verifyOrder)
 
 //Show Order list
 user_route.get("/order", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.showOrder)
+user_route.get("/view-order", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.viewOrder)
 
 //user cancel order
 user_route.get("/cancel/:orderId/:productId", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.cancelOrder)
 user_route.get("/return/:orderId/:productId", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.returnOrder)
 
+//Wallet
+user_route.get("/user-wallet",userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.getWallet)
 
+
+//Search
+user_route.get("/search",userController.searchProducts)
+user_route.get("/search-products",userProfileController.searchProductHome)
+
+
+
+//Invoice
+user_route.get('/invoice',userProfileController.pdf)
 
 
 //LOGOUT

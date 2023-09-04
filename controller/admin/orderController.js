@@ -1,4 +1,4 @@
-
+const User = require("../../model/user/userModel")
 const productModel = require("../../model/admin/productModel");
 const Order = require("../../model/orderModel")
 
@@ -53,6 +53,10 @@ const viewOrders = async(req,res)=>{
 
           
             const productIds = viewOrders.items.map(item => item.ProductId.toString());
+            const userId = viewOrders.userId
+            console.log("UserId: ",userId)
+            const userData = await User.findOne({_id:userId})
+            console.log("User Data: ",userData)
             console.log("ProductIds: ",productIds)
 
             const productData = await productModel.find({ _id: { $in: productIds } })
@@ -61,6 +65,7 @@ const viewOrders = async(req,res)=>{
             console.log("Product Data: ",productData)
 
             console.log("............................................")
+            res.render("ordersViewProducts",{data:viewOrders})
 
 
 
@@ -76,12 +81,20 @@ const viewOrders = async(req,res)=>{
 const orderDelivered = async(req,res)=>{
     try{
         if(req.session.admin_id){
+
+
+
+            
             console.log("welcome to update status route")
             const {orderId, productId} = req.params;
+            const viewOrders = await Order.findOne({_id:orderId})
             console.log("req.params.orderId", orderId, "req.params.productId", productId);
             await Order.updateOne({ _id: orderId, 'items.ProductId': productId }, { $set: {'items.$.status': 'Delivered'} });
+          
              
-            res.redirect("/admin/order")
+            // res.redirect("/admin/order")
+            res.redirect(`/admin/order/${orderId}`)
+            // res.render("ordersViewProducts",{data:viewOrders})
         }else{
             res.redirect("/admin")
         }
@@ -97,9 +110,12 @@ const orderShipped = async(req,res)=>{
             console.log("welcome to update status route")
             const {orderId, productId} = req.params;
             console.log("req.params.orderId", orderId, "\n", productId);
+            const viewOrders = await Order.findOne({_id:orderId})
+            console.log("ViewOrders: ",viewOrders)
             await Order.updateOne({ _id: orderId, 'items.ProductId': productId }, { $set: {'items.$.status': 'Shipped'} });
              
-            res.redirect("/admin/order")
+            res.redirect(`/admin/order/${orderId}`)
+            // res.render("ordersViewProducts",{data:viewOrders})
         }else{
             res.redirect("/admin")
         }
@@ -108,11 +124,6 @@ const orderShipped = async(req,res)=>{
         console.log("error in conform order",err)
     }
 }
-
-
-
-
-
 
 module.exports = {
     orderList,

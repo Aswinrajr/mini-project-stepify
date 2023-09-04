@@ -1,4 +1,4 @@
-<%- include("./layouts/userheader.ejs") %>
+<!-- <%- include("./layouts/userheader.ejs") %>
 
 
     <div class="container mt-5">
@@ -39,7 +39,7 @@
             </div>
 
             <div class="col-xl-9 col-lg-8 col-md-7 mt-5">
-                <!-- Start Filter Bar -->
+            
                 <div class="filter-bar d-flex flex-wrap align-items-center mt-5">
                     <div class="sorting">
                         <select id="sortOptions" onchange="updateSortValue()">
@@ -51,7 +51,7 @@
                 </div>
                 <section class="lattest-product-area pb-40 category-list">
                     <div class="row">
-                        <!-- single product -->
+                     
                         <% for(const product of products) { %>
                             <div class="col-lg-4 col-md-6">
                                 <div class="single-product">
@@ -173,7 +173,7 @@
         })
         .then(response => response.json())
         .then(responseData => {
-            // Handle the response from the backend if needed
+           
             console.log('Response from backend:', responseData);
         })
         .catch(error => {
@@ -184,4 +184,4 @@
     
 
 
-    <%- include("./layouts/footer.ejs") %>
+    <%- include("./layouts/footer.ejs") %> -->

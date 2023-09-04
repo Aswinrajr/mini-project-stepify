@@ -1,499 +1,90 @@
-<%- include("./layouts/userheader.ejs") %>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.css">
-
-
-
-
-
-
-    <!--================Checkout Area =================-->
-    <section class="checkout_area section_gap mt-5">
-
-        <div class="container">
-
-
-            <%if(validCoupon.length>0 && validCoupon){%>
-                <div class="cupon_area">
-                    <div class="check_title">
-
-                        <h2 style="color:red">Surprise !! You have a coupon here: <a onclick="showCoupon()"
-                                id="displayDiv" style="color: green;cursor: pointer;">Click to Redeem</a></h2>
-                    </div>
-                    <div id="couponDialog" class="dialog" style="display: none;">
-                        <%for(let coupon of validCoupon){%>
-                            <div class="dialog-content">
-
-                                <h4 id="couponCode" style="color: green;margin-top: 15px; margin-left: 40px;"><span
-                                        style="color: black;">Coupon Code:</span>
-                                    <%=coupon.couponCode%>
-                                </h4>
-                            </div>
-                            <%}%>
-                    </div>
-                    <input type="text" id="couponName" placeholder="Enter coupon code">
-                    <button class="tp_btn" href="" id="applybtn" onclick='applyCoupon()'>Apply Coupon</button>
-                </div>
-                <%}else{%>
-                    <h1 style="font-size: 24px; color: red; text-align: center; margin: 20px 0;">No coupons</h1>
-
-                    <%}%>
-
-
-
-
-
-                        <div class="billing_details">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <!-- space for address -->
-                                    <div class=" p-lg-1" id="addressDetails ">
-                                        <h6 class="ps-md-2 pt-lg-3">Saved Addresses</h6>
-
-                                        <% if(userAdress){ %>
-                                            <% userAdress.items.forEach((element)=>{ %>
-                                                <div id="<%= element._id%>" class="address-details-container"
-                                                    style="background-color: #f0f0f0; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; color: black;">
-                                                    <!-- <input type="radio" id="f-option6" name="selector"> -->
-                                                    <!-- <input type="radio" onclick="transfer()" id="address<%= element._id %>"
-                                            name="selector" value="<%= element._id %>"> -->
-                                                    <div class="address" onclick='TrasferAdress("<%= element._id%>")'>
-                                                        <div>
-                                                            <strong>Name: </strong>
-                                                            <%= element.firstName %>
-                                                                <%= element.lastName %>
-                                                        </div>
-                                                        <div>
-                                                            <strong>Address: </strong>
-                                                            <%= element.HouseName %>, <%= element.adressLine %>, <%=
-                                                                        element.nearestLandMark %>, <%= element.pincode
-                                                                            %>
-                                                        </div>
-                                                        <div>
-                                                            <strong>City: </strong>
-                                                            <%= element.city %>
-                                                        </div>
-                                                        <div>
-                                                            <strong>State: </strong>
-                                                            <%= element.state %>
-                                                        </div>
-                                                        <div>
-                                                            <strong>Alternate Mobile: </strong>
-                                                            <%= element.altMobile %>
-                                                        </div>
-                                                        <!-- Add more address details here if needed -->
-                                                    </div>
-                                                    <a href="/update-adress/?id=<%= element._id%>"> <button
-                                                            class="genric-btn info small mt-2"
-                                                            id="cancel-btn">Update</button></a>
-                                                    <a id="delete"
-                                                        href="/deleteadress/?id=<%= element._id%>&source=checkout"><button
-                                                            class="genric-btn danger small mt-2"
-                                                            id="cancel-btn">Delete</button></a>
-
-
-
-
-                                                </div>
-
-                                                <% }) %>
-                                                    <% } %>
-
-                                    </div>
-                                    <div class="col-md-12 form-group">
-                                        <div class="creat_account">
-                                            <h3>Shipping Details</h3>
-                                            <input onclick="enableAdress()" type="checkbox" id="f-option3"
-                                                name="selector">
-                                            <label for="f-option3">Ship to a different address?</label>
-                                        </div>
-
-                                    </div>
-                                    <div style="display: none;" id="enableAdress">
-                                        <h3>Billing Details</h3>
-                                        <form action="/save-adress" method="post" novalidate="novalidate">
-                                            <div class="col-md-6 form-group p_star">
-                                                <input type="text" class="form-control" id="firstName" name="firstName"
-                                                    placeholder="First Name" required>
-
-                                            </div>
-                                            <div class="col-md-6 form-group p_star">
-                                                <input type="text" class="form-control" id="lastName" name="lastName"
-                                                    placeholder="Last Name" required>
-
-                                            </div>
-
-                                            <div class="col-md-6 form-group p_star">
-                                                <input type="text" class="form-control" id="altMobile" name="altMobile"
-                                                    placeholder="Alternate Mobile" required>
-
-                                            </div>
-
-                                            <div class="col-md-12 form-group p_star">
-                                                <input type="text" class="form-control" id="HouseName" name="HouseName"
-                                                    placeholder="House Adress" required="">
-
-
-                                            </div>
-                                            <div class="col-md-12 form-group p_star">
-                                                <input type="text" class="form-control" id="addressLine"
-                                                    name="addressLine" placeholder="Adress Line 1" required="">
-
-                                            </div>
-                                            <div class="col-md-12 form-group p_star">
-                                                <input type="text" class="form-control" id="nearestLandMark"
-                                                    name="nearestLandMark" placeholder="Nearest Land mark" required="">
-
-                                            </div>
-                                            <div class="col-md-12 form-group p_star">
-                                                <input type="text" class="form-control" id="city" name="city"
-                                                    placeholder="City" required="">
-
-                                            </div>
-                                            <div class="col-md-12 form-group p_star">
-                                                <input type="text" class="form-control" id="state" name="state"
-                                                    placeholder="State" required="">
-
-
-                                            </div>
-                                            <div class="col-md-12 form-group">
-                                                <input type="text" class="form-control" id="pincode" name="pincode"
-                                                    placeholder="Postcode/ZIP">
-                                            </div>
-                                            <li onclick="disbleform()" id="cancel"
-                                                class="genric-btn danger circle arrow mx-auto">
-                                                Cancel</li>
-
-                                            <button type="submit" onclick="submitData()" class="btn btn-primary">Save
-                                                Adress</button>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 mb-5">
-                                    <div class="order_box mb-5">
-                                        <% let totalAmount%>
-                                            <h2>Your Order</h2>
-                                            <ul class="list">
-                                                <li><a href="#">Product <span>Total</span></a></li>
-
-                                                <% if (data) { %>
-
-
-                                                    <% for (let i=0; i < data.length; i++) { %>
-                                                        <li><a href="#">
-                                                                <%=data[i].productName%> <span>₹ <%=data[i].totalPrice%>
-                                                                    </span><span> x
-                                                                        <%=data[i].productQuantity%> =
-                                                                    </span> <span class="last">₹
-                                                                        <%=data[i].productPrice%>
-                                                                    </span>
-                                                            </a></li>
-
-                                                        <%}%>
-
-                                                            <%}%>
-                                                                <ul class="list list_2">
-                                                                    <li><a href="#">Subtotal <span>₹ <%=subtotal%>
-                                                                            </span></a></li>
-                                                                </ul>
-
-                                                                <ul class="list list_2">
-                                                                    <% if (data.amount) { %>
-
-                                                                        <li><a href="#">Coupon <span>₹ <%= data.amount
-                                                                                        %></span></a>
-                                                                        </li>
-                                                                        <li><a href="#">Total ₹ <span id="total">
-                                                                                    <%= totalAmount=subtotal -
-                                                                                        data.amount %>
-                                                                                </span></a></li>
-                                                                        <input type="number"
-                                                                            value="<%= subtotal - data.amount %>"
-                                                                            id="grandTotal">
-                                                                        <h1>coupon</h1>
-                                                                        <% } else { %>
-                                                                            <li><a href="#">Coupon <span
-                                                                                        id="coupon-amount">₹
-                                                                                        0</span></a>
-                                                                            </li>
-                                                                            <li><a href="#">Total ₹ <span id="total">
-                                                                                        <%= totalAmount=subtotal %>
-                                                                                    </span></a></li>
-
-                                                                            <% } %>
-                                                                                <li><a href="#">Shipping
-                                                                                        <span>0</span></a></li>
-                                                                </ul>
-                                                                <form action="" method="post">
-
-
-                                                                    <div class="payment_item">
-                                                                        <div class="radion_btn">
-                                                                            <input checked type="radio" id="f-option5"
-                                                                                name="selector"
-                                                                                onclick='selected("COD")'>
-                                                                            <label for="f-option5">Cash on
-                                                                                delivery</label>
-                                                                            <div class="check"></div>
-                                                                        </div>
-
-                                                                    </div>
-                                                                    <a class="primary-btn" id="codPayment" href="#"
-                                                                        onclick="confirmOrder()">Conform
-                                                                        Order</a>
-                                                                    <div class="payment_item active">
-                                                                        <div class="radion_btn">
-                                                                            <input type="radio" id="f-option6"
-                                                                                name="selector"
-                                                                                onclick='selected("onlinePayment")'>
-                                                                            <label for="f-option6">UPI </label>
-                                                                            <img src="img/product/card.jpg" alt="">
-                                                                            <div class="check"></div>
-                                                                        </div>
-
-                                                                    </div>
-                                                                    <a href="#" class="primary-btn" id=""
-                                                                        style="display:none;">Conform
-                                                                        razorpay</a>
-
-                                                                    <a href="#" class="primary-btn" id="razorpayPayment"
-                                                                        onclick='triggerRazorpayPayment(" <%= totalAmount  %>")'
-                                                                        style="display: none;">Conform
-                                                                        Razorpay</a>
-                                                                </form>
-
-
-
-
-
-
-
-
-                                    </div>
-                                </div>
-
-
-                            </div>
-                        </div>
-        </div>
-        <dialog id="confirm-dialog">
-            <div>
-                <form action="/verify-order" method="post">
-                    <input type="text" name="addressId" id="addressId" class="d-none">
-                    <input type="text" name="paymentMethod" id="paymentMethod" class="d-none">
-                    <input type="text" name="usedCouponCode" id="used-coupon-code" class="d-none">
-                    <h4>Confirm your order</h4>
-                    <div>
-                        <h6>Delivery To:-</h6>
-                        <p id="delivery-address"></p>
-                        <h6>Payment Method:-</h6>
-                        <p class="text-danger" id="payment-method"></p>
-                        <p id="used-coupon" class="text-success"></p>
-                        <h6>Amount to be paid</h6>
-                        <p class="text-danger" id="amount-to-pay"></p>
-                    </div>
-                    <button class="genric-btn primary small" id="confirm-btn">confirm</button>
-                </form>
-                <button class="genric-btn danger small mt-2" id="cancel-btns">Cancel</button>
-            </div>
-        </dialog>
-
-
-        <!--================End Checkout Area =================-->
-        <script>
-            function triggerRazorpayPayment(amount) {
-
-                var options = {
-                    key: 'rzp_test_RffDiBBa2HI6Mw',
-                    amount: amount * 100, // Amount in paise (Indian currency)
-                    name: 'Stepify',
-                    description: 'Payment for Order',
-                    image: "/public/usercss/img/logo.png",
-                    handler: function (response) {
-                        // This function will be executed after successful payment
-                        // You should make an AJAX request to your server to verify the payment
-                        // You can use the 'response.razorpay_payment_id' and 'response.razorpay_order_id' for verification
-                    },
-                    prefill: {
-                        name: 'Admin',
-                        email: 'admin@example.com',
-                        contact: '+919876543210',
-                    },
-                };
-                var rzp1 = new Razorpay(options);
-                rzp1.open();
-            }
-        </script>
-
-
-        <script>
-
-
-
-
-            function selected(mode) {
-                const codPayment = document.getElementById("codPayment")
-                const upipayment = document.getElementById("razorpayPayment")
-                console.log("upipayment: ", upipayment)
-                console.log("codPayment", codPayment, "what: ", mode)
-                if (mode === "onlinePayment") {
-                    codPayment.style.display = "none";
-                    upipayment.style.display = "block";
-
-                } else {
-                    codPayment.style.display = "block";
-                    upipayment.style.display = "none";
-                }
-            }
-
-
-            //Show coupon in the user side list
-            function showCoupon() {
-                const dispalyCoupon = document.getElementById("couponDialog")
-                dispalyCoupon.style.display = 'block';
-            }
-            async function showCoupon() {
-                const displayCoupon = document.getElementById("couponDialog");
-                displayCoupon.style.display = 'block';
-            }
-
-            //apply coupon
-            async function applyCoupon() {
-                const couponCode = document.getElementById("couponName").value;
-                event.preventDefault();
-                const url = `/validate-coupon`;
-
-                const options = {
-                    method: "post",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ couponCode })
-                };
-
-
-                try {
-                    const response = await fetch(url, options);
-                    const data = await response.json();
-
-                    if (data.amount) {
-                        // If coupon is used
-                        const couponAmountElement = document.getElementById("coupon-amount");
-                        couponAmountElement.textContent = `₹ ${data.amount}`;
-                        const totalAmountElement = document.getElementById("total");
-                        const subtotal = parseFloat(totalAmountElement.textContent);
-                        const updatedTotal = subtotal - data.amount;
-                        totalAmountElement.textContent = `₹ ${updatedTotal}`;
-
-                        // Enable the confirm order button since coupon is used
-                        const confirmButton = document.getElementById("confirm-btn");
-                        confirmButton.disabled = false;
-
-                        // Store the used coupon code in a hidden input
-                        const usedCouponInput = document.getElementById("used-coupon-code");
-                        usedCouponInput.value = couponCode;
-                    } else {
-                        // If coupon is not used
-                        const couponAmountElement = document.getElementById("coupon-amount");
-                        couponAmountElement.textContent = `₹ 0`;
-                        const totalAmountElement = document.getElementById("total");
-                        totalAmountElement.textContent = `₹ ${subtotal}`;
-
-                        // Disable the confirm order button since coupon is not used
-                        const confirmButton = document.getElementById("confirm-btn");
-                        confirmButton.disabled = true;
-                    }
-                } catch (error) {
-                    console.error("Error applying coupon:", error);
-                }
-            }
-
-
-
-            let toggle = 0;
-            function enableAdress() {
-                if (toggle === 0) {
-                    document.getElementById("enableAdress").style.display = "block"
-                    toggle = 1
-                } else {
-                    document.getElementById("enableAdress").style.display = "none"
-                    toggle = 0
-                }
-            }
-
-
-            //Adress fields
-            function disbleform() {
-                document.getElementById("enableAdress").style.display = "none"
-                toggle = 1
-                document.getElementById("f-option3").checked = false;
-
-            }
-
-            const addresss = document.querySelectorAll('.address-details-container');
-            let selectedAddress = addresss[0];
-            selectedAddress.classList.add('bg-white');
-
-            for (const address of addresss) {
-                address.addEventListener('click', () => {
-                    selectedAddress.classList.remove('bg-white');
-                    address.classList.add('bg-white');
-                    selectedAddress = address;
-                })
-            }
-
-            const confirmDialog = document.getElementById('confirm-dialog');
-            const cancelButton = document.getElementById('cancel-btns');
-            const deliveryAdress = document.getElementById("delivery-address")
-            const paymentMethod = document.getElementById("payment-method")
-
-            const amountToPay = document.getElementById("amount-to-pay")
-
-            const usedCouponCodeElement = document.getElementById("couponName");
-            const usedCouponCode = usedCouponCodeElement.textContent;
-
-            // Display the used coupon code in the dialog
-            const usedCouponElement = document.getElementById("used-coupon");
-            usedCouponElement.textContent = `Used Coupon: ${usedCouponCode}`;
-
-            const transferAddressId = document.getElementById("addressId")
-            const transferPayment = document.getElementById("paymentMethod")
-
-
-            function confirmOrder() {
-                const deliveryAddress = selectedAddress.querySelector('.address').innerHTML;
-                const payment = document.querySelector('input[type="radio"]:checked');
-                const paymentMethodText = payment.nextElementSibling.innerHTML;
-
-                const amountToPayText = document.getElementById("total").innerHTML;
-
-                // Get the used coupon code from the hidden input field
-                const usedCouponCode = document.getElementById("used-coupon-code").value;
-
-                deliveryAdress.innerHTML = deliveryAddress;
-
-
-
-
-
-                paymentMethod.innerText = paymentMethodText;
-                amountToPay.innerHTML = amountToPayText;
-
-                // Display the used coupon code in the dialog
-                const usedCouponText = usedCouponCode ? `Used Coupon: ${usedCouponCode}` : "No Coupon Used";
-                const usedCouponElement = document.getElementById("used-coupon");
-                usedCouponElement.innerText = usedCouponText;
-
-                transferAddressId.value = selectedAddress.id;
-                transferPayment.value = paymentMethod.innerText;
-
-
-
-                confirmDialog.showModal();
-            }
-            cancelButton.addEventListener('click', () => {
-                confirmDialog.close();
-            })
-        </script>
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.all.min.js"></script>
-        <%- include("./layouts/footer.ejs") %>
+<%- include("./layouts/header.ejs") %>
+<div class="w-full overflow-hidden rounded-lg shadow-xs">
+  <div class="w-full h-full overflow-x-auto">
+    <div class="flex justify-end mb-4 mr-4">
+      <button
+        class="flex items-center mt-4 mr-3 px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        <a href="/admin/category/add_category"><span>Add Category</span></a>
+      </button>
+    </div>
+
+   
+
+      <table class="w-full" style="font-family: Arial, sans-serif; font-size: 14px;">
+        <thead>
+          <tr
+            class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+            <th class="px-4 py-3">Sl No</th>
+           
+            <th class="px-4 py-3">Category Name</th>
+            <th class="px-4 py-3">Brand</th>
+            <th class="px-4 py-3">Is Available</th>
+            <th class="px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+          <% if(data){ %>
+          <% for(let i=0;i<data.length;i++){ %>
+          <tr class="text-gray-700 dark:text-gray-400">
+            <td class="px-4 py-3">
+              <div class="flex items-center text-sm">
+                <p class="font-semibold">
+                  <%= i + 1 %>
+                </p>
+              </div>
+            </td>
+          
+            <td class="px-4 py-3 text-sm ">
+              <p class="font-semibold">
+                <%= data[i].categoryName %>
+              </p>
+            </td>
+            <td class="px-4 py-3 text-sm ">
+              <p class="font-semibold">
+                <%= data[i].brand %>
+              </p>
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <p class="font-semibold">
+                <%= data[i].isAvailable %>
+              </p>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center space-x-4 text-sm">
+                <a href="/admin/category/editcategory?id=<%= data[i]._id %>">
+                  <button
+                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                    aria-label="Edit">
+                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z">
+                      </path>
+                    </svg>
+                  </button>
+                </a>
+                <a href="/admin/category/deletecategory?id=<%= data[i]._id %>">
+                  <button
+                    class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                    aria-label="Delete">
+                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                        clip-rule="evenodd"></path>
+                    </svg>
+                  </button>
+                </a>
+              </div>
+            </td>
+          </tr>
+          <% } %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include("./layouts/footer.ejs") %>
