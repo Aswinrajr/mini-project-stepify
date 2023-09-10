@@ -54,6 +54,9 @@ user_route.post("/shop/count",userProfileController.getCount)
 user_route.get("/user-profile", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.getProfile)
 user_route.post("/user-profile", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.addadress)
 
+//user Dashboard
+user_route.get("/user-dashboard", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.getUserDashboard)
+
 //Add Adress
 user_route.post("/save-adress", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.addAdress)
 
@@ -71,6 +74,8 @@ user_route.post("/change-password", userAuth.is_userLoggedIn, userAuth.isBlocked
 //CART
 user_route.post("/cart", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.addToCart)
 user_route.get("/cart", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.loadAddtoCart)
+
+user_route.post("/add-to-cart",userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.addingToCart)
 
 //delete cartproducts
 user_route.get("/deletecart/:proId", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.cartProductDelete)
@@ -100,8 +105,10 @@ user_route.get("/view-order", userAuth.is_userLoggedIn, userAuth.isBlocked, user
 user_route.get("/cancel/:orderId/:productId", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.cancelOrder)
 user_route.get("/return/:orderId/:productId", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.returnOrder)
 
+
 //Wallet
 user_route.get("/user-wallet",userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.getWallet)
+user_route.post("/user-wallet",userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.depositWallet)
 
 
 //Search
@@ -119,6 +126,8 @@ user_route.get("/logout", userAuth.is_userLoggedIn, userAuth.isBlocked, userCont
 
 //404 page not found
 user_route.get("/*", userProfileController.pagenotfound)
+
+
 
 
 

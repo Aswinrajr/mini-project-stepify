@@ -34,7 +34,13 @@ admin_route.post("/verifyotp",  adminController.adminVerifyOTP)
 admin_route.get("/changepassword",  adminController.renderResetPassword)
 admin_route.post("/changepassword",  adminController.setNewPassword)
 
+
+//Dashboard
 admin_route.get("/dashboard",authControl.is_adminLoggedIn,adminController.loadDashboardPage)
+
+//Chart
+admin_route.get("/chart",authControl.is_adminLoggedIn,adminController.getChartData)
+admin_route.post("/sales-report",authControl.is_adminLoggedIn,adminController.downloadSalesReport)
 
 //Admin Category Control
 admin_route.get("/category",authControl.is_adminLoggedIn,categoryController.stepifyCategoryList)
@@ -77,9 +83,15 @@ admin_route.get("/order",authControl.is_adminLoggedIn,orderController.orderList)
 admin_route.get("/order/:orderId",authControl.is_adminLoggedIn,orderController.viewOrders)
 
 //Change order status
-admin_route.get('/delivered/:orderId/:productId',authControl.is_adminLoggedIn,orderController.orderDelivered)
 admin_route.get('/shipped/:orderId/:productId',authControl.is_adminLoggedIn,orderController.orderShipped)
-// admin_route.post("/shipped",orderController.orderShipped)
+admin_route.get('/out-of-delivery/:orderId/:productId',authControl.is_adminLoggedIn,orderController.outForDelivery)
+admin_route.get('/delivered/:orderId/:productId',authControl.is_adminLoggedIn,orderController.orderDelivered)
+admin_route.get('/cancel-order/:orderId/:productId',authControl.is_adminLoggedIn,orderController.cancelOrder)
+admin_route.get('/return-order/:orderId/:productId',authControl.is_adminLoggedIn,orderController.returnOrder)
+
+
+//View User-Profile
+admin_route.get("/user-profile/:id",authControl.is_adminLoggedIn,adminController.viewUserProfile)
 
 //Coupon Control
 admin_route.get("/coupon",authControl.is_adminLoggedIn,couponControl.getCoupon)

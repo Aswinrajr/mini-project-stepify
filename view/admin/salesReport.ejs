@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sales Report</title>
+</head>
+
+<body>
+    <h1 style="text-align: center;">Sales Report</h1>
+    <table id="salesTable" border="1" style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Order ID</th>
+
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">User Mobile</th>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Delivery Address</th>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Items</th>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Payment Method</th>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Used Coupon Code</th>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Total Amount</th>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Refund</th>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Created At</th>
+            <th style="border: 1px solid #dddddd; text-align: left; padding: 8px;">Expected Delivery Date</th>
+        </tr>
+        <% for (let i=0; i < orders.length; i++) { %>
+            <tr>
+                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">
+                    <%= orders[i]._id %>
+                </td>
+
+                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">
+                    <%= orders[i].userMobile %>
+                </td>
+                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;width: 250px;">
+                    <%= orders[i].deliveryAddress %>
+                </td>
+                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">
+                    <ul style="list-style: none; margin: 0; padding: 0;">
+                        <% for (let j=0; j < orders[i].items.length; j++) { %>
+                            <li style="margin-bottom: 5px;">
+                                <strong>Product <%= j + 1 %>:</strong>
+                                <ul style="list-style: none; margin: 0; padding: 0;">
+                                    <li><strong>Image: <img src="../../public/uploads/<%=orders[i].items[j].image%>"
+                                                alt="Product Image" style="width: 100px;height: 100px;">
+                                    <li><strong>Amount Paid:</strong>
+                                        <%= orders[i].items[j].price %>
+                                    </li>
+                                    <li><strong>Quantity:</strong>
+                                        <%= orders[i].items[j].quantity %>
+                                    </li>
+                                    <hr>
+                                </ul>
+                            </li>
+                            <% } %>
+                    </ul>
+                </td>
+
+                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">
+                    <%= orders[i].paymentMethod %>
+                </td>
+                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">
+                    <%= orders[i].usedCouponCode %>
+                </td>
+                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">
+                    <%= orders[i].totalAmount %>
+                </td>
+                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">
+                    <%= orders[i].refund %>
+                </td>
+                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">
+                    <%= orders[i].createdAt.toISOString().split('T')[0] %>
+                </td>
+                <td style="border: 1px solid #dddddd; text-align: left; padding: 8px;">
+                    <%= orders[i].expectedDeliveryDate.toISOString().split('T')[0] %>
+                </td>
+            </tr>
+            <% } %>
+    </table>
+    <button class="genric-btn primary small mt-3" id="downloadButton">Download PDF</button>
+</body>
+<!-- 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script>
+   
+    document.getElementById("downloadButton").addEventListener("click", function () {
+        // Create a new jsPDF instance
+        console.log("Button clicked")
+        var doc = new jsPDF();
+
+        // Add HTML content from the table to the PDF
+        doc.fromHTML(document.getElementById("salesTable"), 15, 15);
+
+        // Save the PDF with a specified filename
+        doc.save("sales_report.pdf");
+    });
+</script> -->

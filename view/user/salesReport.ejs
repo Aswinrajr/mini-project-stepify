@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Report</title>
+</head>
+<body>
+    <h1>Sales Report</h1>
+    <table border="1">
+        <tr>
+            <th>Order ID</th>
+            <th>User ID</th>
+            <th>User Mobile</th>
+            <th>Delivery Address</th>
+            <th>Items</th>
+            <th>Payment Method</th>
+            <th>Used Coupon Code</th>
+            <th>Total Amount</th>
+            <th>Refund</th>
+            <th>Created At</th>
+            <th>Expected Delivery Date</th>
+        </tr>
+        <% for (let i = 0; i < orders.length; i++) { %>
+            <tr>
+                <td><%= orders[i]._id %></td>
+                <td><%= orders[i].userId %></td>
+                <td><%= orders[i].userMobile %></td>
+                <td><%= orders[i].deliveryAddress %></td>
+                <td>
+                    <ul>
+                        <% for (let j = 0; j < orders[i].items.length; j++) { %>
+                            <li><%= orders[i].items[j] %></li>
+                        <% } %>
+                    </ul>
+                </td>
+                <td><%= orders[i].paymentMethod %></td>
+                <td><%= orders[i].usedCouponCode %></td>
+                <td><%= orders[i].totalAmount %></td>
+                <td><%= orders[i].refund %></td>
+                <td><%= orders[i].createdAt %></td>
+                <td><%= orders[i].expectedDeliveryDate %></td>
+            </tr>
+        <% } %>
+    </table>
+</body>
+</html>

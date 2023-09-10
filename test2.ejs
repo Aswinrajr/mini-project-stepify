@@ -210,3 +210,115 @@
                 </form>
             </section>
         </div>
+
+        
+    <style>
+        /* Reset some default styles */
+        body,
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        /* Basic styling for the sidebar */
+        .sidebar {
+            background-color: #333;
+            color: #fff;
+            width: 250px;
+            position: fixed;
+           
+            overflow-y: auto;
+        }
+
+        .sidebar h1 {
+            font-size: 24px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .sidebar ul {
+            margin-top: 20px;
+        }
+
+        .sidebar ul li {
+            margin-right: 0;
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+            padding: 10px;
+        }
+
+        /* Styling for the content area */
+        .content {
+            margin-left: 250px;
+            /* Adjust this width to match the sidebar's width */
+            padding: 20px;
+        }
+
+        /* Basic styling for the footer */
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+        }
+    </style>
+    </head>
+
+    <body class="mt-5">
+        <div class="sidebar mt-5">
+            <h1>Welcome, [User Name]!</h1>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Orders</a></li>
+                <li><a href="#">Cart</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <header class="bg-dark text-white p-4">
+                <div class="container">
+                    <h1>User Dashboard - Your E-commerce Store</h1>
+                </div>
+            </header>
+
+            <section class="dashboard-content p-4">
+                <div class="container">
+                    <div class="row">
+                        <!-- Dashboard content goes here -->
+                        <div class="col-md-8">
+                            <!-- Main content -->
+                        </div>
+                        <div class="col-md-4">
+                            <!-- Sidebar or secondary content -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+         
+        </div>

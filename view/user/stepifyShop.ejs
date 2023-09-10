@@ -110,10 +110,11 @@
 
                                         <div class="prd-bottom">
 
-                                            <a href="" class="social-info">
-                                                <span class="ti-bag"></span>
-                                                <p class="hover-text">add to bag</p>
-                                            </a>
+                                            <a href="#" class="social-info" id="addToCart"
+                                            onclick="addtocart('<%- product._id %>')">
+                                            <span class="ti-bag"></span>
+                                            <p class="hover-text">add to bag</p>
+                                        </a>
                                             <a href="" class="social-info">
                                                 <span class="lnr lnr-heart"></span>
                                                 <p class="hover-text">Wishlist</p>
@@ -141,6 +142,7 @@
         </div>
 
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const selectedCategories = [];
         const selectedBrand = [];
@@ -188,6 +190,39 @@
             pages = 1;
             logData();
         }
+        function addtocart(proid) {
+							console.log("Product ID:", proid)
+							const url = "/add-to-cart"
+							const options = {
+								method: "post",
+								headers: {
+									"Content-Type": "application/json",
+								},
+								body: JSON.stringify({
+									proid
+								})
+							}
+
+							// Send the request and handle the response
+							fetch(url, options)
+								.then(response => response.json()) // Parse the response JSON
+								.then(data => {
+									console.log("Response in add to cart: ", data);
+
+									// Check the response and show SweetAlert accordingly
+									if (data === "Added..") {
+
+										Swal.fire('Item Added to the cart')
+									} else if (data === "Product is already in cart") {
+										Swal.fire('Product is already in cart')
+									} else {
+										Swal.fire('Something went wrong!! please try again')
+									}
+								})
+								.catch(error => {
+									console.error("Error in add to cart:", error);
+								});
+						}
 
         function updateSortValue() {
 

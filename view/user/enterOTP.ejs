@@ -23,6 +23,8 @@
               </div>
 
               <div class="col-md-12 form-group mt-5">
+                <div id="timer" style="font-size: 14px; color: #666; text-align: center; margin-top: 10px;">Time remaining: 2:00</div>
+
                 <button type="submit" value="submit" class="primary-btn">Verify OTP</button>
                 <a href="/otpsend">Resent OTP</a>
               </div>
@@ -32,5 +34,56 @@
       </div>
     </div>
   </section>
+  <script>
+    function removeMessage() {
+        const messageElement = document.getElementById('message');
+        if (messageElement) {
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+            }, 2000);
+        }
+    }
+
+    window.onload = function () {
+        removeMessage();
+
+        // Countdown timer
+        let timeLeft = 60; // 2 minutes (in seconds)
+
+        const timerElement = document.getElementById('timer');
+        const otpInput = document.getElementById('otp');
+        const submitButton = document.querySelector('button[type="submit"]');
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `Time remaining: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function disableInputAndSubmit() {
+            otpInput.disabled = true;
+            submitButton.disabled = true;
+        }
+
+        function enableInputAndSubmit() {
+            otpInput.disabled = false;
+            submitButton.disabled = false;
+        }
+
+        updateTimer();
+
+        const countdownInterval = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                updateTimer();
+            } else {
+                clearInterval(countdownInterval);
+                timerElement.textContent = 'Time expired';
+                disableInputAndSubmit();
+            }
+        }, 1000);
+    };
+</script>
+
 
 <%- include("./layouts/footer.ejs") %>

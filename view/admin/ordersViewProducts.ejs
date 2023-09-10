@@ -70,15 +70,14 @@
                         <div class="order_header">
                             <h4>Order ID: <%=data._id%>
                             </h4>
-                            <p>Expected Delivery: <span style="color: #ff0000;">
-                                    <%=data.expectedDeliveryDate.toISOString().split('T')[0]%>
-                                </span></p>
+
                         </div>
                         <hr class="horizontal_line">
                         <div class="product_details text-dark">
                             <div class="product_info">
                                 <div class="product_details">
                                     <% data.items.forEach(item=> { %>
+
                                         <div class="product_item">
                                             <img src="../../public/uploads/<%=item.image%>" alt="Product Image">
                                             <div class="product_info">
@@ -89,8 +88,19 @@
                                                 </p>
                                                 <p>Delivery Address: <%= data.deliveryAddress %>
                                                 </p>
-                                                <p>Status: <%= item.status %>
+                                                <p>Payment Method: <%= data.paymentMethod %>
                                                 </p>
+                                                <p style="color: #ff0000;">Status: <%= item.status %>
+                                                </p>
+                                                <%if(data.status==="Delivered"){%>
+                                                <p>Expected Delivery: <span style="color: #ff0000;">
+                                                        <%=data.expectedDeliveryDate.toISOString().split('T')[0]%>
+                                                    </span></p>
+                                                    <%}else{%>
+                                                        <p>Expected Delivery: <span style="color: #ff0000;">
+                                                        <%=data.expectedDeliveryDate.toISOString().split('T')[0]%>
+                                                    </span></p>
+                                                        <%}%>
                                                 <div class="progress-bar">
                                                     <%if(item.status==="confirmed"){%>
                                                         <div class="progress-status" style="width: 0%;"></div>
@@ -98,20 +108,25 @@
                                                             <div class="progress-status"
                                                                 style="width: 30%; background-color: #007bff;"></div>
 
-                                                            <%}else if(item.status==="Out of Delivery" ){%>
+                                                            <%}else if(item.status==="Out for Delivery" ){%>
                                                                 <div class="progress-status"
-                                                                    style="width: 80%; background-color: #c3f50c;">
+                                                                    style="width: 80%; background-color: #8d9e51;">
                                                                 </div>
 
                                                                 <%}else if(item.status==="Cancel" ){%>
                                                                     <div class="progress-status"
-                                                                        style="width: 100%; background-color: #f83802;">
+                                                                        style="width: 100%; background-color: #db7c62;">
                                                                     </div>
                                                                     <%}else if(item.status==="Delivered" ){%>
                                                                         <div class="progress-status"
-                                                                            style="width: 100%; background-color: #05d60f;">
+                                                                            style="width: 100%; background-color: #45e64d;">
                                                                         </div>
-                                                                        <%}%>
+                                                                        <%}else{%>
+                                                                            <div class="progress-status"
+                                                                            style="width: 100%; background-color: #eb2b2b;">
+                                                                        </div>
+
+                                                                            <%}%>
 
                                                 </div>
 
@@ -120,18 +135,42 @@
 
                                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;"
                                                     class="">
+                                                    <%if(item.status!="Shipped"){%>
                                                     <a id="toShipped"
                                                         href="/admin/shipped/<%=data._id%>/<%=item.ProductId%>"
                                                         class="genric-btn"
-                                                        style="padding: 6px 12px; font-size: 12px; background-color: #f2fa08; color: rgb(7, 7, 7); border: none; border-radius: 5px; cursor: pointer;"
+                                                        style="padding: 6px 12px; font-size: 12px; background-color: #e8ed51; color: rgb(7, 7, 7); border: none; border-radius: 5px; cursor: pointer;"
                                                         id="mark-shipped-button"
                                                         onclick="markShipped('<%= data._id %>')">Mark Shipped</a>
+                                                        <%} if(item.status!="Out for Delivery"){%>
+                                                    <a id="changestatus"
+                                                        href="/admin/out-of-delivery/<%=data._id%>/<%=item.ProductId%>"
+                                                        class="genric-btn"
+                                                        style="padding: 6px 12px; font-size: 12px; background-color: #61eeb6; color: rgb(8, 8, 8); border: none; border-radius: 5px; cursor: pointer;"
+                                                        id="mark-delivered-button"
+                                                        onclick="outfordelivery('<%= data._id %>')">Out for Delivery</a>
+                                                        <%}if(item.status!="Delivered"){%>
                                                     <a id="changestatus"
                                                         href="/admin/delivered/<%=data._id%>/<%=item.ProductId%>"
                                                         class="genric-btn"
-                                                        style="padding: 6px 12px; font-size: 12px; background-color: #07f90c; color: rgb(8, 8, 8); border: none; border-radius: 5px; cursor: pointer;"
+                                                        style="padding: 6px 12px; font-size: 12px; background-color: #5df55f; color: rgb(8, 8, 8); border: none; border-radius: 5px; cursor: pointer;"
                                                         id="mark-delivered-button"
                                                         onclick="markDelivered('<%= data._id %>')">Mark Delivered</a>
+                                                        <%} if(item.status!="Cancel"){%>
+                                                    <a id="changestatus"
+                                                        href="/admin/cancel-order/<%=data._id%>/<%=item.ProductId%>"
+                                                        class="genric-btn"
+                                                        style="padding: 6px 12px; font-size: 12px; background-color: #e17945; color: rgb(8, 8, 8); border: none; border-radius: 5px; cursor: pointer;"
+                                                        id="mark-delivered-button"
+                                                        onclick="cancelOrder('<%= data._id %>')">Cancel Accepted</a>
+                                                        <%}if(item.status!="Return"){%>
+                                                    <a id="changestatus"
+                                                        href="/admin/return-order/<%=data._id%>/<%=item.ProductId%>"
+                                                        class="genric-btn"
+                                                        style="padding: 6px 12px; font-size: 12px; background-color: #00ff99; color: rgb(8, 8, 8); border: none; border-radius: 5px; cursor: pointer;"
+                                                        id="mark-delivered-button"
+                                                        onclick="returnOrder('<%= data._id %>')">Return Accepted</a>
+                                                        <%}%>
                                                 </div>
                                             </div>
                                         </div>

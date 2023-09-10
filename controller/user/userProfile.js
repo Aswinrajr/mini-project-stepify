@@ -1,6 +1,7 @@
 const User = require("../../model/user/userModel")
 const couponSchema = require("../../model/couponModel")
 const bcrypt = require("bcrypt")
+const mongoose = require('mongoose');
 const alert = require("alert")
 const product = require("../../model/admin/productModel")
 const Order = require("../../model/orderModel")
@@ -10,9 +11,6 @@ const productModel = require("../../model/admin/productModel")
 const categoryModel = require("../../model/admin/categoryModel")
 const order = require("../../model/orderModel")
 const easyinvoice = require("easyinvoice")
-
-// const PDFDocument = require('pdfkit');
-// const fs = require('fs');
 
 
 
@@ -192,6 +190,18 @@ const getCount = async (req, res) => {
     }
 }
 
+//User Dahboard
+const getUserDashboard = async (req, res) => {
+    try {
+        console.log("Welcome to user dashboard")
+        const userData = await User.findOne({ email: req.session.user_id })
+        res.render('userDashboard')
+
+    } catch (err) {
+        console.log("Error in Rendering the userdashboard", err)
+    }
+
+}
 
 
 //Delete Adress
@@ -412,6 +422,50 @@ const addToCart = async (req, res) => {
 
     }
 }
+//Adding to cart from home page
+const addingToCart = async (req, res) => {
+    try {
+        console.log("Welcome to add to cart from the home page");
+        const userData = await User.findOne({ email: req.session.user_id });
+        const proid = req.body.proid;
+        console.log("Proid: ", proid);
+
+        let existProduct = userData.cart.find((element) => {
+            console.log(`Checking the product id: ${element.productId} === ${proid}`);
+            console.log("type of element.productId: ", typeof element.productId.toString());
+            console.log("type of proid: ", typeof proid);
+
+            // Convert proid to ObjectId and then compare
+            return element.productId.toString() === proid
+        });
+        console.log("extinct product: ", existProduct);
+
+        if (existProduct) {
+            console.log("Item exist in cart");
+            res.json("Product is already in cart");
+        } else {
+            const proData = await product.findById(proid);
+
+            console.log("Product data in add to cart :  ", proData);
+            const cartProduct = {
+                productId: proData._id,
+                totalPrice: proData.price,
+                image: proData.image[0],
+            };
+            console.log("---------------------------------------------------------------------------");
+
+            console.log("CartProduct in add to cart : ", cartProduct);
+
+            console.log("---------------------------------------------------------------------------");
+            const userData = await User.updateOne({ email: req.session.user_id }, { $push: { cart: cartProduct } });
+            console.log("Item added to cart");
+            res.status(200).json('Added..');
+        }
+    } catch (err) {
+        console.log("Error in adding cart from the home page: ", err);
+    }
+};
+
 
 //LOARD ADD TO CART
 const loadAddtoCart = async (req, res) => {
@@ -729,7 +783,7 @@ const validateCoupon = async (req, res) => {
             console.log("validUntilDate: ", validUntilDate)
             console.log("validFromDate: ", validFromDate)
 
-            if (validFromDate <= isoCurrentDate) {
+            if (validFromDate <= isoCurrentDate && validUntilDate >= isoCurrentDate) {
                 console.log("Date validation success inside if");
 
                 const userData = await User.findOne({
@@ -750,7 +804,7 @@ const validateCoupon = async (req, res) => {
                 }
             } else {
                 console.log("Coupon is Expired")
-                return res.json({ err: "Coupon is Expired" });
+                return res.json({ err: "Coupon is Expired", amount: 0 });
             }
         } else {
             console.log("Coupon not found.")
@@ -912,10 +966,10 @@ const verifyOrder = async (req, res) => {
         const userData = await User.findOne({ email: req.session.user_id });
         if (userData) {
 
-            const { addressId, paymentMethod, usedCouponCode,amounttopay } = req.body;
+            const { addressId, paymentMethod, amounttopay, usedCouponCode } = req.body;
 
-            console.log("addressId: ",addressId,"paymentMethod: ",paymentMethod,"usedCouponCode: ",usedCouponCode,"amounttopay: ",amounttopay)
-            
+            console.log("addressId: ", addressId, "paymentMethod: ", paymentMethod, "usedCouponCode: ", usedCouponCode, "amounttopay: ", amounttopay)
+
 
             const address = userData.address.items.find(item => item._id == addressId)
             const userCart = userData.cart;
@@ -928,11 +982,11 @@ const verifyOrder = async (req, res) => {
             const newCoupon = await couponSchema.findOne({ couponCode: usedCouponCode })
             console.log("Inside verify order: ", newCoupon)
             console.log("User Coupons", usedCouponCode)
-            let couponAmount ;
-            if(newCoupon){
+            let couponAmount;
+            if (newCoupon) {
 
-                 couponAmount = newCoupon.amount
-            }else{
+                couponAmount = newCoupon.amount
+            } else {
                 couponAmount = 0
 
             }
@@ -943,7 +997,7 @@ const verifyOrder = async (req, res) => {
                 items.push({
                     ProductId: item.productId,
                     quantity: item.quantity,
-                    price: (item.totalPrice * item.quantity)-couponAmount,
+                    price: (item.totalPrice * item.quantity) - couponAmount,
                     image: item.image
                 })
             }
@@ -1019,7 +1073,7 @@ const showOrder = async (req, res) => {
             const productIds = orderData.flatMap(order => order.items.map(item => item.ProductId));
             const products = await productModel.find({ _id: { $in: productIds } });
             console.log("----------------------------------------------------------")
-            console.log("orderData: ",orderData,"productIds: ",productIds,"products: ",products)
+            console.log("orderData: ", orderData, "productIds: ", productIds, "products: ", products)
 
             console.log("----------------------------------------------------------")
 
@@ -1086,7 +1140,7 @@ const cancelOrder = async (req, res) => {
             const { orderId, productId } = req.params;
             console.log("orderId: ", orderId, "productId: ", productId)
 
-            const ocancel = await Order.findOneAndUpdate({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.status": "Cancel" } })
+            const ocancel = await Order.findOneAndUpdate({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.status": "Requested for Cancel" } })
             console.log("ocancel", ocancel)
             res.redirect("/order")
 
@@ -1108,7 +1162,7 @@ const returnOrder = async (req, res) => {
             console.log("Welcome to return order")
             const { orderId, productId } = req.params;
             console.log("orderId: ", orderId, "productId: ", productId)
-            await Order.updateOne({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.status": "Return" } })
+            await Order.updateOne({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.status": "Requested for Return" } })
             res.redirect("/order")
 
         } else {
@@ -1133,22 +1187,27 @@ const OrderRazorpay = async (req, res) => {
 
         // Extract payment data from the request body
         const transferData = req.body;
-        console.log("trasferData: ",transferData);
+        console.log("trasferData: ", transferData);
         const paymentData = transferData.paymentData
-        const coupon = transferData.onlineCouponUsed.code
-        console.log("Coupon used in online payment: ",coupon)
-        const couponData  = await couponSchema.findOne({couponCode:coupon})
-        console.log("Coupondata in deduction: ",couponData)
-        let amountDeducted=0;
-        if(couponData){
-            amountDeducted = couponData.amount
-        }else{
-            amountDeducted=0
+        let coupon
+        if (transferData.onlineCouponUsed) {
+            coupon = transferData.onlineCouponUsed.code
 
         }
-        console.log("Amount to dedict is : ",amountDeducted)
 
-        
+        console.log("Coupon used in online payment: ", coupon)
+        const couponData = await couponSchema.findOne({ couponCode: coupon })
+        console.log("Coupondata in deduction: ", couponData)
+        let amountDeducted = 0;
+        if (couponData) {
+            amountDeducted = couponData.amount
+        } else {
+            amountDeducted = 0
+
+        }
+        console.log("Amount to dedict is : ", amountDeducted)
+
+
         if (!paymentData) {
             console.log("No payment data provided");
             return res.status(400).send("No payment data provided");
@@ -1161,7 +1220,7 @@ const OrderRazorpay = async (req, res) => {
         console.log("Address Id: ", addressId);
 
         const deliveryAddress = `${addressId.firstName} ${addressId.lastName},\n ${addressId.altMobile},\n ${addressId.HouseName},\n ${addressId.addressLine},\n${addressId.city}, ${addressId.state},\n${addressId.nearestLandMark},\n${addressId.pincode}`;
-        console.log("deliveryAddress: ",deliveryAddress)
+        console.log("deliveryAddress: ", deliveryAddress)
 
         // Extract the user's cart
         const cart = userData.cart;
@@ -1180,7 +1239,7 @@ const OrderRazorpay = async (req, res) => {
         const items = cart.map(item => ({
             ProductId: item.productId,
             quantity: item.quantity,
-            price:( item.totalPrice * item.quantity)-amountDeducted,
+            price: (item.totalPrice * item.quantity),
             image: item.image,
         }));
         console.log("Items: ", items);
@@ -1191,7 +1250,8 @@ const OrderRazorpay = async (req, res) => {
             userMobile: addressId.altMobile,
             deliveryAddress: deliveryAddress,
             items,
-            usedCouponCode:coupon,
+            usedCouponCode: coupon,
+            totalAmount: paymentData.amount,
             paymentMethod: paymentData.paymentmode,
             expectedDeliveryDate: expectedDeliveryDate.toISOString().split('T')[0],
         });
@@ -1235,18 +1295,19 @@ const OrderRazorpay = async (req, res) => {
 //---------------------------------invoice....................................
 
 const generateInvoice = async (order, productDetails, subTotal, address, orderCanceled, orderStatus) => {
+    console.log("order: ", order, "productDetails :", productDetails, "subTotal: ", subTotal, "address: ", subTotal, "orderCanceled: ", orderCanceled, "orderStatus: ", orderStatus)
     try {
         const invoiceOptions = {
             documentTitle: 'Invoice',
             currency: 'INR',
             taxNotation: 'GST',
-            // marginTop: 25,
-            // marginRight: 25,
-            // marginLeft: 25,
-            // marginBottom: 25,
-            images: {
-                logo: '', 
-            },
+            marginTop: 25,
+            marginRight: 25,
+            marginLeft: 25,
+            marginBottom: 25,
+            // images: {
+            //     logo: '',
+            // },
             sender: {
                 company: 'Stepify',
                 address: '5th Avenue Kozhikode',
@@ -1256,23 +1317,18 @@ const generateInvoice = async (order, productDetails, subTotal, address, orderCa
                 phone: '7589641475',
             },
             client: {
-                company:"Delivery Adress",
+                company: "Delivery Adress",
                 address: order.deliveryAddress,
-         
             },
             information: {
-                Number: "hello",
-                Date: order.createdAt.toLocaleDateString(), // Order date
-                'Delivery-Date': order.expectedDeliveryDate.toLocaleDateString(), // Expected delivery date
+                "Number": order._id,
+                "Date": order.createdAt.toLocaleDateString(),
+                'due-Date': order.expectedDeliveryDate.toLocaleDateString(),
             },
-            contents:{
-                order_id:order._id,
-                Date_of_order:order.createdAt.toLocaleDateString(),
-                'Delivery-Date': order.expectedDeliveryDate.toLocaleDateString(),
 
-            },
             products: [],
-            bottomNotice: `Order ${orderStatus}: ${orderCanceled ? 'Canceled' : 'Confirmed'}`,
+            // bottomNotice: `Order ${orderStatus}: ${orderCanceled ? 'Canceled' : 'Confirmed'}`,
+            'bottom-notice': 'Kindly pay your invoice within 15 days.',
             subtotal: subTotal,
             total: subTotal,
         };
@@ -1281,8 +1337,7 @@ const generateInvoice = async (order, productDetails, subTotal, address, orderCa
         productDetails.forEach((data) => {
             invoiceOptions.products.push({
                 quantity: data.quantity,
-                description: `${data.brand} - ${data.categoryId}`, 
-            
+                description: `${data.brand} - ${data.categoryId}`,
                 price: data.price,
             });
         });
@@ -1300,6 +1355,7 @@ const generateInvoice = async (order, productDetails, subTotal, address, orderCa
 
 
 
+
 const pdf = async (req, res) => {
     try {
         const orderId = req.query.id;
@@ -1313,11 +1369,11 @@ const pdf = async (req, res) => {
             const productInfo = await productModel.findOne({ _id: orderProduct.ProductId });
 
             return {
-                categoryId: productInfo.categoryName[0], 
-                brand:productInfo.brand,
-                quantity: orderProduct.quantity, 
-                price: orderProduct.price,
-               
+                categoryId: productInfo.categoryName[0],
+                brand: productInfo.brand,
+                quantity: orderProduct.quantity,
+                price: productInfo.price,
+
             };
         }));
 
@@ -1349,16 +1405,17 @@ const pdf = async (req, res) => {
 };
 
 //Wallet
-const getWallet = async(req,res)=>{
-    try{
-        if(req.session.user_id){
-            res.render("userWallet")
-        }else{
+const getWallet = async (req, res) => {
+    try {
+        if (req.session.user_id) {
+            const userData = await User.findOne({ email: req.session.user_id })
+            res.render("userWallet", { msg: "", amount: userData.wallet })
+        } else {
             res.redirect("/")
         }
 
-    }catch(err){
-        console.log("Error in rendering the wallet",err)
+    } catch (err) {
+        console.log("Error in rendering the wallet", err)
     }
 }
 
@@ -1369,14 +1426,45 @@ const pagenotfound = (req, res) => {
     res.render("pageNotFound")
 }
 
+const depositWallet = async (req, res) => {
+    try {
+        const userData = await User.findOne({ email: req.session.user_id })
+        let walletAmount = userData.wallet
+        console.log("User data in Deposit Wallet: ", walletAmount)
+        const amount = req.body.depositAmount
+        if (amount <= 500 && amount >= 100) {
+            console.log("Amount to be deposited : ", amount)
+            walletAmount = parseInt(walletAmount) + parseInt(amount)
+            console.log("Wallet balence after adding the amount is: ", walletAmount)
+            userData.wallet = walletAmount
+            await userData.save()
+            console.log("Wallet updated successfully", userData)
+            res.redirect("/user-wallet")
+        } else {
+            res.render("userWallet", { msg: "Deposit amount between 100 to 500 only", amount: walletAmount })
+        }
+
+
+
+    } catch (err) {
+        console.log("Error in depositing money to the wallet: ", err)
+    }
+}
+
 
 module.exports = {
+
+    getUserDashboard,
+
     getProfile,
     deleteAdress,
     saveAdressData,
     changePassword,
     verifyPassword,
     addToCart,
+
+    addingToCart,
+
     loadAddtoCart,
     updateQuantity,
     cartProductDelete,
@@ -1408,7 +1496,8 @@ module.exports = {
     verifyOrderConform,
     pdf,
 
-    getWallet
+    getWallet,
+    depositWallet
 
 
 

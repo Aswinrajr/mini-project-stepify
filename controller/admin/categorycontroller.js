@@ -26,15 +26,30 @@ const loadAddCategoryPage = (req,res)=>{
 const AddCategoryPage = async(req,res)=>{
     try{
         const {categoryName,brand} = req.body
-        const existCategory = await Category.findOne({categoryName,brand})
+        const formattedCategoryName = capitalizeFirstLetter(categoryName);
+        const formattedBrand = capitalizeFirstLetter(brand);
+
+
+         const existCategory = await Category.findOne({
+            $or: [
+                {
+                    categoryName: {
+                        $regex: new RegExp('^' + formattedCategoryName + '$', 'i')
+                    },
+                    brand: {
+                        $regex: new RegExp('^' + formattedBrand + '$', 'i')
+                    }
+                }
+            ]
+        });
         if(existCategory){
             console.log("The category is alredy exist")
             alert("Category Alredy Exist Please Add New Category")
             res.redirect("/admin/category/add_category")
         }else{
             const newCategory = new Category({
-                categoryName:req.body.categoryName,
-                brand:req.body.brand
+                categoryName:formattedCategoryName,
+                brand:formattedBrand
             })
             const newCategoryData = await newCategory.save()
             console.log("newCategory",newCategoryData)
@@ -52,6 +67,12 @@ const AddCategoryPage = async(req,res)=>{
         console.log("Error in adding category",err)
     }
 }
+
+function capitalizeFirstLetter(inputString) {
+    return inputString.charAt(0).toUpperCase() + inputString.slice(1).toLowerCase();
+}
+
+
 
 const editCategoryPage = async(req,res)=>{
     try{

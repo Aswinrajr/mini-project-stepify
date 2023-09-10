@@ -1,0 +1,187 @@
+<%- include("./layouts/header.ejs") %>
+    <style>
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .cart_empty_message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            animation: bounce 1s infinite;
+        }
+    </style>
+
+    <div class="flex h-screen bg-gray-50 dark:bg-gray-900" :class="{ 'overflow-hidden': isSideMenuOpen }">
+
+
+        <div class="flex flex-col flex-1 w-full">
+
+            <main class="h-full overflow-y-auto">
+                <div class="container px-6 mx-auto grid">
+                    <h6 class="my-6 text-xl font-semibold text-gray-700 dark:text-gray-200">
+                        User Name: <%=name%>
+                    </h6>
+
+                    <!-- Cards -->
+                    <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
+                        <!-- Card -->
+                        <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                            <div
+                                class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                    Total No. of Orders
+                                </p>
+                                <%if(orderData.length>0){%>
+                                    <p>
+                                        <%=orderData.length%>
+                                    </p>
+                                    <%}else{%>
+                                        <p>0</p>
+                                        <%}%>
+                            </div>
+                        </div>
+                        <!-- Card -->
+                        <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                            <div
+                                class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="9" fill="#4CAF50" />
+                                    <path fill="#FFF"
+                                        d="M14.64 5.64a.996.996 0 00-1.41 0L9 10.59 6.47 8.05a.999.999 0 10-1.41 1.41l3.18 3.18a.996.996 0 001.41 0l7-7a.999.999 0 000-1.41z" />
+                                </svg>
+                            </div>
+
+                            <div>
+                                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                    Order Delivered
+                                </p>
+                                <p>
+                                    <%=deliveredData%>
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Card -->
+                        <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                            <div
+                                class="p-3 mr-4 text-red-500 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-500">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="9" fill="#FF5733" />
+                                    <path fill="#FFF"
+                                        d="M14.64 5.64a.996.996 0 00-1.41 0L9 10.59 6.47 8.05a.999.999 0 10-1.41 1.41l3.18 3.18a.996.996 0 001.41 0l7-7a.999.999 0 000-1.41z" />
+                                </svg>
+                            </div>
+
+                            <div>
+                                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                    Order Canecelled
+                                </p>
+                                <p>
+                                    <%=canceledData%>
+                                </p>
+
+                            </div>
+                        </div>
+                        <!-- Card -->
+                        <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                            <div
+                                class="p-3 mr-4 text-yellow-500 bg-yellow-100 rounded-full dark:text-yellow-100 dark:bg-yellow-500">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="9" fill="#FFC107" />
+                                    <path fill="#FFF"
+                                        d="M9.6 5.6a.996.996 0 00-1.41 0L5 9.59V7a1 1 0 00-2 0v6a1 1 0 001 1h6a1 1 0 000-2H7.41l4.19-4.19a.999.999 0 000-1.41z" />
+                                </svg>
+                            </div>
+
+                            <div>
+                                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                                    Order Returned
+                                </p>
+                                <p>
+                                    <%=returnedData%>
+                                </p>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- New Table -->
+                    <%if(orderData.length>0){%>
+                        <div class="w-full overflow-hidden rounded-lg shadow-xs">
+                            <div class="w-full overflow-x-auto">
+                                <table class="w-full whitespace-no-wrap">
+                                    <thead>
+                                        <tr
+                                            class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                                            <th class="px-4 py-3">Product</th>
+                                            <th class="px-4 py-3">Amount</th>
+                                            <th class="px-4 py-3">Status</th>
+                                            <th class="px-4 py-3">Orderd Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                                        <%for(let order of orderData){%>
+                                            <%for(item of order.items){ %>
+
+                                            <tr class="text-gray-700 dark:text-gray-400">
+                                                <td class="px-4 py-3">
+                                                    <div class="flex items-center text-sm">
+                                                        <div>
+                                                            <img src="../../public/uploads/<%=item.image%>"
+                                                             alt="Product Image" style="width: 80px;height: 80px;"> 
+                                                        
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                <%=item.price%>
+                                                </td>
+                                                <td class="px-4 py-3 text-xs">
+                                                    <span
+                                                        class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
+                                                       <%=item.status%>
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">
+                                                  <%=order.createdAt.toISOString().split('T')[0] %>
+                                                </td>
+                                            </tr>
+                                            <%}%>
+                                            <%}%>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                        <%}else{%>
+                            <div class="cart_empty_message mt-5">
+                                <h4>No such Orders</h4>
+
+                            </div>
+                            <%}%>
+
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <%- include("./layouts/footer.ejs") %>

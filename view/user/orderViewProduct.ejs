@@ -1,7 +1,6 @@
 <%- include("./layouts/userheader.ejs") %>
 
     <style>
-       
         .order_box {
             border: 1px solid #ccc;
             padding: 20px;
@@ -57,7 +56,7 @@
             position: absolute;
             height: 100%;
             border-radius: 10px;
-           
+
             transition: width 0.3s ease-in-out;
         }
     </style>
@@ -66,19 +65,26 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="order_box mt-5">
-                        <div class="order_header">
-                            <h4>Order ID: <%=data._id%>
-                            </h4>
-                            <p>Expected Delivery: <span style="color: #ff0000;">
-                                    <%=deliveryDate%>
-                                </span></p>
-                        </div>
-                        <hr class="horizontal_line">
-                        <div class="product_details text-dark">
-                            <div class="product_info">
-                                <div class="product_details">
-                                    <% data.items.forEach(item=> { %>
+                    <% data.items.forEach(item=> { %>
+                        <div class="order_box mt-5">
+                            <div class="order_header">
+                                <h4>Order ID: <%=data._id%>
+                                </h4>
+                                <%if(item.status!="Delivered"){%>
+                                    <p>Expected Delivery: <span style="color: #ff0000;">
+                                            <%=deliveryDate%>
+                                        </span></p>
+                                    <%}else{%>
+                                        <p>Delivered Date: <span style="color: #ff0000;">
+                                                <%=data.expectedDeliveryDate.toISOString().split('T')[0]%>
+                                            </span></p>
+
+                                        <%}%>
+                            </div>
+                            <hr class="horizontal_line">
+                            <div class="product_details text-dark">
+                                <div class="product_info">
+                                    <div class="product_details">
                                         <div class="product_item">
                                             <img src="../../public/uploads/<%=item.image%>" alt="Product Image">
                                             <div class="product_info">
@@ -95,15 +101,22 @@
                                                     <%if(item.status==="confirmed"){%>
                                                         <div class="progress-status" style="width: 0%;"></div>
                                                         <%}else if(item.status==="Shipped" ){%>
-                                                            <div class="progress-status" style="width: 30%; background-color: #007bff;"></div>
+                                                            <div class="progress-status"
+                                                                style="width: 30%; background-color: #007bff;"></div>
 
-                                                            <%}else if(item.status==="Out of Delivery" ){%>
-                                                                <div class="progress-status" style="width: 80%; background-color: #c3f50c;"></div>
+                                                            <%}else if(item.status==="Out for Delivery" ){%>
+                                                                <div class="progress-status"
+                                                                    style="width: 80%; background-color: #c3f50c;">
+                                                                </div>
 
                                                                 <%}else if(item.status==="Cancel" ){%>
-                                                                    <div class="progress-status" style="width: 100%; background-color: #f83802;"></div>
-                                                                    <%}else if(item.status==="Delivered"){%>
-                                                                        <div class="progress-status" style="width: 100%; background-color: #05d60f;"></div> 
+                                                                    <div class="progress-status"
+                                                                        style="width: 100%; background-color: #f83802;">
+                                                                    </div>
+                                                                    <%}else if(item.status==="Delivered" ){%>
+                                                                        <div class="progress-status"
+                                                                            style="width: 100%; background-color: #05d60f;">
+                                                                        </div>
                                                                         <%}%>
 
                                                 </div>
@@ -122,26 +135,29 @@
                                                             Order</a>
 
                                                         <%}else{%>
-                                                            <a href="#" class="genric-btn disable radius mt-2">Disable</a>
+                                                            <a href="#"
+                                                                class="genric-btn disable radius mt-2">Disable</a>
 
                                                             <%}%>
-                                                            <a href="/invoice?id=<%= data._id %> "><span class="genric-btn info small mt-2 text-dark">Download Invoice</span></a>
+                                                                <a href="/invoice?id=<%= data._id %> "><span
+                                                                        class="genric-btn info small mt-2 text-dark">Download
+                                                                        Invoice</span></a>
                                             </div>
-                                         
+
                                         </div>
-                                        
+
                                         <hr class="horizontal_line">
                                         <% }); %>
 
-                                </div>
+                                    </div>
 
+                                </div>
                             </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>
     </section>
-
+    <script src="https://unpkg.com/easyinvoice/dist/easyinvoice.min.js"></script>
 
     <%- include("./layouts/footer.ejs") %>

@@ -53,11 +53,9 @@
                                             <% userAdress.items.forEach((element)=>{ %>
                                                 <div id="<%= element._id%>" class="address-details-container"
                                                     style="background-color: #f0f0f0; border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; color: black;">
-                                                    <!-- <input type="radio" id="f-option6" name="selector"> -->
-                                                    <!-- <input type="radio" onclick="transfer()" id="address<%= element._id %>"
-                                            name="selector" value="<%= element._id %>"> -->
+
                                                     <div class="address" onclick='TrasferAdress("<%= element._id%>")'>
-                                                        <input type="hidden" id="selectedAddressId"
+                                                        <input type="radio" id="selectedAddressId"
                                                             name="selectedAddressId" value="">
 
                                                         <div>
@@ -189,8 +187,8 @@
                                                                             <%=data[i].totalPrice%>
                                                                         </span><span> x
                                                                             <%=data[i].productQuantity%> =
-                                                                        </span> <span class="last">₹
-                                                                            <%=data[i].productPrice%>
+                                                                        </span> <span class="last">
+                                                                            <%= data[i].productPrice%>
                                                                         </span>
                                                                 </a></li>
 
@@ -236,7 +234,6 @@
                                                                                     id="f-option5" name="selector"
                                                                                     onclick='selected("COD")'>
                                                                                 <label for="f-option5">Cash on delivery</label>
-                                                                                    
                                                                                 <div class="check"></div>
                                                                             </div>
 
@@ -285,7 +282,7 @@
                 <form action="/verify-order" method="post">
                     <input type="text" name="addressId" id="addressId" class="d-none">
                     <input type="text" name="paymentMethod" id="paymentMethod" class="d-none">
-                    <input type="text" name="amounttopay" id="amount-to-pay" class="d-none">
+                    <input type="number" name="amounttopay" id="amount-to-pay" class="d-none">
                     <input type="text" name="usedCouponCode" id="used-coupon-code" class="d-none">
                     <h4>Confirm your order</h4>
                     <div>
@@ -296,6 +293,7 @@
                         <p id="used-coupon" class="text-success"></p>
                         <h6>Amount to be paid</h6>
                         <p class="text-danger" id="amount-to-pay"></p>
+
                     </div>
                     <button class="genric-btn primary small" id="confirm-btn">confirm</button>
                 </form>
@@ -305,6 +303,7 @@
 
 
         <!--================End Checkout Area =================-->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             let onlineCouponUsed;
 
@@ -322,8 +321,8 @@
 
             function triggerRazorpayPayment() {
                 const amounttopay = document.getElementById("total");
-                const amount = parseFloat(amounttopay.textContent) * 100; 
-                console.log("Amount To pay: ",amount)
+                const amount = parseFloat(amounttopay.textContent) * 100;
+                console.log("Amount To pay: ", amount)
 
                 const selectedAddressId = document.getElementById("selectedAddressId").value;
                 console.log("selectedAddressId: ", selectedAddressId)
@@ -364,33 +363,7 @@
                 rzp1.open();
             }
 
-            // async function verifyPayment(paymentData) {
-            //     console.log("got the payment data", paymentData)
-            //     const url = "/online-payment"
 
-            //     const options = {
-            //         method: "post",
-            //         headers: {
-            //             "Content-Type": "application/json"
-            //         },
-            //         body: JSON.stringify(paymentData)
-            //     };
-
-            //     try {
-            //         const response = await fetch(url, options);
-            //         console.log("Responce in fetch:", response)
-            //         if (response.ok) {
-            //             // Payment successfully verified on your server
-            //             const reply = await response.json()
-            //             console.log("Payment verified:", reply);
-            //         } else {
-            //             // Payment verification failed on your server
-            //             console.log("Payment verification failed");
-            //         }
-            //     } catch (error) {
-            //         console.error("Error verifying payment:", error);
-            //     }
-            // }
 
 
             async function verifyPayment(paymentData) {
@@ -484,15 +457,19 @@
                 const dispalyCoupon = document.getElementById("couponDialog")
                 dispalyCoupon.style.display = 'block';
             }
-            async function showCoupon() {
-                const displayCoupon = document.getElementById("couponDialog");
-                displayCoupon.style.display = 'block';
-            }
+            // async function showCoupon() {
+            //     const displayCoupon = document.getElementById("couponDialog");
+            //     displayCoupon.style.display = 'block';
+            // }
 
             //apply coupon
             async function applyCoupon() {
-                const couponCode = document.getElementById("couponName").value;
+                let couponCode = "false"
+                couponCode = document.getElementById("couponName").value;
+                console.log("couponCode: ", couponCode.length)
+
                 event.preventDefault();
+
                 const url = `/validate-coupon`;
 
                 const options = {
@@ -508,11 +485,21 @@
                     const response = await fetch(url, options);
                     const data = await response.json();
                     console.log("Data: ", data.amount)
+                    console.log("response: ", response)
+
+                    if (!couponCode) {
+                        Swal.fire('No coupon Applied')
+
+                    }
+
+                    else if (!data.amount) {
+                        Swal.fire('Coupon alredy used')
+                    }
 
 
                     if (data.amount) {
                         onlineCouponUsed = data
-                        console.log("onlineCouponUsed: ",onlineCouponUsed)
+                        console.log("onlineCouponUsed: ", onlineCouponUsed)
                         // If coupon is used
                         const couponAmountElement = document.getElementById("coupon-amount");
                         couponAmountElement.textContent = `₹ ${data.amount}`;
@@ -529,7 +516,16 @@
                         // Store the used coupon code in a hidden input
                         const usedCouponInput = document.getElementById("used-coupon-code");
                         usedCouponInput.value = couponCode;
-                    } else {
+                        if (onlineCouponUsed.message === "Coupon validated successfully.") {
+                            Swal.fire('Coupon applied successfully')
+                        }
+
+                    } else if (data.amount === 0) {
+                        Swal.fire('Coupon Expired')
+
+                    }
+
+                    else {
                         // If coupon is not used
                         const couponAmountElement = document.getElementById("coupon-amount");
                         couponAmountElement.textContent = `₹ 0`;
@@ -540,6 +536,7 @@
                         // Disable the confirm order button since coupon is not used
                         const confirmButton = document.getElementById("confirm-btn");
                         confirmButton.disabled = true;
+
                     }
                 } catch (error) {
                     console.error("Error applying coupon:", error);

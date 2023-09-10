@@ -53,6 +53,9 @@
                             <button type="submit"
                                 class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">Verify OTP</button>  
                         </form>
+                        <div id="timer" style="font-size: 14px; color: #666; text-align: center; margin-top: 10px;">Time remaining: 1:00</div>
+
+
 
                         <hr class="my-8" />
     
@@ -76,5 +79,56 @@
 
     window.onload = removeMessage;
 </script>
+<script>
+    function removeMessage() {
+        const messageElement = document.getElementById('message');
+        if (messageElement) {
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+            }, 2000);
+        }
+    }
+
+    window.onload = function () {
+        removeMessage();
+
+        // Countdown timer
+        let timeLeft = 60; // 2 minutes (in seconds)
+
+        const timerElement = document.getElementById('timer');
+        const otpInput = document.getElementById('otp');
+        const submitButton = document.querySelector('button[type="submit"]');
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `Time remaining: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function disableInputAndSubmit() {
+            otpInput.disabled = true;
+            submitButton.disabled = true;
+        }
+
+        function enableInputAndSubmit() {
+            otpInput.disabled = false;
+            submitButton.disabled = false;
+        }
+
+        updateTimer();
+
+        const countdownInterval = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                updateTimer();
+            } else {
+                clearInterval(countdownInterval);
+                timerElement.textContent = 'OTP expired';
+                disableInputAndSubmit();
+            }
+        }, 1000);
+    };
+</script>
+
 
 </html>

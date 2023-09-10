@@ -39,9 +39,9 @@ const orderData = mongoose.Schema({
             default:"confirmed"
             
         },
-        cancel: {
-            type: Boolean,
-            default: false
+        deliveryDate: {
+            type: Date,
+            
         }
     }],
     paymentMethod:{
@@ -50,8 +50,13 @@ const orderData = mongoose.Schema({
     },
     usedCouponCode:{
         type:String,
-        
-
+    },
+    totalAmount:{
+        type:String,
+    },
+    refund:{
+        type:Boolean,
+        default:false
     },
     createdAt: {
         type: Date,

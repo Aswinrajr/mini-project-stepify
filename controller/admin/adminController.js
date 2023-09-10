@@ -1,13 +1,22 @@
 const Admin = require("../../model/admin/adminModel")
 const User = require("../../model/user/userModel")
+const Order = require("../../model/orderModel")
 const bcrypt = require("bcrypt");
 const alert = require("alert")
 const { CompositionHookListInstance } = require("twilio/lib/rest/video/v1/compositionHook")
-const { ConversationListInstance } = require("twilio/lib/rest/conversations/v1/conversation")
+const { ConversationListInstance } = require("twilio/lib/rest/conversations/v1/conversation");
+const productModel = require("../../model/admin/productModel");
 const SID = process.env.Account_SID
 const TOKEN = process.env.Auth_Token
 const twilio = require("twilio")(SID, TOKEN)
 console.log(SID, TOKEN)
+
+const Chart = require('chart.js');
+const axios = require('axios');
+const moment = require('moment');
+const easyinvoice = require("easyinvoice")
+const jsPDF = require('jspdf');
+
 
 
 // PASSWORD BYCRYPT
@@ -254,7 +263,24 @@ const loadDashboardPage = async (req, res) => {
         if (adminData) {
 
             console.log("welcome to dashboard")
-            res.render("adminDashboard", { adminData })
+            const orders = await Order.find()
+            const orderCount = await Order.find().count()
+            const userCount = await User.find().count()
+            const productCount = await productModel.find({ isAvailable: true }).count()
+            let totalPrice = 0
+
+            for (const order of orders) {
+                for (const item of order.items) {
+                    totalPrice += item.price;
+                }
+            }
+
+            console.log("No.of order Data: ", orderCount)
+            console.log("No.of User Data: ", userCount)
+            console.log("No.of Product Data: ", productCount)
+            console.log("Total sales: ", totalPrice)
+
+            res.render("adminDashboard", { adminData, orderCount, userCount, productCount, totalPrice })
 
         } else {
             console.log("Admin Verification Failed")
@@ -264,6 +290,139 @@ const loadDashboardPage = async (req, res) => {
         console.log("Error in loading Dashboard", err)
     }
 }
+
+const getChartData = async (req, res) => {
+    try {
+        const { dateRange, status } = req.query;
+        console.log("Welcome to chart: ", dateRange, status)
+
+        let startDate, endDate;
+
+        switch (dateRange) {
+            case 'daily':
+                startDate = moment().startOf('day');
+                endDate = moment().endOf('day');
+                break;
+            case 'weekly':
+                startDate = moment().startOf('week');
+                endDate = moment().endOf('week');
+                break;
+            case 'monthly':
+                startDate = moment().startOf('month');
+                endDate = moment().endOf('month');
+                break;
+            case 'yearly':
+                startDate = moment().startOf('year');
+                endDate = moment().endOf('year');
+                break;
+            default:
+                startDate = moment().startOf('day');
+                endDate = moment().endOf('day');
+                break;
+        }
+
+        console.log("startDate: ", startDate)
+        console.log("endDate: ", endDate)
+
+
+        const orders = await Order.find({
+            createdAt: { $gte: startDate, $lte: endDate },
+            "items.status": status,
+        }).count();
+
+        console.log("Oredrs in chart: ", orders)
+
+
+        const chartData = {
+            labels: [status],
+            datasets: [
+                {
+                    label: 'Order Status',
+                    data: [orders],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)'],
+                    borderColor: ['rgba(75, 192, 192, 1)'],
+                    borderWidth: 1,
+                },
+            ],
+        };
+
+        // Send chart data as JSON response
+        res.json(chartData);
+    } catch (err) {
+        console.error('Error fetching chart data:', err);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+const downloadSalesReport = async (req, res) => {
+    try {
+
+        // const { from,to } = req.query;
+        // console.log("Welcome to download report: ")
+        // let startDate=from, endDate=to;
+        // console.log("startDate: ", startDate)
+        // console.log("endDate: ", endDate)
+        // const orders = await Order.find({
+        //     createdAt: { $gte: startDate, $lte: endDate }
+
+        // })
+
+        const { dateFrom, dateTo } = req.body
+        console.log("DateFrom :", dateFrom, "DateTo: ", dateTo)
+
+        let startDate = dateFrom, endDate = dateTo;
+        const orders = await Order.find({
+            createdAt: { $gte: startDate, $lte: endDate }
+
+        })
+        console.log("....................................................")
+
+        console.log(`Orders for report from ${startDate} to ${endDate} is: `, orders)
+
+        console.log(".......................................................")
+        res.render("salesReport", { orders })
+
+
+    } catch (err) {
+        console.log("Error in downloading the sales report: ", err)
+    }
+
+}
+
+const viewUserProfile = async (req, res) => {
+    try {
+        let deliveredData = 0;
+        let canceledData = 0;
+        let returnedData = 0;
+
+        const id = req.params.id
+        console.log("User id: ", id)
+        const userData = await User.findOne({ _id: id })
+        const orderData = await Order.find({ userId: id })
+        deliveredData = await Order.find({ userId: id, "items.status": "Delivered" }).count()
+        canceledData = await Order.find({ userId: id, "items.status": "Cancel" }).count()
+        returnedData = await Order.find({ userId: id, "items.status": "Return" }).count()
+
+
+        const name = userData.name
+        console.log("User in view profile: ", name)
+        console.log("Userdata with ordered", orderData)
+        console.log("Items delivered: ", deliveredData)
+        console.log("Items canceledData: ", canceledData)
+        console.log("Items returnedData: ", returnedData)
+
+
+
+        console.log("Welcome to user Profile view")
+
+
+        res.render("viewUserProfile", { name, orderData, deliveredData, canceledData, returnedData })
+
+    } catch (err) {
+        console.log("Error in Getting the user profile", err)
+    }
+}
+
 
 
 //ADMIN LOGOUT
@@ -293,5 +452,11 @@ module.exports = {
     adminRegistration,
     adminVerification,
     loadDashboardPage,
-    adminLogout
+    adminLogout,
+
+    getChartData,
+    downloadSalesReport,
+    viewUserProfile
+
+
 }
