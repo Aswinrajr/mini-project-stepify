@@ -1,43 +1,86 @@
 <%- include("./layouts/userheader.ejs") %>
 
 <style>
-    ul {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-    }
-
+    /* Your custom CSS styles for the user profile page */
     .sidebar {
-        background-color: #ffffff;
-        border: 2px solid;
-        width: 200px;
-       
-       
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        width: 250px;
+        padding: 20px;
+        margin-right: 20px;
     }
 
     .sidebar h1 {
         font-size: 24px;
-        padding: 20px;
         text-align: center;
+        margin-bottom: 20px;
+        color: #333;
     }
 
-  
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
 
-    
+    .sidebar ul li {
+        margin-bottom: 10px;
+    }
 
     .sidebar ul li a {
-        color: #000000;
+        color: #333;
         text-decoration: none;
         font-weight: bold;
         display: block;
         padding: 10px;
-     
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
     }
 
- 
-   
+    .sidebar ul li a:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
 
+    .content {
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        padding: 20px;
+        width: calc(100% - 270px); /* Adjust based on your sidebar width */
+    }
+
+    /* Additional styles for user profile content */
+    .content h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .content p {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    /* Style links within the content area */
+    .content a {
+        color: #007bff;
+        text-decoration: underline;
+    }
+
+    /* Style buttons within the content area */
+    .content button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .content button:hover {
+        background-color: #0056b3;
+    }
 </style>
+
 
 <section class="checkout_area section_gap mt-5">
     <div class="container mt-4">
@@ -45,6 +88,7 @@
             <div class="row">
                 <div class="col-lg-4 col-md-3">
                     <div class="sidebar mt-5">
+                       
                         <ul>
                             <li><a href="#">About</a></li>
                             <li><a href="/change-password">Change Password</a></li>
@@ -56,9 +100,9 @@
                 </div>
                 <div class="content col-lg-8 col-md-9">
                     <section class="dashboard-content p-4">
-                        <div class="container">
-                            
-                        </div>
+                       
+                        <h2>Welcome,  <%=userData.name%>!</h2>
+                     
                     </section>
                 </div>
             </div>

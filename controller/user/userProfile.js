@@ -195,7 +195,7 @@ const getUserDashboard = async (req, res) => {
     try {
         console.log("Welcome to user dashboard")
         const userData = await User.findOne({ email: req.session.user_id })
-        res.render('userDashboard')
+        res.render('userDashboard',{userData})
 
     } catch (err) {
         console.log("Error in Rendering the userdashboard", err)
