@@ -290,7 +290,7 @@ const changePassword = async (req, res) => {
         if (userData) {
 
             console.log("Welcome to change password")
-            res.render("ChangePassword")
+            res.render("changePassword")
 
 
         } else {
