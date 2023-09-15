@@ -111,13 +111,13 @@ const adminVerification = async (req, res) => {
 
     try {
 
-        const adminData = await Admin.findOne({ email: adminEmail }).timeout(20000).exec();
+        const adminData = await Admin.findOne({ email: adminEmail });
         console.log("Searching For Admin Data")
         console.log(adminData)
         if (adminData) {
 
             const matchPassword = await bcrypt.compare(adminPassword, adminData.password)
-            
+
             if (matchPassword) {
                 req.session.admin_id = adminData.email
                 console.log("welcome to dashboard", req.session.admin_id)
