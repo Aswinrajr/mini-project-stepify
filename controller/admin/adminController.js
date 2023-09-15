@@ -111,7 +111,7 @@ const adminVerification = async (req, res) => {
 
     try {
 
-        const adminData = await Admin.findOne({ email: adminEmail })
+        const adminData = await Admin.findOne({ email: adminEmail }).exec()
         console.log("Searching For Admin Data")
         console.log(adminData)
         if (adminData) {
@@ -412,7 +412,7 @@ const downloadPDF = async (req, res) => {
         console.log("Product id: ", productIds)
         const productDetails = await productModel.find({ _id: { $in: productIds } })
         console.log("Product data: ", productDetails)
- 
+
 
         const doc = new PDFDocument();
         doc.pipe(fs.createWriteStream('invoice.pdf'));
