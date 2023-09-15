@@ -1,4 +1,12 @@
 <%- include("./layouts/header.ejs") %>
+    <style>
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+    </style>
 
     <div class="container px-6 mx-auto grid" style="width: 50%; margin-top: 5%; font-size: 1.2rem;">
         <form action="/admin/product" method="post" enctype="multipart/form-data">
@@ -10,27 +18,38 @@
                     </h1>
                 </div>
                 <div class="row flex py-4 ">
-                    <div class="col-xl-6 ">
+                    <div class="col-xl-6">
                         <label class="block mt-4 text-sm">
                             <span class="text-gray-700 dark:text-gray-400">
-                                CategoryName
+                                Category
                             </span>
-                            <input type="text"
-                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                                id="categoryName" name="categoryName" placeholder="Category Name" required="">
-                        </label>
+                            <select name="categoryName" id="categoryName"
+                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-select">
+                                <% for (category of uniqueCategoryArray) { %>
+                                    <option value="<%= category %>">
+                                        <%= category %>
+                                    </option>
 
+                                    <% } %>
+                            </select>
+                        </label>
                     </div>
+
                     <div class="col-xl-6 mx-auto">
                         <label class="block mt-4 text-sm">
                             <span class="text-gray-700 dark:text-gray-400">
                                 Brand
                             </span>
-                            <input type="text"
-                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                                id="brand" name="brand" placeholder="Enter your brand" required="">
-                        </label>
+                            <select name="brand" id="brand"
+                                class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-select">
+                                <% for (brand of uniqueBrandArray) { %>
+                                    <option value="<%= brand %>">
+                                        <%= brand %>
+                                    </option>
 
+                                    <% } %>
+                            </select>
+                        </label>
                     </div>
 
                 </div>
@@ -43,6 +62,7 @@
                             <input type="text"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                                 id="person" name="person" placeholder="For" required="">
+
                         </label>
 
                     </div>
@@ -53,7 +73,8 @@
                             </span>
                             <input type="number"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                                id="size" name="size" placeholder="Size" required="">
+                                id="size" name="size" placeholder="Size" required="" min="3">
+                            <p id="validationMessage" style="color: red;font-size: 13px;"></p>
                         </label>
 
                     </div>
@@ -79,6 +100,7 @@
                             <input type="number"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                                 id="price" name="price" placeholder="Enter the Price" required="">
+                                <p id="validationPrice" style="color: red;font-size: 13px;"></p>
                         </label>
 
                     </div>
@@ -94,27 +116,20 @@
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                                 id="quantity" name="quantity" placeholder="Quantity" required="">
                         </label>
+                        <p id="validationQuantity" style="color: red;font-size: 13px;"></p>
                     </div>
-                    <!-- <div class="col-md-6 ">
-                        <br>
-                        <label class="block mt-4 text-sm">
-                         
-                            <input type="file" class="pt-3" name="image" id="image" accept="image/*" multiple>
-                        </label>
-                    </div> -->
-                    
+
+
                 </div>
                 <div class="col-xl-6">
                     <label class="block mt-4 text-sm">
-                        <!-- <input type="text"
-                            class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                            id="pricr" name="price" placeholder="Enter the Price" required=""> -->
+
                         <input type="file" class="" name="image" id="image" accept="image/*" multiple>
 
                     </label>
 
                 </div>
-              
+
 
 
 
@@ -142,6 +157,58 @@
             </div>
         </form>
     </div>
+
+
+    <script>
+        // Get a reference to the input field and error message element
+        const quantityInput = document.getElementById("size");
+        const quantity = document.getElementById("quantity");
+        const price = document.getElementById("price");
+
+        const validationMessage = document.getElementById("validationMessage");
+        const validationQuantity = document.getElementById("validationQuantity");
+        const validationPrice= document.getElementById("validationPrice");
+
+        // Add an event listener to the input field to validate the value
+        quantityInput.addEventListener("input", function () {
+            const enteredValue = parseInt(quantityInput.value, 10);
+
+            // Check if the entered value is negative
+            if (enteredValue < 0) {
+                validationMessage.textContent = "size cannot be negative.";
+                quantityInput.setCustomValidity("size cannot be negative."); // Set a custom validation message
+            } else {
+                validationMessage.textContent = ""; // Clear the validation message
+                quantityInput.setCustomValidity(""); // Clear the custom validation message
+            }
+        });
+
+        quantity.addEventListener("input", function () {
+            const enteredValue = parseInt(quantity.value, 10);
+
+            // Check if the entered value is negative
+            if (enteredValue < 1) {
+                validationQuantity.textContent = "Quantity cannot be less than 1";
+                quantity.setCustomValidity("Quantity cannot be lessthan 1."); // Set a custom validation message
+            } else {
+                validationQuantity.textContent = ""; // Clear the validation message
+                quantity.setCustomValidity(""); // Clear the custom validation message
+            }
+        });
+
+        price.addEventListener("input", function () {
+            const enteredValue = parseInt(price.value, 10);
+
+            // Check if the entered value is negative
+            if (enteredValue < 100) {
+                validationPrice.textContent = "Price cannot be less than minimum price";
+                price.setCustomValidity("Price cannot be less than minimum price"); // Set a custom validation message
+            } else {
+                validationPrice.textContent = ""; // Clear the validation message
+                price.setCustomValidity(""); // Clear the custom validation message
+            }
+        });
+    </script>
 
 
 

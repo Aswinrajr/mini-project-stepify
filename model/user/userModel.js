@@ -33,18 +33,18 @@ const userSchema = new mongoose.Schema({
         },
         quantity: {
             type: Number,
-            default:1,
+            default: 1,
         },
         totalPrice: {
             type: Number,
             required: true
         },
-        status:{
-            type:String,
-            default:"Listed"
+        status: {
+            type: String,
+            default: "Listed"
         },
-        image:{
-            type:String
+        image: {
+            type: String
 
         }
     }],
@@ -52,60 +52,77 @@ const userSchema = new mongoose.Schema({
         items: [{
             firstName: {
                 type: String,
-                required:true
+                required: true
             },
-            lastName:{
+            lastName: {
                 type: String,
-                required:true
+                required: true
 
             },
             altMobile: {
-                type:Number,
+                type: Number,
                 required: true,
             },
             HouseName: {
                 type: String,
                 require: true
             },
-            addressLine:{
+            addressLine: {
                 type: String,
-                required:true
+                required: true
             },
-            nearestLandMark:{
+            nearestLandMark: {
                 type: String,
-                required:true
+                required: true
             },
-            pincode:{
-                type:Number,
+            pincode: {
+                type: Number,
                 required: true,
-            },       
+            },
             city: {
                 type: String,
-                required:true
+                required: true
             },
             state: {
                 type: String,
-                required:true
+                required: true
             },
-         
+
         }]
     },
-    userCoupens:[{
-        couponId:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:"Coupon"
+    userCoupens: [{
+        couponId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Coupon"
         },
-        couponCode:{
-            type:String,
-            required:true
+        couponCode: {
+            type: String,
+            required: true
         }
 
     }],
-    wallet:{
-        type:Number,
-        default:0
+    wallet: {
+        type: Number,
+        default: 0
+    },
+    wishList: [
+        {
+            productId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: product
+            }
+
+        }
+    ],
+    referalCode: {
+        type:String
+    },
+    usedReferal:{
+        type:Boolean,
+        default:false
     }
-  
+    
+
 })
 
 module.exports = mongoose.model("User", userSchema)  

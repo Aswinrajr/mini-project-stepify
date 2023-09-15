@@ -54,6 +54,7 @@
                             <input type="number"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                                 id="size" name="size" value="<%= product.size %>" required="">
+                                <p id="validationSize" style="color: red;font-size: 13px;"></p>
                         </label>
         
                     </div>
@@ -79,6 +80,7 @@
                             <input type="number"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                                 id="price" name="price" value="<%= product.price %>" required="">
+                                <p id="validationPrice" style="color: red;font-size: 13px;"></p>
                         </label>
         
                     </div>
@@ -93,15 +95,14 @@
                             <input type="number"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                                 id="quantity" name="quantity" value="<%= product.quantity %>" required="">
+                                <p id="validationQuantity" style="color: red;font-size: 13px;"></p>
                         </label>
 
                     </div>
                 </div>
                 <div class="col-xl-6">
                     <label class="block mt-4 text-sm">
-                        <!-- <input type="text"
-                            class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                            id="pricr" name="price" placeholder="Enter the Price" required=""> -->
+                     
                         <input type="file" class="" name="image" id="image"  accept="image/*" multiple>
                         <div class="flex">
                             <%for(let i=0;i<product.image.length;i++){%>
@@ -131,6 +132,56 @@
             </div>
         </form>
     </div>
+
+    <script>
+     
+        const quantityInput = document.getElementById("size");
+        const quantity = document.getElementById("quantity");
+        const price = document.getElementById("price");
+
+        const validationMessage = document.getElementById("validationSize");
+        const validationQuantity = document.getElementById("validationQuantity");
+        const validationPrice= document.getElementById("validationPrice");
+
+     
+        quantityInput.addEventListener("input", function () {
+            const enteredValue = parseInt(quantityInput.value, 10);
+
+            // Check if the entered value is negative
+            if (enteredValue < 0) {
+                validationMessage.textContent = "size cannot be negative.";
+                quantityInput.setCustomValidity("size cannot be negative."); // Set a custom validation message
+                validationMessage.textContent = ""; 
+                quantityInput.setCustomValidity(""); 
+            }
+        });
+
+        quantity.addEventListener("input", function () {
+            const enteredValue = parseInt(quantity.value, 10);
+
+            // Check if the entered value is negative
+            if (enteredValue < 1) {
+                validationQuantity.textContent = "Quantity cannot be less than 1";
+                quantity.setCustomValidity("Quantity cannot be lessthan 1."); 
+            } else {
+                validationQuantity.textContent = ""; 
+                quantity.setCustomValidity(""); 
+            }
+        });
+
+        price.addEventListener("input", function () {
+            const enteredValue = parseInt(price.value, 10);
+
+            // Check if the entered value is negative
+            if (enteredValue < 100) {
+                validationPrice.textContent = "Price cannot be less than minimum price";
+                price.setCustomValidity("Price cannot be less than minimum price");
+            } else {
+                validationPrice.textContent = ""; 
+                price.setCustomValidity(""); 
+            }
+        });
+    </script>
 
 
 

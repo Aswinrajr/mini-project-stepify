@@ -14,8 +14,9 @@ console.log(SID, TOKEN)
 const Chart = require('chart.js');
 const axios = require('axios');
 const moment = require('moment');
-const easyinvoice = require("easyinvoice")
-const jsPDF = require('jspdf');
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+
 
 
 
@@ -50,6 +51,7 @@ const adminLoginPage = (req, res) => {
 
     } catch (err) {
         console.log("Error in Loading admin page: ", err)
+        res.status(500).render("wentWrong")
 
     }
 }
@@ -61,6 +63,7 @@ const renderAdminRegisterPage = (req, res) => {
         res.render("adminSignUpPage", { msg: '' })
     } catch (err) {
         console.log("Error in loading admin page")
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -95,6 +98,7 @@ const adminRegistration = async (req, res) => {
         // alert("Admin Is alredy Registered Please Log In")
         // res.redirect("/admin")
         console.log("Error in Admin Registration", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -129,6 +133,7 @@ const adminVerification = async (req, res) => {
         }
     } catch (err) {
         console.log("Error in admin Login", err)
+        res.status(500).render("wentWrong")
 
 
     }
@@ -141,6 +146,7 @@ const enterMobileNumber = async (req, res) => {
 
     } catch (err) {
         console.log("Error in rendering forgotpassword")
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -178,6 +184,7 @@ const sentOTP = async (req, res) => {
 
     } catch (err) {
         console.log("Error in rendering sendOtp page", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -189,6 +196,7 @@ const renderEnterOTP = async (req, res) => {
 
     } catch (err) {
         console.log("Error in rendering otp", err)
+        res.status(500).render("wentWrong")
 
     }
 }
@@ -211,6 +219,7 @@ const adminVerifyOTP = async (req, res) => {
 
     } catch (err) {
         console.log("Error in verify OTP")
+        res.status(500).render("wentWrong")
     }
 }
 //change password
@@ -221,6 +230,7 @@ const renderResetPassword = async (req, res) => {
 
     } catch (err) {
         console.log("Error in rendering admin reset password")
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -249,6 +259,7 @@ const setNewPassword = async (req, res) => {
 
     } catch (err) {
         console.log("Error in change password")
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -288,6 +299,7 @@ const loadDashboardPage = async (req, res) => {
         }
     } catch (err) {
         console.log("Error in loading Dashboard", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -357,15 +369,7 @@ const getChartData = async (req, res) => {
 const downloadSalesReport = async (req, res) => {
     try {
 
-        // const { from,to } = req.query;
-        // console.log("Welcome to download report: ")
-        // let startDate=from, endDate=to;
-        // console.log("startDate: ", startDate)
-        // console.log("endDate: ", endDate)
-        // const orders = await Order.find({
-        //     createdAt: { $gte: startDate, $lte: endDate }
 
-        // })
 
         const { dateFrom, dateTo } = req.body
         console.log("DateFrom :", dateFrom, "DateTo: ", dateTo)
@@ -380,13 +384,84 @@ const downloadSalesReport = async (req, res) => {
         console.log(`Orders for report from ${startDate} to ${endDate} is: `, orders)
 
         console.log(".......................................................")
-        res.render("salesReport", { orders })
+        res.render("salesReport", { orders, startDate, endDate })
 
 
     } catch (err) {
         console.log("Error in downloading the sales report: ", err)
+        res.status(500).render("wentWrong")
     }
 
+}
+
+const downloadPDF = async (req, res) => {
+    try {
+        console.log("Welcome to sales report download pdf")
+
+        const { startDate, endDate } = req.params
+        console.log("startDate: ", startDate, "endDate: ", endDate)
+
+        let orders = await Order.find({
+            createdAt: { $gte: startDate, $lte: endDate }
+
+        })
+        console.log("Orders data in download report: ", orders)
+        const productIds = orders.flatMap((order) =>
+            order.items.map((item) => item.ProductId)
+        )
+        console.log("Product id: ", productIds)
+        const productDetails = await productModel.find({ _id: { $in: productIds } })
+        console.log("Product data: ", productDetails)
+ 
+
+        const doc = new PDFDocument();
+        doc.pipe(fs.createWriteStream('invoice.pdf'));
+
+        // Add content to the PDF
+
+        doc.fontSize(15).text('Stepify  ', { align: 'center' });
+        doc.fontSize(12).text(`Sales Report from${startDate} to ${endDate} `, { align: 'center' });
+        doc.text('--------------------------------------------------------------------------------------------------------------------');
+        let serialNumber = 1
+
+
+        orders.forEach((order) => {
+            doc.text(serialNumber, { align: "start" })
+            doc.text(`Order ID: ${order._id}`);
+            doc.text(`Order Date: ${order.createdAt}`);
+            doc.text(`Delivery Address: ${order.deliveryAddress}`);
+
+            order.items.forEach((item) => {
+                doc.text(`Product: ${item.ProductId}`);
+                doc.text(`Quantity: ${item.quantity}`);
+                doc.text(`Amount: ${item.price}`);
+
+
+            });
+
+            doc.text(`Payment Method: ${order.paymentMethod}`);
+            if (order.totalAmount) {
+                doc.text(`Total Amount: ${order.totalAmount}`);
+            }
+            serialNumber++
+
+            doc.text('--------------------------------------------------------------------------------------------------------------------');
+        });
+        // Stream the PDF to the response
+        const filename = 'Invoice.pdf';
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Content-Type', 'application/pdf');
+        doc.pipe(res);
+        doc.end();
+
+
+    } catch (err) {
+        console.log("Error in downloading the pdf: ", err)
+        res.status(500).render("wentWrong")
+    }
+    finally {
+        console.log("Downloading")
+    }
 }
 
 const viewUserProfile = async (req, res) => {
@@ -420,6 +495,7 @@ const viewUserProfile = async (req, res) => {
 
     } catch (err) {
         console.log("Error in Getting the user profile", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -456,7 +532,9 @@ module.exports = {
 
     getChartData,
     downloadSalesReport,
-    viewUserProfile
+    viewUserProfile,
+    downloadPDF
+
 
 
 }

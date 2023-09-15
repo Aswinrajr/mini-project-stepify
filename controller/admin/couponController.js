@@ -28,6 +28,7 @@ const getCoupon = async (req, res) => {
 
     } catch (err) {
         console.log('Error in rendering Coupon Page', err);
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -39,8 +40,8 @@ const saveCoupon = async (req, res) => {
             
             offerCode: req.body.code,
             amount: req.body.amount,
-            validFrom:req.body.validFrom, // Convert to Date object
-            validUntil:req.body.validUntil, // Convert to Date object
+            validFrom:req.body.validFrom, 
+            validUntil:req.body.validUntil,
         });
 
    
@@ -68,6 +69,7 @@ const saveCoupon = async (req, res) => {
 
     } catch (err) {
         console.log("Error in adding coupon", err);
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -91,6 +93,7 @@ const listCoupon = async(req,res)=>{
 
     }catch(err){
         console.log("Error in listing coupons",err)
+        res.status(500).render("wentWrong")
     }
 }
 

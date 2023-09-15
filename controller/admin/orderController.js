@@ -77,6 +77,7 @@ const viewOrders = async (req, res) => {
 
     } catch (err) {
         console.log("Error in rendering the view order details: ", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -105,6 +106,7 @@ const orderDelivered = async (req, res) => {
 
     } catch (err) {
         console.log("error in conform order", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -119,13 +121,14 @@ const orderShipped = async (req, res) => {
             await Order.updateOne({ _id: orderId, 'items.ProductId': productId }, { $set: { 'items.$.status': 'Shipped' } });
 
             res.redirect(`/admin/order/${orderId}`)
-            // res.render("ordersViewProducts",{data:viewOrders})
+         
         } else {
             res.redirect("/admin")
         }
 
     } catch (err) {
         console.log("error in conform order", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -148,6 +151,7 @@ const outForDelivery = async (req, res) => {
 
     } catch (err) {
         console.log('Error in updatingout for delivery: ', err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -174,7 +178,7 @@ const cancelOrder = async (req, res) => {
            
             if (viewOrders.paymentMethod === "Online Payment") {
                 let amount=0;
-                // const refundOrder = viewOrders.items
+              
                 const refundOrder = viewOrders.items.find(item => item.ProductId == productId);
                 if (coupon && viewOrders.refund === false) {
                     console.log("Money added to the wallet deducting the coupon amount: ", refundOrder)
@@ -207,6 +211,7 @@ const cancelOrder = async (req, res) => {
 
     } catch (err) {
         console.log('Error in updatingout for delivery: ', err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -263,6 +268,7 @@ const returnOrder = async (req, res) => {
         }
     } catch (err) {
         console.log('Error in updating out for delivery: ', err)
+        res.status(500).render("wentWrong")
     }
 }
 

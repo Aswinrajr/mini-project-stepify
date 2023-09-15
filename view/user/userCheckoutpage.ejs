@@ -210,7 +210,7 @@
                                                                                         <%=amountTopay=subtotal%>
                                                                                     </span></a></li>
 
-                                                                            <h1>coupon</h1>
+                                                                            <h1>  <h1><%=amountToPay%></h1></h1>
                                                                             <% } else { %>
                                                                                 <li><a href="#">Coupon <span
                                                                                             id="coupon-amount">₹
@@ -220,6 +220,7 @@
                                                                                             id="total">
                                                                                             <%=amountTopay=subtotal%>
                                                                                         </span></a></li>
+                                                                                      
 
                                                                                 <% } %>
                                                                                     <li><a href="#">Shipping
@@ -292,7 +293,7 @@
                         <p class="text-danger" id="payment-method"></p>
                         <p id="used-coupon" class="text-success"></p>
                         <h6>Amount to be paid</h6>
-                        <p class="text-danger" id="amount-to-pay"></p>
+                        <p class="text-danger" id="amountto-pay"></p>
 
                     </div>
                     <button class="genric-btn primary small" id="confirm-btn">confirm</button>
@@ -582,7 +583,8 @@
             const deliveryAdress = document.getElementById("delivery-address")
             const paymentMethod = document.getElementById("payment-method")
 
-            const amountToPay = document.getElementById("amount-to-pay")
+            const amountToPay = document.getElementById("amountto-pay")
+            console.log("Amount to Pay: ",amountToPay)
 
             const usedCouponCodeElement = document.getElementById("couponName");
             const usedCouponCode = usedCouponCodeElement.textContent;
@@ -613,6 +615,7 @@
 
                 paymentMethod.innerText = paymentMethodText;
                 amountToPay.innerHTML = amountToPayText;
+                console.log("amountToPay.innerHTML: ",amountToPayText)
 
                 // Display the used coupon code in the dialog
                 const usedCouponText = usedCouponCode ? `Used Coupon: ${usedCouponCode}` : "No Coupon Used";

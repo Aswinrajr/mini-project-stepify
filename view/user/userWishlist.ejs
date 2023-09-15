@@ -1,0 +1,155 @@
+<%- include("./layouts/userheader.ejs") %>
+
+    <style>
+        body {
+
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .wishlist-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .wishlist-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .wishlist-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .wishlist-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .product-image {
+            max-width: 100px;
+            max-height: 100px;
+            margin-right: 20px;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-title {
+            font-size: 18px;
+            color: #333;
+            margin: 0;
+        }
+
+        .product-price {
+            font-size: 16px;
+            color: #666;
+            margin: 0;
+        }
+
+        .remove-button {
+            background-color: #ff4444;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .remove-button:hover {
+            background-color: #dd3333;
+        }
+
+        .buy-now-button {
+            background-color: #e9942d;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .buy-now-button:hover {
+            background-color: #ff8e04;
+        }
+
+        .product_count .reduced {
+            border-radius: 0 0 4px 4px;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .cart_empty_message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            animation: bounce 1s infinite;
+        }
+    </style>
+    <section class="cart_area mt-5">
+        <div class="container mt-3">
+            <div class="cart_inner">
+                <%if(products.length>0){%>
+                    <div class="wishlist-container">
+                        <h1 class="wishlist-title">My Wishlist</h1>
+                        <ul class="wishlist-list">
+                            <%for(let product of products){%>
+                                <li class="wishlist-item">
+                                    <div class="product-container">
+                                        <img class="product-image" src="../../public/uploads/<%=product.image[0]%>"
+                                            alt="Product 1">
+                                        <div class="product-details">
+                                            <h2 class="product-title">
+                                                <%=product.categoryName%>
+                                            </h2>
+                                            <span>
+                                                <%=product.brand%>
+                                            </span>
+                                            <p class="product-price">Price: <%=product.price%>
+                                            </p>
+                                        </div>
+                                        <a href="/buynow/?id=<%=product._id%>" class="buy-now-button mx-4"
+                                            style="color:white;">Buy Now</a>
+                                        <a href="/deleteWishlist/?id=<%=product._id%>" 
+                                            class="remove-button mx-4" style="color:white;">Remove</a>
+                                    </div>
+                                </li>
+                                <%}%>
+                        </ul>
+                    </div>
+                    <%}else{%>
+                        <div class="cart_empty_message mt-5">
+                            <h3>Your Wishlist Empty.</h3>
+                            <a href="/">Continue Shopping</a>
+                        </div>
+                        <%}%>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <%- include("./layouts/footer.ejs") %>

@@ -21,6 +21,7 @@ const orderData = mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Product"
         },
+  
         quantity: {
             type: Number,
             require: true
@@ -42,6 +43,11 @@ const orderData = mongoose.Schema({
         deliveryDate: {
             type: Date,
             
+        },
+        reason:{
+            type:String,
+            default:"NotReturned"
+
         }
     }],
     paymentMethod:{

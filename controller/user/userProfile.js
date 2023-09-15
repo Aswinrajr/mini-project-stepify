@@ -195,7 +195,7 @@ const getUserDashboard = async (req, res) => {
     try {
         console.log("Welcome to user dashboard")
         const userData = await User.findOne({ email: req.session.user_id })
-        res.render('userDashboard',{userData})
+        res.render('userDashboard', { userData })
 
     } catch (err) {
         console.log("Error in Rendering the userdashboard", err)
@@ -669,7 +669,10 @@ const proceedToCheckout = async (req, res) => {
         const userdata = await User.findOne({ email: req.session.user_id })
         if (userdata) {
             console.log("..........................................................")
-            console.log("Coupon Data in the user: ", validCoupon)
+            if (validCoupon) {
+
+                console.log("Coupon Data in the user: ", validCoupon)
+            }
             console.log("..........................................................")
 
 
@@ -745,7 +748,7 @@ const proceedToCheckout = async (req, res) => {
             console.log("---------------------checkoutdata---------------------------------")
             console.log("userAdress", userAdress)
             console.log("---------------------checkoutdata---------------------------------")
-            console.log("validCoupon", validCoupon)
+            // console.log("validCoupon", validCoupon)
             console.log("---------------------checkoutdata---------------------------------")
 
             console.log(typeof (subtotal))
@@ -990,6 +993,7 @@ const verifyOrder = async (req, res) => {
                 couponAmount = 0
 
             }
+            let totalPrice = 0
 
             //productid quantity price 
             const items = []
@@ -998,9 +1002,14 @@ const verifyOrder = async (req, res) => {
                     ProductId: item.productId,
                     quantity: item.quantity,
                     price: (item.totalPrice * item.quantity) - couponAmount,
-                    image: item.image
+                    image: item.image,
+
                 })
+                totalPrice = totalPrice + ((item.totalPrice * item.quantity) - couponAmount)
+                console.log("totalPrice: ", totalPrice + ((item.totalPrice * item.quantity) - couponAmount))
+
             }
+            console.log("Total price: ", totalPrice)
 
             const deliveryAddress = `${address.firstName} ${address.lastName},\n ${address.altMobile},\n ${address.HouseName},\n ${address.addressLine},\n${address.city}, ${address.state},\n${address.nearestLandMark},\n${address.pincode}`;
 
@@ -1012,7 +1021,22 @@ const verifyOrder = async (req, res) => {
                 paymentMethod,
                 usedCouponCode,
                 expectedDeliveryDate: expectedDeliveryDate.toISOString().split('T')[0],
+                totalAmount: totalPrice
             })
+
+            for (const item of userCart) {
+                console.log("Haii achuuuuu")
+                const proId = item.productId
+                const quantity = parseInt(item.quantity)
+                const product = await productModel.findOne({ _id: proId })
+                const productQuantity = parseInt(product.quantity)
+                const updateQuantity = productQuantity - quantity
+                const productUpdated = await productModel.findOneAndUpdate({ _id: proId }, { $set: { quantity: updateQuantity } })
+                console.log("Updated product: ", updateQuantity)
+
+
+
+            }
             userData.cart = []
             await userData.save()
 
@@ -1161,8 +1185,31 @@ const returnOrder = async (req, res) => {
 
             console.log("Welcome to return order")
             const { orderId, productId } = req.params;
+            const reason = req.query.reason;
+            console.log("reason: ", reason)
             console.log("orderId: ", orderId, "productId: ", productId)
-            await Order.updateOne({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.status": "Requested for Return" } })
+            const orderData = await Order.findOneAndUpdate({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.status": "Requested for Return" } })
+
+
+
+            if (reason != "defective") {
+                const items = orderData.items
+                console.log("need to add quantity: ", items[0].quantity)
+                let productQuantity = await productModel.findOne({ _id: productId }, { quantity: 1, _id: 0 })
+                console.log("productQuantity: ", productQuantity.quantity)
+
+                const number = productQuantity.quantity
+                const add = parseInt(number) + parseInt(items[0].quantity)
+                console.log("productQuantity after updated: ", add)
+
+                const updated = await productModel.findOneAndUpdate({ _id: productId }, { $set: { quantity: add } })
+                const updatedOrder = await Order.findOneAndUpdate({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.reason": "Recieved A wrong Item" } })
+                console.log("Updated", updated)
+
+            } else {
+                const updatedOrder = await Order.findOneAndUpdate({ _id: orderId, "items.ProductId": productId }, { $set: { "items.$.reason": "Item is defactive" } })
+
+            }
             res.redirect("/order")
 
         } else {
@@ -1241,6 +1288,7 @@ const OrderRazorpay = async (req, res) => {
             quantity: item.quantity,
             price: (item.totalPrice * item.quantity),
             image: item.image,
+
         }));
         console.log("Items: ", items);
 
@@ -1286,6 +1334,41 @@ const OrderRazorpay = async (req, res) => {
     }
 }
 
+//BuyNow
+
+const buyNow = async (req, res) => {
+    try {
+        if (req.session.user_id) {
+            const { id } = req.query
+            console.log("id in buy now: ", id)
+            const product = await productModel.findOne({ _id: id })
+            const user = await User.findOne({ email: req.session.user_id })
+            const validCoupon = await couponSchema.find({ status: "Valid" })
+            const userAdress = user.address
+            const subtotal = parseInt(product.price)
+            console.log("Adress in buy now: ", userAdress, subtotal, validCoupon)
+            const Products = {
+                productName: product.categoryName,
+                productPrice: product.price,
+                productQuantity: 1,
+                totalPrice: 1 * product.price
+
+
+            }
+            const walletProduct = []
+            walletProduct.push(Products)
+
+
+            console.log("Product for buy: ", walletProduct)
+            res.render("userCheckOutpage", { data: walletProduct, userAdress, subtotal, validCoupon })
+        } else {
+            res.redirect("/")
+        }
+
+    } catch (err) {
+        console.log("Error in buy now page", err)
+    }
+}
 
 
 
@@ -1295,7 +1378,7 @@ const OrderRazorpay = async (req, res) => {
 //---------------------------------invoice....................................
 
 const generateInvoice = async (order, productDetails, subTotal, address, orderCanceled, orderStatus) => {
-    console.log("order: ", order, "productDetails :", productDetails, "subTotal: ", subTotal, "address: ", subTotal, "orderCanceled: ", orderCanceled, "orderStatus: ", orderStatus)
+    console.log("order: ", order, "productDetails :", productDetails, "subTotal: ", subTotal, "address: ", subTotal)
     try {
         const invoiceOptions = {
             documentTitle: 'Invoice',
@@ -1305,9 +1388,9 @@ const generateInvoice = async (order, productDetails, subTotal, address, orderCa
             marginRight: 25,
             marginLeft: 25,
             marginBottom: 25,
-            // images: {
-            //     logo: '',
-            // },
+            images: {
+                "logo": ""
+            },
             sender: {
                 company: 'Stepify',
                 address: '5th Avenue Kozhikode',
@@ -1321,16 +1404,17 @@ const generateInvoice = async (order, productDetails, subTotal, address, orderCa
                 address: order.deliveryAddress,
             },
             information: {
-                "Number": order._id,
-                "Date": order.createdAt.toLocaleDateString(),
-                'due-Date': order.expectedDeliveryDate.toLocaleDateString(),
+                "number": order._id,
+                "date": order.createdAt.toLocaleDateString(),
+                'due-date': order.expectedDeliveryDate.toLocaleDateString(),
+
             },
 
             products: [],
-            // bottomNotice: `Order ${orderStatus}: ${orderCanceled ? 'Canceled' : 'Confirmed'}`,
+
             'bottom-notice': 'Kindly pay your invoice within 15 days.',
-            subtotal: subTotal,
-            total: subTotal,
+
+
         };
 
         // Add products to the invoice
@@ -1338,6 +1422,7 @@ const generateInvoice = async (order, productDetails, subTotal, address, orderCa
             invoiceOptions.products.push({
                 quantity: data.quantity,
                 description: `${data.brand} - ${data.categoryId}`,
+                "tax-rate": 0,
                 price: data.price,
             });
         });
@@ -1423,7 +1508,7 @@ const getWallet = async (req, res) => {
 
 
 const pagenotfound = (req, res) => {
-    res.render("pageNotFound")
+    res.status(404).render("pageNotFound")
 }
 
 const depositWallet = async (req, res) => {
@@ -1451,10 +1536,162 @@ const depositWallet = async (req, res) => {
     }
 }
 
+//wishlist
+const addWishlist = async (req, res) => {
+    try {
+        console.log("Welcome to wishlist")
+        if (req.session.user_id) {
+            const userData = await User.findOne({ email: req.session.user_id })
+            let wishlist = userData.wishList
+            const { proId } = req.body
+            console.log("wishlist: ", wishlist, "proId: ", proId)
+            const product = await productModel.findOne({ _id: proId })
+            console.log("Product Found at wishlist: ", product)
+            const existProduct = wishlist.some(item => item.productId.equals(proId));
+            console.log("Exist productid: ", existProduct)
+            if (!existProduct) {
+                wishlist.push({ productId: proId })
+                await userData.save()
+                console.log("Wish list Added")
+                res.status(200).json({ message: "Product added to wishlist successfully" });
+            } else {
+                console.log("Item already exists in the wishlist")
+                res.status(400).json({ message: "Item already exists in the wishlist" });
+            }
+        } else {
+            res.redirect("/")
+        }
+    } catch (err) {
+        console.log("Error in wishlist: ", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+const getWishList = async (req, res) => {
+    try {
+        const userData = await User.findOne({ email: req.session.user_id })
+        const userWishlist = userData.wishList
+        console.log("Wishlist for User: ", userWishlist)
+        const productIds = userWishlist.map(wishlistItem => wishlistItem.productId);
+        const products = await productModel.find({ _id: { $in: productIds } })
+        console.log("All the product in the wishlist: ", products)
+
+
+        res.render("userWishlist", { products })
+
+
+    } catch (err) {
+        console.log("Error in getting the page of the wishlist", err)
+    }
+}
+
+//delete from Wishlist
+const deleteWishlist = async (req, res) => {
+    try {
+        if (req.session.user_id) {
+            const { id } = req.query;
+            console.log("Product id to delete from wishlist: ", id);
+            console.log("Typeof id", typeof (id));
+            const userEmail = req.session.user_id;
+            const wishlist = await User.updateOne(
+                { email: userEmail },
+                { $pull: { wishList: { productId: id } } }
+            );
+            console.log("Wishlist: ", wishlist)
+            res.redirect("/getwishlist")
+
+
+        } else {
+            res.redirect("/")
+        }
+    } catch (err) {
+        console.log("Error in deleting wishlist", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+
+
+const contact = async (req, res) => {
+    try {
+        console.log("Welcome to contact")
+        res.render("contact")
+
+    } catch (err) {
+        console.log("Errin contact", err)
+        res.status(500).render("wentWrong")
+    }
+}
+
+
+const blog = async (req, res) => {
+    try {
+        console.log("Welcome to contact")
+        res.render("blog")
+
+    } catch (err) {
+        console.log("Errin contact", err)
+        res.status(500).render("wentWrong")
+    }
+}
+
+const redeemreferal = async (req, res) => {
+    try {
+        const code = req.body.referal
+        console.log("code: ", code)
+
+        const referedUser = await User.findOne({ referalCode: code, status: "Active" })
+        console.log("refered user: ", referedUser)
+        const email = referedUser.email
+        if (referedUser) {
+            const accepedUser = await User.findOne({ email: req.session.user_id, status: "Active" })
+
+            const usedCode = accepedUser.usedReferal
+            if(usedCode===false){
+                console.log("Mnet added")
+                let acceptedUserWallet = accepedUser.wallet
+                let referedUserWallet = referedUser.wallet
+
+                console.log("acceptedUserWallet: ",acceptedUserWallet)
+                console.log("referedUserWallet: ",referedUserWallet)
+                
+                acceptedUserWallet +=75;
+                referedUserWallet +=75;
+
+                console.log("acceptedUserWallet: ",acceptedUserWallet)
+                console.log("referedUserWallet: ",referedUserWallet)
+
+                await User.findOneAndUpdate({ email: req.session.user_id, status: "Active" },{$set:{wallet:acceptedUserWallet,usedReferal:true}})
+                await User.findOneAndUpdate({ email:email, status: "Active" },{$set:{wallet:referedUserWallet}})
+                console.log("Monet added tp bot wallet")
+
+
+
+            }else{
+                console.log("Used referal")
+                alert("Referl code is alredy used")
+            }
+           
+        } else {
+            console.log("referal code not exist")
+            alert("Invalid user Referal Code")
+
+        }
+
+
+    } catch (err) {
+        console.log("Error in reedeem referal code:", err)
+        res.status(500).render("wentWrong")
+    }
+}
+
+
 
 module.exports = {
 
     getUserDashboard,
+    addWishlist,
 
     getProfile,
     deleteAdress,
@@ -1486,18 +1723,24 @@ module.exports = {
     getCount,
 
     verifyOnlinePayment,
-    //verifyRazorpay
+
 
     OrderRazorpay,
     searchProductHome,
     viewOrder,
 
-    // orderInvoice,
+ 
     verifyOrderConform,
     pdf,
 
     getWallet,
-    depositWallet
+    depositWallet,
+    buyNow,
+    getWishList,
+    deleteWishlist,
+    contact,
+    blog,
+    redeemreferal
 
 
 

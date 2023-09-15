@@ -41,6 +41,7 @@ admin_route.get("/dashboard",authControl.is_adminLoggedIn,adminController.loadDa
 //Chart
 admin_route.get("/chart",authControl.is_adminLoggedIn,adminController.getChartData)
 admin_route.post("/sales-report",authControl.is_adminLoggedIn,adminController.downloadSalesReport)
+admin_route.post("/downloadreport/:startDate/:endDate",authControl.is_adminLoggedIn,adminController.downloadPDF)
 
 //Admin Category Control
 admin_route.get("/category",authControl.is_adminLoggedIn,categoryController.stepifyCategoryList)
@@ -99,6 +100,11 @@ admin_route.post("/coupon",authControl.is_adminLoggedIn,couponControl.saveCoupon
 
 //Listing Coupons
 admin_route.get("/coupon/list-coupon/:id",authControl.is_adminLoggedIn,couponControl.listCoupon)
+
+//stockMangement
+admin_route.get("/lowstock",authControl.is_adminLoggedIn,productController.addStock)
+admin_route.post("/lowstock",authControl.is_adminLoggedIn,productController.updateStock)
+
 
 
 

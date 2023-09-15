@@ -65,6 +65,7 @@ const AddCategoryPage = async(req,res)=>{
         }
     }catch(err){
         console.log("Error in adding category",err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -83,6 +84,7 @@ const editCategoryPage = async(req,res)=>{
         res.render("stepifyUpdateCategory",{category})
     }catch(err){
         console.log("Error in loading update category",err)
+        res.status(500).render("wentWrong")
     }
 
 }
@@ -97,6 +99,7 @@ const updateCategory = async (req, res) => {
       res.redirect("/admin/category");
     } catch (error) {
       console.error("Error:", error);   
+      res.status(500).render("wentWrong")
     }
 }
 
@@ -122,6 +125,7 @@ const unlistCategory = async (req,res)=>{
         
     }catch(err){
         console.log('in unlistController : '+err.msg);
+        res.status(500).render("wentWrong")
     }
 };
 

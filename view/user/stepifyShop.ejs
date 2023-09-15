@@ -49,40 +49,44 @@
                             <option value="highToLow">Price: High to Low</option>
                         </select>
                     </div>
-               
+
                     <div class="pagination row" id="filterNextBar">
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-center">
-                                <% if (currentPage> 1) { %>
-                                    <li class="page-item">
-                                        <a class="page-link" href="#" onclick='getPage("<%= currentPage - 1 %>")'
-                                            aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                            <span class="sr-only">Previous</span>
-                                        </a>
-                                    </li>
-                                    <% } %>
+                        <div class="pagination">
 
-                                        <% for (let i=1; i <=totalPage; i++) { %>
-                                            <li class='page-item <%= i === currentPage ? " active" : "" %>'>
-                                                <a class="page-link" href="#" onclick='getPage("<%= i %>")'>
-                                                    <%= i %>
-                                                </a>
-                                            </li>
-                                            <% } %>
 
-                                                <% if (currentPage < totalPage) { %>
-                                                    <li class="page-item">
-                                                        <a class="page-link" href="#"
-                                                            onclick='getPage("<%= currentPage + 1 %>")'
-                                                            aria-label="Next">
-                                                            <span aria-hidden="true">&raquo;</span>
-                                                            <span class="sr-only">Next</span>
-                                                        </a>
-                                                    </li>
-                                                    <% } %>
-                            </ul>
-                        </nav>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    <% if (currentPage> 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" onclick='getPage("<%= currentPage - 1 %>")'
+                                                aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                                <span class="sr-only">Previous</span>
+                                            </a>
+                                        </li>
+                                        <% } %>
+
+                                            <% for (let i=1; i <=totalPage; i++) { %>
+                                                <li class='page-item <%= i === currentPage ? " active" : "" %>'>
+                                                    <a class="page-link" href="#" onclick='getPage("<%= i %>")'>
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+
+                                                    <% if (currentPage < totalPage) { %>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="#"
+                                                                onclick='getPage("<%= currentPage + 1 %>")'
+                                                                aria-label="Next">
+                                                                <span aria-hidden="true">&raquo;</span>
+                                                                <span class="sr-only">Next</span>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+                                </ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
                 <section class="lattest-product-area pb-40 category-list">
@@ -111,19 +115,18 @@
                                         <div class="prd-bottom">
 
                                             <a href="#" class="social-info" id="addToCart"
-                                            onclick="addtocart('<%- product._id %>')">
-                                            <span class="ti-bag"></span>
-                                            <p class="hover-text">add to bag</p>
-                                        </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-heart"></span>
+                                                onclick="addtocart('<%- product._id %>')">
+                                                <span class="ti-bag"></span>
+                                                <p class="hover-text">add to bag</p>
+                                            </a>
+
+                                            <a href="#" class="social-info" id=""
+                                                onclick='wishList("<%=product._id%>")'>
+                                                <span class="lnr lnr lnr-heart"></span>
                                                 <p class="hover-text">Wishlist</p>
                                             </a>
-                                            <a href="" class="social-info">
-                                                <span class="lnr lnr-sync"></span>
-                                                <p class="hover-text">compare</p>
-                                            </a>
-                                            <a href="" class="social-info">
+
+                                            <a href="/productview?id=<%=product._id%>" class="social-info">
                                                 <span class="lnr lnr-move"></span>
                                                 <p class="hover-text">view more</p>
                                             </a>
@@ -171,6 +174,55 @@
             logData();
         }
 
+        function wishList(proId) {
+            console.log("Product id in wishlist: ", proId);
+            const url = "/wishlist";
+            const options = {
+                method: "post",
+                headers: {
+                    "Content-type": "application/json",
+                },
+                body: JSON.stringify({ proId }),
+            };
+
+            fetch(url, options)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.message) {
+                        console.log("Message: ", data.message)
+
+                        showMessage(data.message);
+                    } else {
+                        console.log("Error: ")
+
+
+                    }
+                })
+                .catch((error) => {
+
+                    console.error("Error:", error);
+                });
+
+        }
+        function showMessage(message) {
+
+            const toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+
+            // Show the Toast with the message
+            toast.fire({
+                icon: 'success',
+                title: message
+            });
+        }
+
+
+
+
         function getBrand(checkbox, brand) {
 
             if (checkbox.checked) {
@@ -191,38 +243,38 @@
             logData();
         }
         function addtocart(proid) {
-							console.log("Product ID:", proid)
-							const url = "/add-to-cart"
-							const options = {
-								method: "post",
-								headers: {
-									"Content-Type": "application/json",
-								},
-								body: JSON.stringify({
-									proid
-								})
-							}
+            console.log("Product ID:", proid)
+            const url = "/add-to-cart"
+            const options = {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    proid
+                })
+            }
 
-							// Send the request and handle the response
-							fetch(url, options)
-								.then(response => response.json()) // Parse the response JSON
-								.then(data => {
-									console.log("Response in add to cart: ", data);
+            // Send the request and handle the response
+            fetch(url, options)
+                .then(response => response.json()) // Parse the response JSON
+                .then(data => {
+                    console.log("Response in add to cart: ", data);
 
-									// Check the response and show SweetAlert accordingly
-									if (data === "Added..") {
+                    // Check the response and show SweetAlert accordingly
+                    if (data === "Added..") {
 
-										Swal.fire('Item Added to the cart')
-									} else if (data === "Product is already in cart") {
-										Swal.fire('Product is already in cart')
-									} else {
-										Swal.fire('Something went wrong!! please try again')
-									}
-								})
-								.catch(error => {
-									console.error("Error in add to cart:", error);
-								});
-						}
+                        Swal.fire('Item Added to the cart')
+                    } else if (data === "Product is already in cart") {
+                        Swal.fire('Product is already in cart')
+                    } else {
+                        Swal.fire('Something went wrong!! please try again')
+                    }
+                })
+                .catch(error => {
+                    console.error("Error in add to cart:", error);
+                });
+        }
 
         function updateSortValue() {
 
@@ -293,14 +345,20 @@
             for (let i = 1; i <= page; i++) {
                 const productDiv = document.createElement('div');
                 productDiv.className = 'pagination ';
-                productDiv.innerHTML = `
-                <a class="col-4" onclick='getPage(${i})' value="${i}"  id="${i}" style="height:30px;color:white">
+                productDiv.innerHTML =
+                    ` 
+                <a class=" " onclick='getPage(${i})' value="${i}"  id="${i}" style="line-height: 40px;color:black" >
                     ${i} 
                 </a>
+        
                 `
                 productListContainer.appendChild(productDiv);
             }
         }
+
+
+
+
 
 
         function updateProductList(products) {

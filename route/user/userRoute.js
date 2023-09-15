@@ -77,6 +77,16 @@ user_route.get("/cart", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfil
 
 user_route.post("/add-to-cart",userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.addingToCart)
 
+//Buy Now
+user_route.get("/buynow",userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.buyNow)
+
+//Wishlist
+user_route.get("/getwishlist",userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.getWishList)
+user_route.post("/wishlist",userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.addWishlist)
+
+//Delete from wallet
+user_route.get("/deleteWishlist",userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.deleteWishlist)
+
 //delete cartproducts
 user_route.get("/deletecart/:proId", userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.cartProductDelete)
 
@@ -119,6 +129,14 @@ user_route.get("/search-products",userProfileController.searchProductHome)
 
 //Invoice
 user_route.get('/invoice',userProfileController.pdf)
+
+//contact
+user_route.get("/contact", userProfileController.contact)
+user_route.get("/blog", userProfileController.blog)
+
+//rreferal
+user_route.post("/redeemReferal",userAuth.is_userLoggedIn, userAuth.isBlocked, userProfileController.redeemreferal)
+
 
 
 //LOGOUT

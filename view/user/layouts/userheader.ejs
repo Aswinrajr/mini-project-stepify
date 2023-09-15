@@ -36,6 +36,23 @@
 
     <!-- Zoom -->
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.css"> -->
+
+    <style>
+        /* Initially hide the Wallet text */
+.cart .wallet-text {
+    display: none;
+}
+
+/* When hovering over the cart link, show the Wallet text and hide the heart icon */
+.cart:hover .ti-heart {
+    display: none;
+}
+
+.cart:hover .wallet-text {
+    display: inline-block;
+}
+
+    </style>
 </head>
 
 <body>
@@ -70,14 +87,26 @@
                                     <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
                                 </ul>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                            <!-- <li class="nav-item"><a class="nav-link" href="">Wishlist</a></li> -->
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <!-- <li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li> -->
+                            
+                           
+                           
+                            <li class="nav-item">
+                                <a href="/getwishlist" class="cart">
+                                    <span class="ti-heart"></span>
+                                    <span class="wallet-text">wishlist</span>
+                                </a>
+                            </li>
+                            
+
                             <li class="nav-item">
                                 <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
                             </li>
+                           
                         </ul>
+                        
                     </div>
                 </div>
             </nav>

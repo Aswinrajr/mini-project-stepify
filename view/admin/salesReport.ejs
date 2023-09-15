@@ -75,21 +75,30 @@
             </tr>
             <% } %>
     </table>
-    <button class="genric-btn primary small mt-3" id="downloadButton">Download PDF</button>
+  
+        <form action="/admin/downloadreport/<%=startDate%>/<%=endDate%>" method="post">
+            <button type="submit" class="genric-btn primary small mt-3" >Download
+                PDF</button>
+        </form>
 </body>
-<!-- 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
 <script>
-   
-    document.getElementById("downloadButton").addEventListener("click", function () {
-        // Create a new jsPDF instance
-        console.log("Button clicked")
-        var doc = new jsPDF();
 
-        // Add HTML content from the table to the PDF
-        doc.fromHTML(document.getElementById("salesTable"), 15, 15);
-
-        // Save the PDF with a specified filename
-        doc.save("sales_report.pdf");
-    });
-</script> -->
+    // function downloadButton(from, to) {
+    //     console.log("From: ", from, "To: ", to)
+    //     const url = "/admin/downloadreport"
+    //     const mode = {
+    //         startDate: from,
+    //         endDate: to
+    //     }
+    //     const options = {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({ mode })
+    //     }
+    //     const res = fetch(url, options)
+    //     console.log(res.data)
+    // }
+</script>

@@ -11,6 +11,7 @@ const listUser =async (req,res)=>{
 
     }catch(err){
         console.log("Error in User listing",err)
+        res.status(500).render("wentWrong")
 
     }
 }
@@ -35,6 +36,7 @@ const unlistuser = async (req, res) => {
 
     } catch (err) {
         console.log('in unlist userController : ' , err);
+        res.status(500).render("wentWrong")
     }
 };
 

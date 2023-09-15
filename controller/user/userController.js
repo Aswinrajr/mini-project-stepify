@@ -37,20 +37,21 @@ function generate_OTP() {
 //Search
 const searchProducts = async (req, res) => {
     const query = req.query.query;
-    const userData = await User.findOne({email:req.session.user_id})
+    const userData = await User.findOne({ email: req.session.user_id })
     try {
         const products = await productModel.find({
             $or: [
-                { name: { $regex: query, $options: 'i' } }, 
-                { brand: { $regex: query, $options: 'i' } }, 
-                { categoryName: { $regex: query, $options: 'i' } }, 
+                { name: { $regex: query, $options: 'i' } },
+                { brand: { $regex: query, $options: 'i' } },
+                { categoryName: { $regex: query, $options: 'i' } },
             ],
         });
 
-        res.render('webHomepage', { products, userData}); 
+        res.render('webHomepage', { products, userData });
     } catch (err) {
         console.error(err);
-      
+        res.status(500).render("wentWrong")
+
     }
 
 }
@@ -81,7 +82,8 @@ const websiteHome = async (req, res) => {
 
         res.render("webHomepage", { products, userData })
     } catch (err) {
-        console.log("Error in home Page")
+        console.log("Error in home Page", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -92,9 +94,28 @@ const usersignupPage = (req, res) => {
         res.render("userSignup", { msg: 'Sign up Now' })
     } catch (err) {
         console.log("Error in sign up ", err)
+        res.status(500).render("wentWrong")
     }
 
 }
+
+function generateRandomCode() {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const codeLength = 5;
+    let code = "";
+
+    // Generate a random character from the 'characters' string for each position in the code
+    for (let i = 0; i < codeLength; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        code += characters.charAt(randomIndex);
+    }
+
+    return code;
+}
+
+// Example usage:
+
+
 
 //NEW USER REGISTRATION
 const userRegistration = async (req, res) => {
@@ -108,11 +129,14 @@ const userRegistration = async (req, res) => {
 
             console.log(name, email, mobile, password)
             const spassword = await securePassword(password)
+            const referralCode = generateRandomCode();
+            console.log(referralCode); // Output: e.g., "ABC12"
             const user = new User({
                 name: name,
                 email: email,
                 mobile: mobile,
-                password: spassword
+                password: spassword,
+                referalCode:referralCode
             })
             const userData = await user.save()
             res.render("userSignup", { msg: "User registered successfully Please log in" })
@@ -128,7 +152,7 @@ const userRegistration = async (req, res) => {
         //alert('Enter the fields')
         console.log("Error in User Registration", err)
 
-        res.redirect("/signup")
+        res.status(500).render("wentWrong")
 
     }
 }
@@ -139,6 +163,7 @@ const getUserLoginPage = (req, res) => {
         res.render("userLogin", { msg: 'Please Login' })
     } catch (err) {
         console.log("Error in loading the login page: ", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -152,6 +177,7 @@ const renderEnterMobileNumber = async (req, res) => {
 
     } catch (err) {
         console.log("Error in Rendering the Mobile number page in reset password")
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -189,6 +215,7 @@ const cpSendOTP = async (req, res) => {
 
     } catch (err) {
         console.log("Error in rendering sendOtp page IN FORGOT PASSWORD", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -201,6 +228,7 @@ const renderEnterOTP = async (req, res) => {
 
     } catch (err) {
         console.log("Error in rendering otp page for forgotpassword")
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -225,6 +253,7 @@ const cpVerifyOTP = async (req, res) => {
 
     } catch (err) {
         console.log("Error in verify OTP")
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -235,6 +264,7 @@ const renderResetPassword = async (req, res) => {
 
     } catch (err) {
         console.log("Error in rendering reset password", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -256,6 +286,7 @@ const setNewPassword = async (req, res) => {
 
     } catch (err) {
         console.log("Error in Resetting password", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -285,19 +316,19 @@ const verifyUser = async (req, res) => {
                 if (matchPassword) {
                     req.session.user_id = userData.email
                     console.log("Welcome to User Profile")
-                  
+
                     res.redirect("/")
                 } else {
-                  
+
                     res.render("userLogin", { msg: "Please enter the Registered password" })
                 }
             } else {
-                
+
                 res.render("userLogin", { msg: "You are Blocked please contact admin" })
             }
 
         } else {
-          
+
             res.render("userLogin", { msg: "User is not registered please sign up" })
         }
 
@@ -316,6 +347,7 @@ const loadSendOTP = async (req, res) => {
 
     } catch (err) {
         console.log("Error in loading the send otp page", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -353,6 +385,7 @@ const sendOTP = async (req, res) => {
 
     } catch (err) {
         console.log("Error in rendering sendOtp page", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -377,6 +410,7 @@ const verifyOTP = async (req, res) => {
 
     } catch (err) {
         console.log("Error in verify OTP")
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -402,32 +436,44 @@ const productView = async (req, res) => {
                 if (element.productId == proId) {
                     console.log("Found....😊");
                     existincart = true
+                } else {
+                    console.log("Product NOT FOUND")
+
                 }
             })
             isLoggedIn = true;
 
-        } 
+        }
         else {
             console.log("No user")
             alert("Please Login to Continue Shopping")
-          
+
         }
         console.log("---------------------------------------------------------------------------")
+
+
         console.log("products in cart exist/not: [proId]", proId)
         console.log("---------------------------------------------------------------------------")
 
 
         const proData = await productModel.findById({ _id: proId })
-        console.log("---------------------------------------------------------------------------")
-        console.log("Product data in product view : [proData]: ", proData)
-        console.log("---------------------------------------------------------------------------")
-        console.log("---------------------------------------------------------------------------")
-        console.log("user data in product view :[userData]: ", userData)
-        console.log("---------------------------------------------------------------------------")
-        res.render("productView", { proData, userData, existincart,isLoggedIn  })
+        if (proData) {
+
+            console.log("---------------------------------------------------------------------------")
+            console.log("Product data in product view : [proData]: ", proData)
+            console.log("---------------------------------------------------------------------------")
+            console.log("---------------------------------------------------------------------------")
+            console.log("user data in product view :[userData]: ", userData)
+            console.log("---------------------------------------------------------------------------")
+            res.render("productView", { proData, userData, existincart, isLoggedIn })
+        } else {
+            console.log("pRODUCT NOT FOUND IN DATA BASE")
+            res.status(404).render("pageNotFound")
+        }
 
     } catch (err) {
         console.log("Error in product View", err)
+        res.status(500).render("wentWrong")
     }
 }
 
@@ -445,6 +491,7 @@ const addToCart = async (req, res) => {
         }
     } catch (err) {
         console.log("Error in Add to Cart")
+        res.status(500).render("wentWrong")
     }
 }
 

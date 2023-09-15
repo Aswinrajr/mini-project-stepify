@@ -9,6 +9,7 @@
                     <div class="product_image_area">
                         <div class="container">
                             <div class="row s_product_inner">
+                                
                                 <div class="col-lg-6">
                                     <div class="p-5 row d-flex">
                                         <% proData.image.forEach(data=>{%>
@@ -64,12 +65,12 @@
                                                                     Cart</a>
 
                                                                 <%}%>
-                                                                    <button type="button"
+                                                                    <a href="/buynow/?id=<%=proData._id%>" type="button"
                                                                         class="primary-btn border-0">Buy
-                                                                        Now</button>
+                                                                        Now</a>
                                                                     <!-- <a href="#" class="primary-btn border-0">Buy Now</a> -->
-                                                                    <a class="icon_btn" href="#"><i
-                                                                            class="lnr lnr lnr-heart"></i></a>
+                                                                    <a class="icon_btn"  href="#"><i
+                                                                            class="lnr lnr lnr-heart" onclick='wishList("<%=proData._id%>")'></i></a>
                                         </div>
 
 
@@ -78,6 +79,8 @@
                             </div>
                         </div>
                     </div>
+
+                    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
                     <!-- jquery -->
                     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -127,5 +130,51 @@
                                 if (err === 'Not Login') location.href = '/login';
                             }
                         }
+                        function wishList(proId) {
+                            console.log("Product id in wishlist: ", proId);
+                            const url = "/wishlist";
+                            const options = {
+                                method: "post",
+                                headers: {
+                                    "Content-type": "application/json",
+                                },
+                                body: JSON.stringify({ proId }),
+                            };
+
+                            fetch(url, options)
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    if (data.message) {
+                                        console.log("Message: ", data.message)
+
+                                        showMessage(data.message);
+                                    } else {
+                                        console.log("Error: ")
+
+
+                                    }
+                                })
+                                .catch((error) => {
+
+                                    console.error("Error:", error);
+                                });
+
+                        }
+                        function showMessage(message) {
+
+                            const toast = Swal.mixin({
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+
+                            // Show the Toast with the message
+                            toast.fire({
+                                icon: 'success',
+                                title: message
+                            });
+                        }
+
                     </script>
                     <%- include("./layouts/footer.ejs") %>

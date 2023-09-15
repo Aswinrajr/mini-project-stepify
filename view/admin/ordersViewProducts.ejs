@@ -86,6 +86,10 @@
                                                 </p>
                                                 <p>quantity: <%= item.quantity %>
                                                 </p>
+                                                <%if(item.reason!="NotReturned"){%>
+                                                <p>Reason: <%= item.reason %>
+                                                </p>
+                                                <%}%>
                                                 <p>Delivery Address: <%= data.deliveryAddress %>
                                                 </p>
                                                 <p>Payment Method: <%= data.paymentMethod %>

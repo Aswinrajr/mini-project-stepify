@@ -1,8 +1,8 @@
 <% if(userData){%>
 	<%- include("./layouts/userheader.ejs") %>
-		<%}else{%>
+		<% } else { %>
 			<%- include("./layouts/header.ejs") %>
-				<%}%>
+				<% } %>
 
 
 					<!-- start banner Area -->
@@ -29,7 +29,7 @@
 													</div>
 												</div>
 											</div>
-											<div class="col-lg-7">
+											<div class="col-lg-7 col-md-6">
 												<div class="banner-img">
 													<img class="img-fluid"
 														src="/public/usercss/img/banner/banner-img.png" alt="">
@@ -42,7 +42,9 @@
 						</div>
 					</section>
 					<!-- End banner Area -->
+
 					<!-- start features Area -->
+			
 					<section class="features-area section_gap">
 						<div class="container">
 							<div class="row features-inner">
@@ -53,7 +55,7 @@
 											<img src="/public/usercss/img/features/f-icon1.png" alt="">
 										</div>
 										<h6>Free Delivery</h6>
-										<p>Free Shipping on all order</p>
+										<p>Free Shipping on all orders</p>
 									</div>
 								</div>
 								<!-- single features -->
@@ -63,7 +65,7 @@
 											<img src="/public/usercss/img/features/f-icon2.png" alt="">
 										</div>
 										<h6>Return Policy</h6>
-										<p>Free Shipping on all order</p>
+										<p>Easy Returns</p>
 									</div>
 								</div>
 								<!-- single features -->
@@ -73,7 +75,7 @@
 											<img src="/public/usercss/img/features/f-icon3.png" alt="">
 										</div>
 										<h6>24/7 Support</h6>
-										<p>Free Shipping on all order</p>
+										<p>Customer Support</p>
 									</div>
 								</div>
 								<!-- single features -->
@@ -83,75 +85,119 @@
 											<img src="/public/usercss/img/features/f-icon4.png" alt="">
 										</div>
 										<h6>Secure Payment</h6>
-										<p>Free Shipping on all order</p>
+										<p>Secure Payment Options</p>
 									</div>
 								</div>
 							</div>
 						</div>
 					</section>
 					<!-- end features Area -->
+
 					<!-- start product Area -->
-					<section class=" active-product">
-						<!-- single product slide -->
-						<div class="">
-							<div class="container">
-								<div class="row justify-content-center">
-									<div class="col-lg-6 text-center">
-										<div class="section-title">
-											<h1> Premium Collections</h1>
-											<p></p>
-										</div>
+					<section class="active-product">
+						<div class="container">
+							<div class="row justify-content-center">
+								<div class="col-lg-6 text-center">
+									<div class="section-title">
+										<h1>Premium Collections</h1>
 									</div>
 								</div>
-								<div class="row">
-									<% for(const product of products) { %>
-										<!-- single product -->
-										<div class="col-lg-3 col-md-6">
-											<div class="single-product ">
-												<a href="/productview?id=<%=product._id%>"><img class="img-fluid"
-														src="/public/uploads/<%= product.image[0] %>" alt=""
-														style="width: 300px;height: 300px;"></a>
-												<div class="product-details">
-													<span>
-														<%=product.brand%>
-													</span>
-													<h5>
-														<%= product.categoryName %>
-													</h5>
-													<div class="price">
-														<h5>Price: ₹ <%= product.price %>
-														</h5>
-														<span>Person : <%=product.person%></span><br>
-														<span class="">Size: <%= product.size%>
-														</span>
+							</div>
+							<div class="row">
 
-													</div>
-													<% if(userData){%>
-														<div class="prd-bottom">
-															<a href="#" class="social-info" id="addToCart"
-																onclick="addtocart('<%- product._id %>')">
-																<span class="ti-bag"></span>
-																<p class="hover-text">add to bag</p>
-															</a>
-															<a href="" class="social-info">
-																<span class="lnr lnr-heart"></span>
-																<p class="hover-text">Wishlist</p>
-															</a>
-														</div>
-														<%}%>
+								<% for(const product of products) { %>
+									<!-- single product -->
+									<div class="col-lg-3 col-md-6 col-sm-6">
+										<div class="single-product">
+											<a href="/productview?id=<%=product._id%>">
+												<img class="img-fluid" src="/public/uploads/<%= product.image[0] %>"
+													alt="" style="width: 100%; max-height: 300px;">
+											</a>
+											<div class="product-details">
+												<span>
+													<%=product.brand%>
+												</span>
+												<h5>
+													<%= product.categoryName %>
+												</h5>
+												<div class="price">
+													<h5>Price: ₹ <%= product.price %>
+													</h5>
+													<span>Person: <%=product.person%></span><br>
+													<span class="">Size: <%= product.size%></span>
 												</div>
+												<% if(userData){%>
+													<div class="prd-bottom">
+														<a href="#" class="social-info" id="addToCart"
+															onclick="addtocart('<%- product._id %>')">
+															<span class="ti-bag"></span>
+															<p class="hover-text">add to bag</p>
+														</a>
+														<a href="#" onclick='wishList("<%=product._id%>")'
+															class="social-info">
+															<span class="lnr lnr-heart"></span>
+															<p class="hover-text">Wishlist</p>
+														</a>
+													</div>
+													<%}%>
 											</div>
 										</div>
-										<% } %>
-								</div>
+									</div>
+									<% } %>
 							</div>
 						</div>
-						</div>
-
 					</section>
-					<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+					<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 					<script>
+						function wishList(proId) {
+							console.log("Product id in wishlist: ", proId);
+							const url = "/wishlist";
+							const options = {
+								method: "post",
+								headers: {
+									"Content-type": "application/json",
+								},
+								body: JSON.stringify({ proId }),
+							};
+
+							fetch(url, options)
+								.then((response) => response.json())
+								.then((data) => {
+									if (data.message) {
+										console.log("Message: ", data.message)
+
+										showMessage(data.message);
+									} else {
+										console.log("Error: ")
+
+
+									}
+								})
+								.catch((error) => {
+									
+									console.error("Error:", error);
+								});
+
+						}
+						function showMessage(message) {
+					
+							const toast = Swal.mixin({
+								toast: true,
+								position: 'top-end',
+								showConfirmButton: false,
+								timer: 3000
+							});
+
+							// Show the Toast with the message
+							toast.fire({
+								icon: 'success',
+								title: message
+							});
+						}
+
+
+
 
 						function addtocart(proid) {
 							console.log("Product ID:", proid)
@@ -174,7 +220,6 @@
 
 									// Check the response and show SweetAlert accordingly
 									if (data === "Added..") {
-
 										Swal.fire('Item Added to the cart')
 									} else if (data === "Product is already in cart") {
 										Swal.fire('Product is already in cart')
@@ -186,9 +231,5 @@
 									console.error("Error in add to cart:", error);
 								});
 						}
-
-
-
-
 					</script>
 					<%- include("./layouts/footer.ejs") %>

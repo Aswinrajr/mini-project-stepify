@@ -79,8 +79,23 @@
     .content button:hover {
         background-color: #0056b3;
     }
-</style>
 
+    /* Style user details */
+    .user-details {
+        margin-top: 20px;
+    }
+
+    /* Additional styles for user mobile and address */
+    .user-details h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .user-details p {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+</style>
 
 <section class="checkout_area section_gap mt-5">
     <div class="container mt-4">
@@ -88,7 +103,6 @@
             <div class="row">
                 <div class="col-lg-4 col-md-3">
                     <div class="sidebar mt-5">
-                       
                         <ul>
                             <li><a href="#">About</a></li>
                             <li><a href="/change-password">Change Password</a></li>
@@ -100,9 +114,14 @@
                 </div>
                 <div class="content col-lg-8 col-md-9">
                     <section class="dashboard-content p-4">
-                       
-                        <h2>Welcome,  <%=userData.name%>!</h2>
-                     
+                        <h2>Welcome, <%= userData.name %>!</h2>
+                        
+                        <!-- User Details -->
+                        <div class="user-details">
+                            <h3>Mobile Number:</h3>
+                            <p><%= userData.mobile %></p>
+                            
+                        </div>
                     </section>
                 </div>
             </div>
