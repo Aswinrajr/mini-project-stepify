@@ -1360,7 +1360,7 @@ const buyNow = async (req, res) => {
 
 
             console.log("Product for buy: ", walletProduct)
-            res.render("userCheckOutpage", { data: walletProduct, userAdress, subtotal, validCoupon })
+            res.render("userCheckoutpage", { data: walletProduct, userAdress, subtotal, validCoupon })
         } else {
             res.redirect("/")
         }
