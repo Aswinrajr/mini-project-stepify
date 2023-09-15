@@ -6,7 +6,6 @@ const Product = require("../../model/admin/productModel")
 const userController = require("../../controller/user/userController")
 const userProfileController = require("../../controller/user/userProfile")
 const userAuth = require("../../middleware/userAuthValidation")
-const razorpayController = require('../../controller/user/razorpayControler');
 
 
 
@@ -99,7 +98,6 @@ user_route.get("/checkout", userAuth.is_userLoggedIn, userAuth.isBlocked, userPr
 user_route.post("/validate-coupon",userAuth.is_userLoggedIn,userAuth.isBlocked,userProfileController.validateCoupon)
 user_route.get("/verify-payment",userAuth.is_userLoggedIn,userAuth.isBlocked,userProfileController.verifyOnlinePayment)
 user_route.post("/online-payment",userAuth.is_userLoggedIn,userAuth.isBlocked,userProfileController.OrderRazorpay)
-// user_route.post("/verify-razorpay-payment",userAuth.is_userLoggedIn,userAuth.isBlocked,userProfileController.verifyRazorpay)
 
 
 
