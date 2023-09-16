@@ -343,7 +343,7 @@ const verifyUser = async (req, res) => {
 const loadSendOTP = async (req, res) => {
     try {
         console.log("You are in send otp page")
-        res.render("userOTPsend")
+        res.render("userOtpsend")
 
     } catch (err) {
         console.log("Error in loading the send otp page", err)
