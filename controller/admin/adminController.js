@@ -108,6 +108,7 @@ const adminVerification = async (req, res) => {
     const adminEmail = req.body.email
     const adminPassword = req.body.password
     console.log(adminEmail, adminPassword)
+    console.log("Haii")
 
     try {
 
