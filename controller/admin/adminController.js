@@ -6,10 +6,10 @@ const alert = require("alert")
 const { CompositionHookListInstance } = require("twilio/lib/rest/video/v1/compositionHook")
 const { ConversationListInstance } = require("twilio/lib/rest/conversations/v1/conversation");
 const productModel = require("../../model/admin/productModel");
-const SID = process.env.Account_SID
-const TOKEN = process.env.Auth_Token
-const twilio = require("twilio")(SID, TOKEN)
-console.log(SID, TOKEN)
+// const SID = process.env.Account_SID
+// const TOKEN = process.env.Auth_Token
+// const twilio = require("twilio")(SID, TOKEN)
+// console.log(SID, TOKEN)
 
 const Chart = require('chart.js');
 const axios = require('axios');
@@ -170,16 +170,16 @@ const sentOTP = async (req, res) => {
             console.log("aOTP: ", req.app.locals.aOTP, "aMobile: ", req.app.locals.amobile)
             console.log(OTP)
             //Using twilio to send
-            await twilio.messages
-                .create({
-                    body: OTP,
-                    to: adminMob,
-                    from: "+18149047030"
-                }).then((message) => {
-                    console.log(message)
-                    alert("OTP Send To The Registered Mobile Number")
-                    res.redirect("/admin/verifyotp")
-                })
+            // await twilio.messages
+            //     .create({
+            //         body: OTP,
+            //         to: adminMob,
+            //         from: "+18149047030"
+            //     }).then((message) => {
+            //         console.log(message)
+            //         alert("OTP Send To The Registered Mobile Number")
+            //         res.redirect("/admin/verifyotp")
+            //     })
 
         } else {
             res.render("otpForgotPassword", { msg: "" })
