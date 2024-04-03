@@ -21,10 +21,10 @@ user_route.post("/signup", userAuth.is_userLoggedOut, userController.userRegistr
 
 //OTP SEND
 user_route.get("/otpsend", userAuth.is_userLoggedOut, userController.loadSendOTP)
-user_route.post("/otpsend", userAuth.is_userLoggedOut, userController.sendOTP)
+// user_route.post("/otpsend", userAuth.is_userLoggedOut, userController.sendOTP)
 
 //VERIFY OTP
-user_route.post("/verify", userAuth.is_userLoggedOut, userController.verifyOTP)
+// user_route.post("/verify", userAuth.is_userLoggedOut, userController.verifyOTP)
 
 //FORGOT PASSWORD
 user_route.get("/enter-mobile-number", userAuth.is_userLoggedOut, userController.renderEnterMobileNumber)

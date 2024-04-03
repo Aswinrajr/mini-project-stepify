@@ -3,8 +3,8 @@ const bcrypt = require("bcrypt")
 const alert = require("alert")
 const { CompositionHookListInstance } = require("twilio/lib/rest/video/v1/compositionHook")
 const { ConversationListInstance } = require("twilio/lib/rest/conversations/v1/conversation")
-const SID = process.env.Account_SID
-const TOKEN = process.env.Auth_Token
+const SID = "AC441672b78b9fa71e3136eca501edae98"
+const TOKEN = "6ca1345103ff994e2a46199af2939ff6"
 const twilio = require("twilio")(SID, TOKEN)
 console.log(SID, TOKEN)
 
