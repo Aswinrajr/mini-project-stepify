@@ -5,6 +5,7 @@ const path = require('path');
 
 
 const alert = require("alert");
+const productModel = require("../../model/admin/productModel");
 // const { set } = require("../../route/admin/adminRoute");
 
 
@@ -188,31 +189,50 @@ const unlistproduct = async (req, res) => {
 };
 
 
-const addStock =async(req,res)=>{
-    try{
+const addStock = async (req, res) => {
+    try {
         console.log("Welcome to add stock")
         const products = await Product.find({ quantity: { $lt: "10" } });
-        console.log("products: ",products)
+        console.log("products: ", products)
 
-        res.render("lowStock",{data:products})
+        res.render("lowStock", { data: products })
 
-    }catch(err) {
+    } catch (err) {
         console.log("Errorn in add stock:", err)
         res.status(500).render("wentWrong")
     }
 }
 
-const updateStock = async(req,res)=>{
-    try{
+const updateStock = async (req, res) => {
+    try {
         console.log("WELCOME ADD DATA")
-        const {addQuantity} = req.body
-        
-        console.log("addQuantity: ",addQuantity)
+        const { addQuantity } = req.body
+
+        console.log("addQuantity: ", addQuantity)
         const product = await Product.findOne()
 
-    }catch(err){
-        console.log("Error in adding stock",err)
+    } catch (err) {
+        console.log("Error in adding stock", err)
         res.status(500).render("wentWrong")
+    }
+}
+
+const deleteImage = async (req, res) => {
+    try {
+        console.log("welcome to image delete")
+        const {imageId} = req.query
+        console.log("Image id: ",imageId)
+        const product = await productModel.findOne({image:imageId})
+        console.log("Product: ",product)
+        const id= product._id
+        const result = await productModel.updateOne(
+            { _id: id }, 
+            { $pull: { image: imageId } }
+          );
+        res.render("stepifyUpdateProduct", { product })
+
+    } catch (err) {
+        console.log("Error in deleting the image", err)
     }
 }
 
@@ -224,6 +244,7 @@ module.exports = {
     newUpdatedProductData,
     unlistproduct,
     addStock,
-    updateStock
+    updateStock,
+    deleteImage
 
 }

@@ -70,6 +70,8 @@ admin_route.post("/product/",authControl.is_adminLoggedIn,upload.array("image",3
 admin_route.get("/product/editproduct",authControl.is_adminLoggedIn,productController.updateProductData)
 admin_route.post("/product/editproduct",authControl.is_adminLoggedIn,upload.array("image",3),productController.newUpdatedProductData)
 
+admin_route.get("/product/deleteImage",authControl.is_adminLoggedIn,productController.deleteImage)
+
 //Unlist product Data
 admin_route.get("/product/deleteproduct",authControl.is_adminLoggedIn,productController.unlistproduct)
 admin_route.post("/product/deleteproduct",authControl.is_adminLoggedIn,productController.loadProductData)

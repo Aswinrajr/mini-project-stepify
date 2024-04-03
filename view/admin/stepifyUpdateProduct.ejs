@@ -1,7 +1,18 @@
 <%- include("./layouts/header.ejs") %>
+    <style>
+        .delete-button {
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            height: 30px;
+            margin-top: 30px;
+            margin-left: 10px;
+        }
+    </style>
 
     <div class="container px-6 mx-auto grid" style="width: 50%; margin-top: 5%; font-size: 1.2rem;">
-        <form action="/admin/product/editproduct?id=<%=product._id%>"  method="post" enctype="multipart/form-data">
+        <form action="/admin/product/editproduct?id=<%=product._id%>" method="post" enctype="multipart/form-data">
             <div class="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800 ">
                 <div class="text-center font-semibold">
                     <!-- Increase the font size using inline style -->
@@ -17,7 +28,7 @@
                             </span>
                             <input type="text"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                                id="categoryName" name="categoryName" value="<%= product.categoryName %>"  required="">
+                                id="categoryName" name="categoryName" value="<%= product.categoryName %>" required="">
                         </label>
 
                     </div>
@@ -28,9 +39,9 @@
                             </span>
                             <input type="text"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                                id="brand" name="brand" value="<%= product.brand %>"  required="">
+                                id="brand" name="brand" value="<%= product.brand %>" required="">
                         </label>
-        
+
                     </div>
 
                 </div>
@@ -42,7 +53,7 @@
                             </span>
                             <input type="text"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                                id="person" name="person" value="<%= product.person %>"  required="">
+                                id="person" name="person" value="<%= product.person %>" required="">
                         </label>
 
                     </div>
@@ -54,9 +65,9 @@
                             <input type="number"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                                 id="size" name="size" value="<%= product.size %>" required="">
-                                <p id="validationSize" style="color: red;font-size: 13px;"></p>
+                            <p id="validationSize" style="color: red;font-size: 13px;"></p>
                         </label>
-        
+
                     </div>
 
                 </div>
@@ -80,9 +91,9 @@
                             <input type="number"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                                 id="price" name="price" value="<%= product.price %>" required="">
-                                <p id="validationPrice" style="color: red;font-size: 13px;"></p>
+                            <p id="validationPrice" style="color: red;font-size: 13px;"></p>
                         </label>
-        
+
                     </div>
 
                 </div>
@@ -95,20 +106,24 @@
                             <input type="number"
                                 class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
                                 id="quantity" name="quantity" value="<%= product.quantity %>" required="">
-                                <p id="validationQuantity" style="color: red;font-size: 13px;"></p>
+                            <p id="validationQuantity" style="color: red;font-size: 13px;"></p>
                         </label>
 
                     </div>
                 </div>
                 <div class="col-xl-6">
                     <label class="block mt-4 text-sm">
-                     
-                        <input type="file" class="" name="image" id="image"  accept="image/*" multiple>
+
+                        <input type="file" class="" name="image" id="image" accept="image/*" multiple>
                         <div class="flex">
-                            <%for(let i=0;i<product.image.length;i++){%>
-                            <img style="width: 80px; height: 80px;" src="../../public/uploads/<%= product.image[i] %>" alt="Current Product Image">
-                            <%}%>
-                          </div>
+                            <%for(let i=0;i<3;i++){%>
+                                <img style="width: 80px; height: 80px;"
+                                    src="../../public/uploads/<%= product.image[i] %>" alt="Current Product Image">
+                                <a href="/admin/product/deleteImage/?imageId=<%=product.image[i]%>" class="delete-button">delete</a>
+
+
+                                <%}%>
+                        </div>
 
                     </label>
 
@@ -125,7 +140,7 @@
                         </label>
 
                     </div>
-                </div>      
+                </div>
                 <button type="submit"
                     class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">Update
                     Product</button>
@@ -134,16 +149,16 @@
     </div>
 
     <script>
-     
+
         const quantityInput = document.getElementById("size");
         const quantity = document.getElementById("quantity");
         const price = document.getElementById("price");
 
         const validationMessage = document.getElementById("validationSize");
         const validationQuantity = document.getElementById("validationQuantity");
-        const validationPrice= document.getElementById("validationPrice");
+        const validationPrice = document.getElementById("validationPrice");
 
-     
+
         quantityInput.addEventListener("input", function () {
             const enteredValue = parseInt(quantityInput.value, 10);
 
@@ -151,8 +166,8 @@
             if (enteredValue < 0) {
                 validationMessage.textContent = "size cannot be negative.";
                 quantityInput.setCustomValidity("size cannot be negative."); // Set a custom validation message
-                validationMessage.textContent = ""; 
-                quantityInput.setCustomValidity(""); 
+                validationMessage.textContent = "";
+                quantityInput.setCustomValidity("");
             }
         });
 
@@ -160,12 +175,12 @@
             const enteredValue = parseInt(quantity.value, 10);
 
             // Check if the entered value is negative
-            if (enteredValue < 1) {
-                validationQuantity.textContent = "Quantity cannot be less than 1";
-                quantity.setCustomValidity("Quantity cannot be lessthan 1."); 
+            if (enteredValue < 0) {
+                validationQuantity.textContent = "Quantity cannot be less than 0";
+                quantity.setCustomValidity("Quantity cannot be lessthan 0.");
             } else {
-                validationQuantity.textContent = ""; 
-                quantity.setCustomValidity(""); 
+                validationQuantity.textContent = "";
+                quantity.setCustomValidity("");
             }
         });
 
@@ -177,8 +192,8 @@
                 validationPrice.textContent = "Price cannot be less than minimum price";
                 price.setCustomValidity("Price cannot be less than minimum price");
             } else {
-                validationPrice.textContent = ""; 
-                price.setCustomValidity(""); 
+                validationPrice.textContent = "";
+                price.setCustomValidity("");
             }
         });
     </script>
