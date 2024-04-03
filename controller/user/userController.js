@@ -3,9 +3,9 @@ const bcrypt = require("bcrypt")
 const alert = require("alert")
 const { CompositionHookListInstance } = require("twilio/lib/rest/video/v1/compositionHook")
 const { ConversationListInstance } = require("twilio/lib/rest/conversations/v1/conversation")
-const {SID,TOKEN} =require("../../config/Sample")
+// const {SID,TOKEN} =require("../../config/Sample")
 const twilio = require("twilio")(SID, TOKEN)
-console.log(SID, TOKEN)
+// console.log(SID, TOKEN)
 
 const productModel = require("../../model/admin/productModel")
 
@@ -196,17 +196,17 @@ const cpSendOTP = async (req, res) => {
             console.log("sOTP: ", req.app.locals.sOTP, "sMobile: ", req.app.locals.smobile)
             console.log(OTP)
             //Using twilio to send
-            await twilio.messages
-                .create({
-                    body: OTP,
-                    to: userMob,
-                    from: "+18149047030"
-                }).then((message) => {
-                    console.log(message)
-                    alert("OTP Send To The Registered Mobile Number")
-                    //res.render("userOTPverify")
-                    res.redirect("/enter-OTP")
-                })
+            // await twilio.messages
+            //     .create({
+            //         body: OTP,
+            //         to: userMob,
+            //         from: "+18149047030"
+            //     }).then((message) => {
+            //         console.log(message)
+            //         alert("OTP Send To The Registered Mobile Number")
+            //         //res.render("userOTPverify")
+            //         res.redirect("/enter-OTP")
+            //     })
 
         } else {
             res.render("enterMobileNumber")
