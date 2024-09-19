@@ -1,235 +1,223 @@
-<% if(userData){%>
-	<%- include("./layouts/userheader.ejs") %>
-		<% } else { %>
-			<%- include("./layouts/header.ejs") %>
-				<% } %>
+<% if(userData){%> <%- include("./layouts/userheader.ejs") %> <% } else { %> <%-
+include("./layouts/header.ejs") %> <% } %>
 
+<section class="banner-area">
+  <div class="container">
+    <div class="row fullscreen align-items-center justify-content-start">
+      <div class="col-lg-12">
+        <div class="active-banner">
+          <div class="row single-slide align-items-center d-flex">
+            <div class="col-lg-5 col-md-6">
+              <div class="banner-content">
+                <h1>Nike New <br />Collection!</h1>
+                <p>
+                  "Step into Style and Comfort with Our Footwear Collection!
+                  <br />Discover the perfect blend of style and comfort with our
+                  stunning collection of footwear. Whether you're looking for
+                  casual kicks, elegant heels, sporty sneakers, or sturdy boots,
+                  we've got you covered.
+                </p>
+                <div class="add-bag d-flex align-items-center">
+                  <a class="add-btn" href="/"
+                    ><span class="lnr lnr-cross"></span
+                  ></a>
+                  <span class="add-text text-uppercase">Add to Bag</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-7 col-md-6">
+              <div class="banner-img">
+                <img
+                  class="img-fluid"
+                  src="/public/usercss/img/banner/banner-img.png"
+                  alt=""
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-					<!-- start banner Area -->
-					<section class="banner-area">
-						<div class="container">
-							<div class="row fullscreen align-items-center justify-content-start">
-								<div class="col-lg-12">
-									<div class="active-banner">
-										<!-- single-slide -->
-										<div class="row single-slide align-items-center d-flex">
-											<div class="col-lg-5 col-md-6">
-												<div class="banner-content">
-													<h1>Nike New <br>Collection!</h1>
-													<p>"Step into Style and Comfort with Our Footwear Collection!
-														<br>Discover the perfect blend of style and comfort with our
-														stunning collection of footwear. Whether you're looking for
-														casual kicks, elegant heels, sporty sneakers, or sturdy boots,
-														we've got you covered.
-													</p>
-													<div class="add-bag d-flex align-items-center">
-														<a class="add-btn" href="/"><span
-																class="lnr lnr-cross"></span></a>
-														<span class="add-text text-uppercase">Add to Bag</span>
-													</div>
-												</div>
-											</div>
-											<div class="col-lg-7 col-md-6">
-												<div class="banner-img">
-													<img class="img-fluid"
-														src="/public/usercss/img/banner/banner-img.png" alt="">
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</section>
-					<!-- End banner Area -->
+<section class="features-area section_gap">
+  <div class="container">
+    <div class="row features-inner">
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="single-features">
+          <div class="f-icon">
+            <img src="/public/usercss/img/features/f-icon1.png" alt="" />
+          </div>
+          <h6>Free Delivery</h6>
+          <p>Free Shipping on all orders</p>
+        </div>
+      </div>
 
-					<!-- start features Area -->
-			
-					<section class="features-area section_gap">
-						<div class="container">
-							<div class="row features-inner">
-								<!-- single features -->
-								<div class="col-lg-3 col-md-6 col-sm-6">
-									<div class="single-features">
-										<div class="f-icon">
-											<img src="/public/usercss/img/features/f-icon1.png" alt="">
-										</div>
-										<h6>Free Delivery</h6>
-										<p>Free Shipping on all orders</p>
-									</div>
-								</div>
-								<!-- single features -->
-								<div class="col-lg-3 col-md-6 col-sm-6">
-									<div class="single-features">
-										<div class="f-icon">
-											<img src="/public/usercss/img/features/f-icon2.png" alt="">
-										</div>
-										<h6>Return Policy</h6>
-										<p>Easy Returns</p>
-									</div>
-								</div>
-								<!-- single features -->
-								<div class="col-lg-3 col-md-6 col-sm-6">
-									<div class="single-features">
-										<div class="f-icon">
-											<img src="/public/usercss/img/features/f-icon3.png" alt="">
-										</div>
-										<h6>24/7 Support</h6>
-										<p>Customer Support</p>
-									</div>
-								</div>
-								<!-- single features -->
-								<div class="col-lg-3 col-md-6 col-sm-6">
-									<div class="single-features">
-										<div class="f-icon">
-											<img src="/public/usercss/img/features/f-icon4.png" alt="">
-										</div>
-										<h6>Secure Payment</h6>
-										<p>Secure Payment Options</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</section>
-					<!-- end features Area -->
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="single-features">
+          <div class="f-icon">
+            <img src="/public/usercss/img/features/f-icon2.png" alt="" />
+          </div>
+          <h6>Return Policy</h6>
+          <p>Easy Returns</p>
+        </div>
+      </div>
 
-					<!-- start product Area -->
-					<section class="active-product">
-						<div class="container">
-							<div class="row justify-content-center">
-								<div class="col-lg-6 text-center">
-									<div class="section-title">
-										<h1>Premium Collections</h1>
-									</div>
-								</div>
-							</div>
-							<div class="row">
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="single-features">
+          <div class="f-icon">
+            <img src="/public/usercss/img/features/f-icon3.png" alt="" />
+          </div>
+          <h6>24/7 Support</h6>
+          <p>Customer Support</p>
+        </div>
+      </div>
 
-								<% for(const product of products) { %>
-									<!-- single product -->
-									<div class="col-lg-3 col-md-6 col-sm-6">
-										<div class="single-product">
-											<a href="/productview?id=<%=product._id%>">
-												<img class="img-fluid" src="/public/uploads/<%= product.image[0] %>"
-													alt="" style="width: 100%; max-height: 300px;">
-											</a>
-											<div class="product-details">
-												<span>
-													<%=product.brand%>
-												</span>
-												<h5>
-													<%= product.categoryName %>
-												</h5>
-												<div class="price">
-													<h5>Price: ₹ <%= product.price %>
-													</h5>
-													<span>Person: <%=product.person%></span><br>
-													<span class="">Size: <%= product.size%></span>
-												</div>
-												<% if(userData){%>
-													<div class="prd-bottom">
-														<a href="#" class="social-info" id="addToCart"
-															onclick="addtocart('<%- product._id %>')">
-															<span class="ti-bag"></span>
-															<p class="hover-text">add to bag</p>
-														</a>
-														<a href="#" onclick='wishList("<%=product._id%>")'
-															class="social-info">
-															<span class="lnr lnr-heart"></span>
-															<p class="hover-text">Wishlist</p>
-														</a>
-													</div>
-													<%}%>
-											</div>
-										</div>
-									</div>
-									<% } %>
-							</div>
-						</div>
-					</section>
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="single-features">
+          <div class="f-icon">
+            <img src="/public/usercss/img/features/f-icon4.png" alt="" />
+          </div>
+          <h6>Secure Payment</h6>
+          <p>Secure Payment Options</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-					<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-					<script>
-						function wishList(proId) {
-							console.log("Product id in wishlist: ", proId);
-							const url = "/wishlist";
-							const options = {
-								method: "post",
-								headers: {
-									"Content-type": "application/json",
-								},
-								body: JSON.stringify({ proId }),
-							};
+<section class="active-product">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 text-center">
+        <div class="section-title">
+          <h1>Premium Collections</h1>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <% for(const product of products) { %>
 
-							fetch(url, options)
-								.then((response) => response.json())
-								.then((data) => {
-									if (data.message) {
-										console.log("Message: ", data.message)
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="single-product">
+          <a href="/productview?id=<%=product._id%>">
+            <img
+              class="img-fluid"
+              src="/public/uploads/<%= product.image[0] %>"
+              alt=""
+              style="width: 100%; height: 300px"
+            />
+          </a>
+          <div class="product-details">
+            <span> <%=product.brand%> </span>
+            <h5><%= product.categoryName %></h5>
+            <div class="price">
+              <h5>Price: ₹ <%= product.price %></h5>
+              <span>Person: <%=product.person%></span><br />
+              <span class="">Size: <%= product.size%></span>
+            </div>
+            <% if(userData){%>
+            <div class="prd-bottom">
+              <a
+                href="#"
+                class="social-info"
+                id="addToCart"
+                onclick="addtocart('<%- product._id %>')"
+              >
+                <span class="ti-bag"></span>
+                <p class="hover-text">add to bag</p>
+              </a>
+              <a
+                href="#"
+                onclick='wishList("<%=product._id%>")'
+                class="social-info"
+              >
+                <span class="lnr lnr-heart"></span>
+                <p class="hover-text">Wishlist</p>
+              </a>
+            </div>
+            <%}%>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</section>
 
-										showMessage(data.message);
-									} else {
-										console.log("Error: ")
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function wishList(proId) {
+    console.log("Product id in wishlist: ", proId);
+    const url = "/wishlist";
+    const options = {
+      method: "post",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ proId }),
+    };
 
+    fetch(url, options)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message) {
+          console.log("Message: ", data.message);
 
-									}
-								})
-								.catch((error) => {
-									
-									console.error("Error:", error);
-								});
+          showMessage(data.message);
+        } else {
+          console.log("Error: ");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  }
+  function showMessage(message) {
+    const toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 3000,
+    });
 
-						}
-						function showMessage(message) {
-					
-							const toast = Swal.mixin({
-								toast: true,
-								position: 'top-end',
-								showConfirmButton: false,
-								timer: 3000
-							});
+    toast.fire({
+      icon: "success",
+      title: message,
+    });
+  }
 
-							// Show the Toast with the message
-							toast.fire({
-								icon: 'success',
-								title: message
-							});
-						}
+  function addtocart(proid) {
+    console.log("Product ID:", proid);
+    const url = "/add-to-cart";
+    const options = {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        proid,
+      }),
+    };
 
+    fetch(url, options)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Response in add to cart: ", data);
 
-
-
-						function addtocart(proid) {
-							console.log("Product ID:", proid)
-							const url = "/add-to-cart"
-							const options = {
-								method: "post",
-								headers: {
-									"Content-Type": "application/json",
-								},
-								body: JSON.stringify({
-									proid
-								})
-							}
-
-							// Send the request and handle the response
-							fetch(url, options)
-								.then(response => response.json()) // Parse the response JSON
-								.then(data => {
-									console.log("Response in add to cart: ", data);
-
-									// Check the response and show SweetAlert accordingly
-									if (data === "Added..") {
-										Swal.fire('Item Added to the cart')
-									} else if (data === "Product is already in cart") {
-										Swal.fire('Product is already in cart')
-									} else {
-										Swal.fire('Something went wrong!! please try again')
-									}
-								})
-								.catch(error => {
-									console.error("Error in add to cart:", error);
-								});
-						}
-					</script>
-					<%- include("./layouts/footer.ejs") %>
+        if (data === "Added..") {
+          Swal.fire("Item Added to the cart");
+        } else if (data === "Product is already in cart") {
+          Swal.fire("Product is already in cart");
+        } else if(!data) {
+          Swal.fire("Something went wrong!! please try again");
+        }
+      })
+      .catch((error) => {
+        console.error("Error in add to cart:", error);
+        
+      });
+  }
+</script>
+<%- include("./layouts/footer.ejs") %>

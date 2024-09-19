@@ -5,14 +5,19 @@ const alert = require("alert")
 //Is_user session :True (login)
 
 const is_userLoggedIn = (req, res, next) => {
-    console.log("Hi");
+    console.log("Checking user login status");
     if (req.session?.user_id) {
-        next()
+        console.log("user exist")
+        next();
     } else {
-        console.log("wELOME TO HOEM");
-        res.redirect("/")
+        console.log("User not logged in");
+        // Redirect to the home page with a message
+        res.redirect('/?message=NotLoggedIn');
     }
-}
+};
+
+
+
 
 
 //is_user session : False (logout)
