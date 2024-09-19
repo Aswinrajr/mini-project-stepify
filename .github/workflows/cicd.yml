@@ -1,0 +1,31 @@
+name: Deploy Stepify Application
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        
+      - name: Log in to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        
+      - name: Build Docker image
+        run: docker build -t aswinraj9/stepify .
+
+      - name: Push to Docker Hub
+        run: docker push aswinraj9/stepify:latest
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull image from Docker Hub
+        run: docker pull aswinraj9/stepify:latest
+        
+      - name: Run Docker container
+        run: docker run -d -p 1999:1999 --name stepify-app-container aswinraj9/stepify:latest
