@@ -20,6 +20,12 @@
       <div class="col-lg-6 mt-5">
         <div class="login_form_inner mt-5">
           <h3>Verify OTP</h3>
+
+          <!-- OTP Display for 8 seconds -->
+          <div id="otpMessage" style="font-size: 18px; color: #333; margin-bottom: 20px;">
+            Your OTP is: <strong id="otpDisplay"><%= otp %></strong>
+          </div>
+
           <form class="row login_form" action="/verify-otp" method="post">
             <div class="col-md-12 form-group mt-3">
               <input
@@ -36,20 +42,14 @@
             <div class="col-md-12 form-group mt-5">
               <div
                 id="timer"
-                style="
-                  font-size: 14px;
-                  color: #666;
-                  text-align: center;
-                  margin-top: 10px;
-                "
-              >
+                style="font-size: 14px; color: #666; text-align: center; margin-top: 10px;">
                 Time remaining: 2:00
               </div>
 
               <button type="submit" value="submit" class="primary-btn">
                 Verify OTP
               </button>
-              <a href="/otpsend">Resent OTP</a>
+              <a href="/otpsend">Resend OTP</a>
             </div>
           </form>
         </div>
@@ -57,21 +57,25 @@
     </div>
   </div>
 </section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-  function removeMessage() {
-    const messageElement = document.getElementById("message");
-    if (messageElement) {
+  // Function to hide the OTP after 8 seconds
+  function hideOTP() {
+    const otpMessageElement = document.getElementById('otpMessage');
+    if (otpMessageElement) {
       setTimeout(() => {
-        messageElement.style.display = "none";
-      }, 2000);
+        otpMessageElement.style.display = 'none';
+      }, 8000); // Hide after 8 seconds
     }
   }
 
   window.onload = function () {
-    removeMessage();
+    hideOTP();
 
-  
-    let timeLeft = 60;
+    // OTP Countdown Timer
+    let timeLeft = 120; // 2 minutes countdown
 
     const timerElement = document.getElementById("timer");
     const otpInput = document.getElementById("otp");
@@ -80,19 +84,12 @@
     function updateTimer() {
       const minutes = Math.floor(timeLeft / 60);
       const seconds = timeLeft % 60;
-      timerElement.textContent = `Time remaining: ${minutes}:${
-        seconds < 10 ? "0" : ""
-      }${seconds}`;
+      timerElement.textContent = `Time remaining: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     }
 
     function disableInputAndSubmit() {
       otpInput.disabled = true;
       submitButton.disabled = true;
-    }
-
-    function enableInputAndSubmit() {
-      otpInput.disabled = false;
-      submitButton.disabled = false;
     }
 
     updateTimer();

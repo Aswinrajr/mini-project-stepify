@@ -25,12 +25,12 @@ const unlistuser = async (req, res) => {
         if (userData.status === "Active") {
             await User.updateOne({ _id: userId }, { $set: {status: "Blocked"} })
             console.log("Unlisted data", userData)
-            alert("user Unlisted")
+            
 
         } else {
             await User.updateOne({ _id: userId }, { $set: { status: "Active" } })
             console.log("listed data", userData)
-            alert("User listed")
+         
         }
         res.redirect("/admin/user")
 

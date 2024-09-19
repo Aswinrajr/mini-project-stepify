@@ -21,7 +21,8 @@
         <div class="login_form_inner mt-5">
           <h3>Send OTP</h3>
 
-          <form class="row login_form" action="/send-otp" method="post">
+          <!-- Form for sending OTP -->
+          <form id="otpForm" class="row login_form" action="/send-otp" method="post">
             <div class="col-md-12 form-group">
               <input
                 type="text"
@@ -47,3 +48,70 @@
 </section>
 
 <%- include("./layouts/footer.ejs") %>
+
+<!-- SweetAlert2 CDN for popup alerts -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  // Handle form submission and mobile verification
+  document.getElementById('otpForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const mobileInput = document.getElementById('mobile').value;
+    const mobileRegex = /^[6-9]\d{9}$/; // Validate mobile number: starts 6-9 and 10 digits
+
+    // Check if the mobile number is valid
+    if (!mobileRegex.test(mobileInput)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Mobile Number',
+        text: 'Please enter a valid 10-digit mobile number starting with 6-9.',
+      });
+      return false;
+    }
+
+    // Verify if the mobile number exists via AJAX
+    fetch('/verify-mobile', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ mobile: mobileInput }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.exists) {
+        // Mobile exists, submit the form to /send-otp to send OTP
+        document.getElementById('otpForm').submit();
+
+        // Show a success message for OTP sent
+        Swal.fire({
+          icon: 'success',
+          title: 'OTP Sent!',
+          text: 'An OTP has been sent to your registered mobile number.',
+        });
+      } else {
+        // Mobile does not exist, prompt the user to sign up
+        Swal.fire({
+          icon: 'info',
+          title: 'Mobile number not found',
+          text: 'It seems like you are not registered. Would you like to sign up?',
+          showCancelButton: true,
+          confirmButtonText: 'Sign Up',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = '/signup'; // Redirect to signup page
+          }
+        });
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Server Error',
+        text: 'An error occurred. Please try again later.',
+      });
+    });
+  });
+</script>

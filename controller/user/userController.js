@@ -169,6 +169,32 @@ const renderEnterMobileNumber = async (req, res) => {
   }
 };
 
+
+const verifyUserMobile = async (req, res) => {
+  try {
+    console.log("Welcome to user verify mobile", req.body);
+    const { mobile } = req.body;
+
+    // Check if the mobile number exists in the database
+    const existUser = await User.findOne({ mobile: mobile });
+    console.log("userExist", existUser);
+
+    if (existUser) {
+      // Mobile exists, send a success response
+      return res.json({ exists: true });
+    } else {
+      // Mobile does not exist, send a response to prompt for signup
+      return res.json({ exists: false });
+    }
+
+  } catch (err) {
+    console.error("Error in user verify mobile", err);
+
+    // Send error response back to the client
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 //REQUESTING FOR OTP
 const cpSendOTP = async (req, res) => {
   try {
@@ -182,17 +208,11 @@ const cpSendOTP = async (req, res) => {
       req.app.locals.sOTP = OTP;
       req.app.locals.smobile = userMob;
       console.log("OTP: ", OTP, "Mobile: ", userMob);
-      console.log(
-        "sOTP: ",
-        req.app.locals.sOTP,
-        "sMobile: ",
-        req.app.locals.smobile
-      );
-      console.log(OTP);
 
-      res.redirect("/enter-OTP");
+      // Render the page and pass the OTP to be displayed for 8 seconds
+      res.render('enterOTP', { otp: OTP });
     } else {
-      res.render("enterMobileNumber");
+      res.render('enterMobileNumber');
     }
   } catch (err) {
     console.log("Error in rendering sendOtp page IN FORGOT PASSWORD", err);
@@ -490,4 +510,5 @@ module.exports = {
   renderResetPassword,
   setNewPassword,
   searchProducts,
+  verifyUserMobile
 };

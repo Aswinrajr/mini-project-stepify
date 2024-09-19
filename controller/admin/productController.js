@@ -173,12 +173,12 @@ const unlistproduct = async (req, res) => {
         if (proData.isAvailable === true) {
             await Product.updateOne({ _id: proId }, { $set: { isAvailable: false } })
             console.log("Unlisted data", proData)
-            alert("Product Unlisted")
+        
 
         } else {
             await Product.updateOne({ _id: proId }, { $set: { isAvailable: true } })
             console.log("listed data", proData)
-            alert("Product listed")
+            
         }
         res.redirect("/admin/product")
 

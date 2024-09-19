@@ -28,6 +28,7 @@ user_route.get("/otpsend", userAuth.is_userLoggedOut, userController.loadSendOTP
 
 //FORGOT PASSWORD
 user_route.get("/enter-mobile-number", userAuth.is_userLoggedOut, userController.renderEnterMobileNumber)
+user_route.post("/verify-mobile", userAuth.is_userLoggedOut, userController.verifyUserMobile)
 user_route.post("/send-otp", userAuth.is_userLoggedOut, userController.cpSendOTP)
 user_route.get("/enter-otp", userAuth.is_userLoggedOut, userController.renderEnterOTP)
 user_route.post("/verify-otp", userAuth.is_userLoggedOut, userController.cpVerifyOTP)

@@ -114,12 +114,12 @@ const unlistCategory = async (req,res)=>{
         if(catData.isAvailable === true){
             await Category.updateOne({_id:catId},{$set:{isAvailable:false}})
             console.log("Unlisted data",catData)
-            alert("Caregory Unlisted From Database")
+           
             
         }else{
              await Category.updateOne({_id:catId},{$set:{isAvailable:true}})
              console.log("listed data",catData)
-             alert("Caregory Listed From Database")
+             
         }
         res.redirect("/admin/category")
         
