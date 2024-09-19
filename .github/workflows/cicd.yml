@@ -15,7 +15,7 @@ jobs:
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         
       - name: Build Docker image
-        run: docker build -t aswinraj9/stepify .
+        run: docker build -t aswinraj9/stepify:latest .
 
       - name: Push to Docker Hub
         run: docker push aswinraj9/stepify:latest
@@ -24,6 +24,11 @@ jobs:
     needs: build
     runs-on: self-hosted
     steps:
+      - name: Stop and remove old container
+        run: |
+          docker stop stepify-app-container || true
+          docker rm stepify-app-container || true
+
       - name: Pull image from Docker Hub
         run: docker pull aswinraj9/stepify:latest
         

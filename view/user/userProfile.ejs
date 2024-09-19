@@ -1,162 +1,215 @@
 <%- include("./layouts/userheader.ejs") %>
-    <style>
+<style>
+    .address-details-container {
+        background-color: white;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .address-details {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .update-link {
+        background-color: rgb(107, 107, 217);
+        padding: 3px;
+        border-radius: 5px;
+        border: 1px solid;
+        color: rgb(255, 255, 255);
+        margin-top: 5px;
+        display: inline-block;
+    }
+
+    .contact_form .form-group {
+        margin-bottom: 20px;
+    }
+
+    .save-address-btn {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #delete {
+        background-color: red;
+        padding: 3px;
+    }
+
+    #delete:hover {
+        background-color: white;
+        color: black;
+    }
+
+    .update-link:hover {
+        background-color: white;
+        color: black;
+    }
+
+    @media (min-width: 992px) {
         .address-details-container {
-            background-color: white;
-         
-            padding: 10px;
-            margin-bottom: 10px;
+            width: 33.33%;
         }
+    }
 
-        .address-details {
-            background-color: white;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
+    .error {
+        border: 1px solid red;
+    }
 
-        .update-link {
-            background-color: rgb(107, 107, 217);
-            padding: 3px;
-            border-radius: 5px;
-            border: 1px solid;
-            color: rgb(255, 255, 255);
-            margin-top: 5px;
-            display: inline-block;
-        }
+    .error-message {
+        color: red;
+        font-size: 0.875em;
+        margin-top: 0.25em;
+    }
+</style>
 
-        .contact_form .form-group {
-            margin-bottom: 20px;
-        }
-
-        .save-address-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        #delete {
-            background-color: red;
-            padding: 3px;
-
-        }
-
-        #delete:hover {
-            background-color: white;
-            color: black;
-        }
-
-        .update-link:hover {
-            background-color: white;
-            color: black;
-        }
-
-        @media (min-width: 992px) {
-            .address-details-container {
-                width: 33.33%;
-               
-            }
-        }
-    </style>
-
-
-    <section class="checkout_area section_gap mt-5">
-        <div class="container mt-4">
-            <div class="billing_details">
-                <h6 class="ps-md-2 pt-lg-3">Saved Addresses</h6>
-                <div class="row">
-                    <div class="col-lg-4 p-lg-1 address-details-container text-dark">
-                        <% if (userAdress) { %>
-                            <% userAdress.items.forEach((element)=> { %>
-                                <div id="<%= element._id%>" class="address-details">
-                                    <div class="address">
-                                        <div><strong>Name: </strong>
-                                            <%= element.firstName %>
-                                                <%= element.lastName %>
-                                        </div>
-                                        <div><strong>Address: </strong>
-                                            <%= element.HouseName %>, <%= element.addressLine %>, <%=
-                                                        element.nearestLandMark %>, <%= element.pincode %>
-                                        </div>
-                                        <div><strong>City: </strong>
-                                            <%= element.city %>
-                                        </div>
-                                        <div><strong>State: </strong>
-                                            <%= element.state %>
-                                        </div>
-                                        <div><strong>Alternate Mobile: </strong>
-                                            <%= element.altMobile %>
-                                        </div>
+<section class="checkout_area section_gap mt-5">
+    <div class="container mt-4">
+        <div class="billing_details">
+            <h6 class="ps-md-2 pt-lg-3">Saved Addresses</h6>
+            <div class="row">
+                <div class="col-lg-4 p-lg-1 address-details-container text-dark">
+                    <% if (userAdress) { %>
+                        <% userAdress.items.forEach((element) => { %>
+                            <div id="<%= element._id %>" class="address-details">
+                                <div class="address">
+                                    <div><strong>Name: </strong>
+                                        <%= element.firstName %> <%= element.lastName %>
                                     </div>
-
-                                    <a id="delete" href="/deleteadress/?id=<%= element._id%>&source=add"
-                                        class="update-link">Delete</a>
-                                    <a href="/update-adress/?id=<%= element._id%>&source=add" class="update-link"
-                                        >Update</a>
+                                    <div><strong>Address: </strong>
+                                        <%= element.HouseName %>, <%= element.addressLine %>, <%= element.nearestLandMark %>, <%= element.pincode %>
+                                    </div>
+                                    <div><strong>City: </strong>
+                                        <%= element.city %>
+                                    </div>
+                                    <div><strong>State: </strong>
+                                        <%= element.state %>
+                                    </div>
+                                    <div><strong>Alternate Mobile: </strong>
+                                        <%= element.altMobile %>
+                                    </div>
                                 </div>
-                                <% }) %>
-                                    <% } %>
-                    </div>
-                    <div class="col-lg-8">
-                        <h3>Add Adress</h3>
-                        <form class="row contact_form" action="" method="post" novalidate="novalidate">
-                            <div class="col-md-6 form-group p_star">
-                                <input type="text" class="form-control" id="firstName" name="firstName"
-                                    placeholder="First Name" required="">
-
+                                <a id="delete" href="/deleteadress/?id=<%= element._id %>&source=add" class="update-link delete-link">Delete</a>
+                                <a href="/update-adress/?id=<%= element._id %>&source=add" class="update-link">Update</a>
                             </div>
-                            <div class="col-md-6 form-group p_star">
-                                <input type="text" class="form-control" id="lastName" name="lastName"
-                                    placeholder="Last Name" required="">
-
-                            </div>
-
-                            <div class="col-md-6 form-group p_star">
-                                <input type="text" class="form-control" id="altnumber" name="altMobile"
-                                    placeholder="Alternate Mobile" required="">
-
-                            </div>
-
-                            <div class="col-md-12 form-group p_star">
-                                <input type="text" class="form-control" id="house" name="HouseName"
-                                    placeholder="House Adress" required="">
-
-
-                            </div>
-                            <div class="col-md-12 form-group p_star">
-                                <input type="text" class="form-control" id="addressLine" name="addressLine"
-                                    placeholder="Adress Line 1" required="">
-
-                            </div>
-                            <div class="col-md-12 form-group p_star">
-                                <input type="text" class="form-control" id="nearestLandMark" name="nearestLandMark"
-                                    placeholder="Nearest Land mark" required="">
-
-                            </div>
-                            <div class="col-md-12 form-group p_star">
-                                <input type="text" class="form-control" id="city" name="city" placeholder="City"
-                                    required="">
-
-                            </div>
-                            <div class="col-md-12 form-group p_star">
-                                <input type="text" class="form-control" id="state" name="state" placeholder="State"
-                                    required="">
-
-
-                            </div>
-                            <div class="col-md-12 form-group">
-                                <input type="text" class="form-control" id="zip" name="pincode"
-                                    placeholder="Postcode/ZIP">
-                            </div>
-
-                            <button type="submit" class="genric-btn info circle arrow " style="align-items: end;">Save
-                                Adress</button>
-                        </form>
-                    </div>
+                        <% }) %>
+                    <% } %>
+                </div>
+                <div class="col-lg-8">
+                    <h3>Add Address</h3>
+                    <form class="row contact_form" action="" method="post" novalidate="novalidate">
+                        <div class="col-md-6 form-group p_star">
+                            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required>
+                            <div class="error-message" id="error-firstName"></div>
+                        </div>
+                        <div class="col-md-6 form-group p_star">
+                            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required>
+                            <div class="error-message" id="error-lastName"></div>
+                        </div>
+                        <div class="col-md-6 form-group p_star">
+                            <input type="text" class="form-control" id="altMobile" name="altMobile" placeholder="Alternate Mobile" required>
+                            <div class="error-message" id="error-altMobile"></div>
+                        </div>
+                        <div class="col-md-12 form-group p_star">
+                            <input type="text" class="form-control" id="house" name="HouseName" placeholder="House Address" required>
+                            <div class="error-message" id="error-HouseName"></div>
+                        </div>
+                        <div class="col-md-12 form-group p_star">
+                            <input type="text" class="form-control" id="addressLine" name="addressLine" placeholder="Address Line 1" required>
+                            <div class="error-message" id="error-addressLine"></div>
+                        </div>
+                        <div class="col-md-12 form-group p_star">
+                            <input type="text" class="form-control" id="nearestLandMark" name="nearestLandMark" placeholder="Nearest Landmark" required>
+                            <div class="error-message" id="error-nearestLandMark"></div>
+                        </div>
+                        <div class="col-md-12 form-group p_star">
+                            <input type="text" class="form-control" id="city" name="city" placeholder="City" required>
+                            <div class="error-message" id="error-city"></div>
+                        </div>
+                        <div class="col-md-12 form-group p_star">
+                            <input type="text" class="form-control" id="state" name="state" placeholder="State" required>
+                            <div class="error-message" id="error-state"></div>
+                        </div>
+                        <div class="col-md-12 form-group">
+                            <input type="text" class="form-control" id="zip" name="pincode" placeholder="Postcode/ZIP">
+                            <div class="error-message" id="error-pincode"></div>
+                        </div>
+                        <button type="submit" class="genric-btn info circle arrow save-address-btn">Save Address</button>
+                    </form>
                 </div>
             </div>
         </div>
-    </section>
-    <%- include("./layouts/footer.ejs") %>
+    </div>
+</section>
+<%- include("./layouts/footer.ejs") %>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.contact_form');
+        form.addEventListener('submit', function(event) {
+            if (!validateForm()) {
+                event.preventDefault();
+            }
+        });
+
+        function validateForm() {
+            let isValid = true;
+            const requiredFields = [
+                { id: 'firstName', errorId: 'error-firstName' },
+                { id: 'lastName', errorId: 'error-lastName' },
+                { id: 'altMobile', errorId: 'error-altMobile' },
+                { id: 'house', errorId: 'error-HouseName' },
+                { id: 'addressLine', errorId: 'error-addressLine' },
+                { id: 'nearestLandMark', errorId: 'error-nearestLandMark' },
+                { id: 'city', errorId: 'error-city' },
+                { id: 'state', errorId: 'error-state' },
+                { id: 'zip', errorId: 'error-pincode' }
+            ];
+
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field.id);
+                const errorDiv = document.getElementById(field.errorId);
+                if (!input.value.trim()) {
+                    isValid = false;
+                    input.classList.add('error');
+                    errorDiv.textContent = 'This field is required.';
+                } else {
+                    input.classList.remove('error');
+                    errorDiv.textContent = '';
+                }
+            });
+
+            return isValid;
+        }
+
+    
+        document.querySelectorAll('.delete-link').forEach(link => {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const deleteUrl = this.getAttribute('href');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to delete this address?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                       
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+        });
+    });
+</script>

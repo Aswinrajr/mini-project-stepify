@@ -930,28 +930,15 @@ const saveAdressData = async (req, res) => {
     console.log("Error in updating address", err);
   }
 };
-
 const verifyOrder = async (req, res) => {
   try {
     const userData = await User.findOne({ email: req.session.user_id });
     if (userData) {
-      const { addressId, paymentMethod, amounttopay, usedCouponCode } =
-        req.body;
+      const { addressId, paymentMethod, amounttopay, usedCouponCode } = req.body;
 
-      console.log(
-        "addressId: ",
-        addressId,
-        "paymentMethod: ",
-        paymentMethod,
-        "usedCouponCode: ",
-        usedCouponCode,
-        "amounttopay: ",
-        amounttopay
-      );
+      console.log("addressId: ", addressId, "paymentMethod: ", paymentMethod, "usedCouponCode: ", usedCouponCode, "amounttopay: ", amounttopay);
 
-      const address = userData.address.items.find(
-        (item) => item._id == addressId
-      );
+      const address = userData.address.items.find((item) => item._id == addressId);
       const userCart = userData.cart;
       const orderDate = new Date();
       console.log("userCart: ", userCart);
@@ -959,40 +946,29 @@ const verifyOrder = async (req, res) => {
       const expectedDeliveryDate = new Date(orderDate);
       expectedDeliveryDate.setDate(orderDate.getDate() + 7);
 
-      const newCoupon = await couponSchema.findOne({
-        couponCode: usedCouponCode,
-      });
+      const newCoupon = await couponSchema.findOne({ couponCode: usedCouponCode });
       console.log("Inside verify order: ", newCoupon);
       console.log("User Coupons", usedCouponCode);
-      let couponAmount;
-      if (newCoupon) {
-        couponAmount = newCoupon.amount;
-      } else {
-        couponAmount = 0;
-      }
+      let couponAmount = newCoupon ? newCoupon.amount : 0;
+      
       let totalPrice = 0;
-
-      //productid quantity price
       const items = [];
+
       for (const item of userCart) {
+        const itemPrice = item.totalPrice * item.quantity - couponAmount;
         items.push({
           ProductId: item.productId,
           quantity: item.quantity,
-          price: item.totalPrice * item.quantity - couponAmount,
+          price: itemPrice,
           image: item.image,
         });
-        totalPrice =
-          totalPrice + (item.totalPrice * item.quantity - couponAmount);
-        console.log(
-          "totalPrice: ",
-          totalPrice + (item.totalPrice * item.quantity - couponAmount)
-        );
+        totalPrice += itemPrice;
       }
-      console.log("Total price: ", totalPrice);
 
       const deliveryAddress = `${address.firstName} ${address.lastName},\n ${address.altMobile},\n ${address.HouseName},\n ${address.addressLine},\n${address.city}, ${address.state},\n${address.nearestLandMark},\n${address.pincode}`;
 
-      await Order.create({
+      // Create order in database
+      const newOrder = await Order.create({
         userId: userData._id,
         userMobile: address.altMobile,
         deliveryAddress,
@@ -1003,40 +979,37 @@ const verifyOrder = async (req, res) => {
         totalAmount: totalPrice,
       });
 
+      // Update product quantities
       for (const item of userCart) {
-        console.log("Haii achuuuuu");
         const proId = item.productId;
         const quantity = parseInt(item.quantity);
         const product = await productModel.findOne({ _id: proId });
-        const productQuantity = parseInt(product.quantity);
-        const updateQuantity = productQuantity - quantity;
-        const productUpdated = await productModel.findOneAndUpdate(
-          { _id: proId },
-          { $set: { quantity: updateQuantity } }
-        );
-        console.log("Updated product: ", updateQuantity);
+        const updateQuantity = product.quantity - quantity;
+        await productModel.findOneAndUpdate({ _id: proId }, { $set: { quantity: updateQuantity } });
       }
+
+      // Clear user cart and save user data
       userData.cart = [];
       await userData.save();
 
+      // Add used coupon to user's account if applicable
       if (newCoupon) {
-        const user = await User.findOneAndUpdate(
+        await User.findOneAndUpdate(
           { email: req.session.user_id },
-          {
-            $push: {
-              userCoupens: {
-                couponId: newCoupon._id,
-                couponCode: newCoupon.couponCode,
-              },
-            },
-          }
+          { $push: { userCoupens: { couponId: newCoupon._id, couponCode: newCoupon.couponCode } } }
         );
-        console.log("USER dATA BASE:", user);
-      } else {
-        console.log("No coupons used");
       }
 
-      res.render("orderConform");
+      // Pass order details to the view
+      res.render("orderConform", {
+        newOrder,
+        deliveryAddress,
+        items,
+        totalPrice,
+        paymentMethod,
+        expectedDeliveryDate: expectedDeliveryDate.toISOString().split("T")[0],
+       
+      });
     } else {
       res.redirect("/");
     }
@@ -1581,11 +1554,11 @@ const addWishlist = async (req, res) => {
           await userData.save();
   
           console.log("Wishlist updated and saved");
-        //   return res
-        //     .status(200)
-        //     .json({ message: "Product added to wishlist successfully" });
-        alert("wishlist added")
-        res.redirect("/getwishlist")
+          return res
+            .status(200)
+            .json({ message: "Product added to wishlist successfully" });
+      
+        // res.redirect("/getwishlist")
         } else {
           console.log("Item already exists in the wishlist");
           return res

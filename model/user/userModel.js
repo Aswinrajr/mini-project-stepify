@@ -52,40 +52,40 @@ const userSchema = new mongoose.Schema({
         items: [{
             firstName: {
                 type: String,
-                required: true
+                // required: true
             },
             lastName: {
                 type: String,
-                required: true
+                // required: true
 
             },
             altMobile: {
                 type: Number,
-                required: true,
+                // required: true,
             },
             HouseName: {
                 type: String,
-                require: true
+                // require: true
             },
             addressLine: {
                 type: String,
-                required: true
+                // required: true
             },
             nearestLandMark: {
                 type: String,
-                required: true
+                // required: true
             },
             pincode: {
                 type: Number,
-                required: true,
+                // required: true,
             },
             city: {
                 type: String,
-                required: true
+                // required: true
             },
             state: {
                 type: String,
-                required: true
+                // required: true
             },
 
         }]

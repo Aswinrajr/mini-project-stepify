@@ -60,28 +60,38 @@
               onclick="addtocart('<%- proData._id %>')"
               >Add to Cart</a
             >
-            <% } %> <% } else { %>
-            <a
-              type="button"
-              id=""
-              class="text-light primary-btn border-0"
-              href="/login"
-              >Login to Add to Cart</a
-            >
             <% } %>
 
             <a
-              href="/buynow/?id=<%= proData._id %>"
+              id="buynow"
               type="button"
-              class="primary-btn border-0"
+              class="primary-btn text-light border-0"
+              onclick="buyNow('<%= proData._id %>')"
               >Buy Now</a
             >
-            <a class="icon_btn" href="#"
-              ><i
+            <% } else { %>
+            <a
+              type="button"
+              id=""
+              class="text-light  primary-btn border-0"
+              href="/login"
+              >Login to Add to Cart</a
+            >
+            <a
+              id="buynow"
+              type="button"
+              class="primary-btn text-light border-0"
+              href="/login"
+              >Buy Now</a
+            >
+            <% } %>
+
+            <a class="icon_btn" href="#">
+              <i
                 class="lnr lnr lnr-heart"
                 onclick='wishList("<%= proData._id %>")'
-              ></i
-            ></a>
+              ></i>
+            </a>
           </div>
         </div>
       </div>
@@ -90,7 +100,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js"></script>
 
 <script>
@@ -166,6 +176,7 @@
   }
 
   function wishList(proId) {
+    console.log("Wishlist clicked")
     fetch("/wishlist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -197,5 +208,53 @@
       title: message,
     });
   }
+
+  async function buyNow(proid) {
+    try {
+      if (!<%= userData ? 'true' : 'false' %>) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const url = "/buynow";
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ proid }),
+      };
+
+      const res = await fetch(url, options);
+      const result = await res.json();
+
+      if (res.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: "Proceeding to checkout",
+          confirmButtonText: "Proceed",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = `/checkout?id=${proid}`;
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: result.error || "Failed to proceed with purchase.",
+        });
+      }
+    } catch (error) {
+      console.error("Error during purchase:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error!",
+        text: "An unexpected error occurred.",
+      });
+    }
+  }
 </script>
+
 <%- include("./layouts/footer.ejs") %>
