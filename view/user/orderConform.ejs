@@ -6,11 +6,11 @@
         --secondary-color: #5cb85c;
         --text-color: #333333;
         --background-color: #f7f9fc;
-        --border-color: #e1e8ed;
     }
 
     body {
         background-color: var(--background-color);
+        font-family: Arial, sans-serif;
     }
 
     .order-confirmation {
@@ -19,7 +19,7 @@
         box-shadow: 0 4px 20px rgba(0,0,0,0.08);
         padding: 40px 30px;
         text-align: center;
-        max-width: 800px;
+        max-width: 600px;
         margin: 60px auto;
     }
 
@@ -27,6 +27,13 @@
         color: var(--secondary-color);
         font-size: 72px;
         margin-bottom: 30px;
+        animation: popIn 0.5s ease-out;
+    }
+
+    @keyframes popIn {
+        0% { transform: scale(0); opacity: 0; }
+        80% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
     }
 
     .title_confirmation {
@@ -34,13 +41,7 @@
         font-size: 28px;
         font-weight: 600;
         margin-bottom: 20px;
-    }
-
-    .order-number {
-        font-size: 18px;
-        color: #6c757d;
-        margin-bottom: 30px;
-        font-weight: 500;
+        animation: fadeIn 1s ease-out 0.5s both;
     }
 
     .btn-continue-shopping {
@@ -54,6 +55,7 @@
         display: inline-block;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        animation: fadeIn 1s ease-out 0.7s both;
     }
 
     .btn-continue-shopping:hover {
@@ -62,39 +64,9 @@
         box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
     }
 
-    .order-summary {
-        background-color: #f8f9fa;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 30px;
-        margin-top: 40px;
-        text-align: left;
-    }
-
-    .order-summary h4 {
-        color: var(--text-color);
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 12px;
-        margin-bottom: 25px;
-        font-size: 22px;
-        font-weight: 600;
-    }
-
-    .summary-item {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 15px;
-        font-size: 16px;
-    }
-
-    .summary-item span:first-child {
-        color: #6c757d;
-        font-weight: 500;
-    }
-
-    .summary-item span:last-child {
-        color: var(--text-color);
-        font-weight: 600;
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     @media (max-width: 768px) {
@@ -106,10 +78,6 @@
         .title_confirmation {
             font-size: 24px;
         }
-
-        .order-summary {
-            padding: 20px;
-        }
     }
 </style>
 
@@ -118,28 +86,7 @@
         <div class="order-confirmation">
             <i class="fas fa-check-circle confirmation-icon"></i>
             <h3 class="title_confirmation">Thank you! Your order has been confirmed.</h3>
-            <p class="order-number">Order number: <%= newOrder._id %></p>
             <a href="/" class="btn-continue-shopping">Continue Shopping</a>
-            
-            <div class="order-summary">
-                <h4>Order Summary</h4>
-                <div class="summary-item">
-                    <span>Order Date:</span>
-                    <span><%= expectedDeliveryDate %></span>
-                </div>
-                <div class="summary-item">
-                    <span>Total Amount:</span>
-                    <span>$<%= totalPrice %></span>
-                </div>
-                <div class="summary-item">
-                    <span>Payment Method:</span>
-                    <span><%= paymentMethod %></span>
-                </div>
-                <div class="summary-item">
-                    <span>Delivery Address:</span>
-                    <span><%= deliveryAddress %></span>
-                </div>
-            </div>
         </div>
     </div>
 </section>
