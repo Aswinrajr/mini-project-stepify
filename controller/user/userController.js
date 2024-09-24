@@ -95,7 +95,6 @@ function generateRandomCode() {
   const codeLength = 5;
   let code = "";
 
-  // Generate a random character from the 'characters' string for each position in the code
   for (let i = 0; i < codeLength; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
     code += characters.charAt(randomIndex);
@@ -103,8 +102,6 @@ function generateRandomCode() {
 
   return code;
 }
-
-// Example usage:
 
 //NEW USER REGISTRATION
 const userRegistration = async (req, res) => {
@@ -119,7 +116,7 @@ const userRegistration = async (req, res) => {
       console.log(name, email, mobile, password);
       const spassword = await securePassword(password);
       const referralCode = generateRandomCode();
-      console.log(referralCode); // Output: e.g., "ABC12"
+      console.log(referralCode);
       const user = new User({
         name: name,
         email: email,
@@ -169,29 +166,23 @@ const renderEnterMobileNumber = async (req, res) => {
   }
 };
 
-
 const verifyUserMobile = async (req, res) => {
   try {
     console.log("Welcome to user verify mobile", req.body);
     const { mobile } = req.body;
 
-    // Check if the mobile number exists in the database
     const existUser = await User.findOne({ mobile: mobile });
     console.log("userExist", existUser);
 
     if (existUser) {
-      // Mobile exists, send a success response
       return res.json({ exists: true });
     } else {
-      // Mobile does not exist, send a response to prompt for signup
       return res.json({ exists: false });
     }
-
   } catch (err) {
     console.error("Error in user verify mobile", err);
 
-    // Send error response back to the client
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -209,10 +200,9 @@ const cpSendOTP = async (req, res) => {
       req.app.locals.smobile = userMob;
       console.log("OTP: ", OTP, "Mobile: ", userMob);
 
-      // Render the page and pass the OTP to be displayed for 8 seconds
-      res.render('enterOTP', { otp: OTP });
+      res.render("enterOTP", { otp: OTP });
     } else {
-      res.render('enterMobileNumber');
+      res.render("enterMobileNumber");
     }
   } catch (err) {
     console.log("Error in rendering sendOtp page IN FORGOT PASSWORD", err);
@@ -363,17 +353,6 @@ const sendOTP = async (req, res) => {
         req.app.locals.smobile
       );
       console.log(OTP);
-      //Using twilio to send
-      // await twilio.messages
-      //     .create({
-      //         body: OTP,
-      //         to: userMob,
-      //         from: "+18149047030"
-      //     }).then((message) => {
-      //         console.log(message)
-      //         alert("OTP Send To The Registered Mobile Number")
-      //         res.render("userOTPverify")
-      //     })
     } else {
       res.render("userOTPsend");
     }
@@ -510,5 +489,5 @@ module.exports = {
   renderResetPassword,
   setNewPassword,
   searchProducts,
-  verifyUserMobile
+  verifyUserMobile,
 };

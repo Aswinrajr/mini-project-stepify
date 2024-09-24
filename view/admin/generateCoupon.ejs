@@ -1,175 +1,178 @@
 <%- include("./layouts/header.ejs") %>
 
-    <div class="mb-4 " style="background-color: bisque;">
-        <label for="checkbox" class="inline-flex items-center " style="margin: 15px;">
-            <input type="checkbox" id="checkbox" class="form-checkbox mr-2">
-            Add Coupon
-        </label>
-    </div>
+<div class="mb-4" style="background-color: bisque">
+  <label for="checkbox" class="inline-flex items-center" style="margin: 15px">
+    <input type="checkbox" id="checkbox" class="form-checkbox mr-2" />
+    Add Coupon
+  </label>
+</div>
 
+<div
+  class="container px-4 md:px-6 mx-auto grid"
+  style="margin-top: 3%; font-size: 1.2rem; display: none"
+  id="display"
+>
+  <form action="/admin/coupon" method="post">
+    <div
+      class="px-2 md:px-4 py-4 md:py-8 mb-8 bg-gray-50 rounded-lg shadow-md dark:bg-gray-800 p-5"
+    >
+      <div class="text-center font-semibold">
+        <h1 class="text-2xl md:text-3xl text-black">Add Coupon</h1>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+        <div class="">
+          <label class="block mt-4 text-sm">
+            <span class="text-gray-700 dark:text-gray-400"> Coupon Code </span>
 
-    <div class="container px-4 md:px-6 mx-auto grid" style="margin-top: 3%; font-size: 1.2rem; display:none"
-        id="display">
-        <form action="/admin/coupon" method="post">
-            <div class="px-2 md:px-4 py-4 md:py-8 mb-8 bg-gray-50 rounded-lg shadow-md dark:bg-gray-800 p-5">
-                <div class="text-center font-semibold">
-                    <h1 class="text-2xl md:text-3xl text-black">
-                        Add Coupon
-                    </h1>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 py-4 ">
-                    <div class="">
-                        <label class="block mt-4 text-sm">
-                            <span class="text-gray-700 dark:text-gray-400">
-                                Coupon Code
-                            </span>
-
-                            <input type="text" id="code" name="code"
-                                class="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-purple-300 focus:border-purple-300"
-                                required>
-                           
-
-                        </label>
-                    </div>
-                    <div>
-                        <label class="block mt-4 text-sm">
-                            <span class="text-gray-700 dark:text-gray-400">
-                                Amount
-                            </span>
-                            <input type="number" id="amount" name="amount"
-                                class="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-purple-300 focus:border-purple-300"
-                                required>
-                                <p id="validationAmount" style="color: red;font-size: 13px;"></p>
-                        </label>
-                    </div>
-                    <div>
-                        <label class="block mt-4 text-sm">
-                            <span class="text-gray-700 dark:text-gray-400">
-                                Valid From
-                            </span>
-                            <input type="date" id="validFrom" name="validFrom"
-                                class="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-purple-300 focus:border-purple-300"
-                                required>
-                        </label>
-                    </div>
-                    <div>
-                        <label class="block mt-4 text-sm">
-                            <span class="text-gray-700 dark:text-gray-400">
-                                Valid To
-                            </span>
-                            <input type="date" id="validUntil" name="validUntil"
-                                class="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-purple-300 focus:border-purple-300"
-                                required>
-                        </label>
-                    </div>
-                </div>
-                <button type="submit"
-                    class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">Add
-                    Coupon</button>
-            </div>
-        </form>
-    </div>
-    <% if(data && data.length> 0) { %>
-        <div class="p-5 overflow-x-auto">
-            <table class="w-full whitespace-no-wrap" style="font-family: Arial, sans-serif; font-size: 14px;">
-                <thead>
-                    <tr
-                        class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                        <th class="px-4 py-3">Coupon Code</th>
-                        <th class="px-4 py-3">Valid From</th>
-                        <th class="px-4 py-3">Valid To</th>
-                        <th class="px-4 py-3">Status</th>
-                        <th class="px-4 py-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                    <% for(let i=0; i < data.length; i++) { %>
-                        <tr class="text-gray-700 dark:text-gray-400">
-                            <td class="px-4 py-3">
-                                <div class="flex items-center text-sm">
-                                    <p class="font-semibold">
-                                        <%= data[i].couponCode %>
-                                       
-                                    </p>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                <p class="font-semibold">
-                                    <%= data[i].validFrom %>
-                                </p>
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                <p class="font-semibold">
-                                    <%= data[i].validUntil %>
-                                </p>
-                            </td>
-                            <td class="px-4 py-3 text-sm">
-                                <p class="font-semibold">
-                                    <%= data[i].status %>
-                                </p>
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center space-x-4 text-sm">
-                               
-                                    <a href="/admin/coupon/list-coupon/<%=data[i].id%>"
-                                       
-                                            class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                                            aria-label="Edit">
-                                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor"
-                                                viewBox="0 0 20 20">
-                                                <path
-                                                    d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z">
-                                                </path>
-                                            </svg>
-                                       
-                                    </a>
-                                   
-                                </div>
-                            </td>
-                        </tr>
-                        <% } %>
-                </tbody>
-            </table>
+            <input
+              type="text"
+              id="code"
+              name="code"
+              class="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-purple-300 focus:border-purple-300"
+              required
+            />
+          </label>
         </div>
-        <% } else { %>
-            <div class="p-5 text-center">
-                <h1 class="text-xl font-semibold text-gray-600">No coupons available</h1>
-            </div>
-            <% } %>
+        <div>
+          <label class="block mt-4 text-sm">
+            <span class="text-gray-700 dark:text-gray-400"> Amount </span>
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              class="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-purple-300 focus:border-purple-300"
+              required
+            />
+            <p id="validationAmount" style="color: red; font-size: 13px"></p>
+          </label>
+        </div>
+        <div>
+          <label class="block mt-4 text-sm">
+            <span class="text-gray-700 dark:text-gray-400"> Valid From </span>
+            <input
+              type="date"
+              id="validFrom"
+              name="validFrom"
+              class="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-purple-300 focus:border-purple-300"
+              required
+            />
+          </label>
+        </div>
+        <div>
+          <label class="block mt-4 text-sm">
+            <span class="text-gray-700 dark:text-gray-400"> Valid To </span>
+            <input
+              type="date"
+              id="validUntil"
+              name="validUntil"
+              class="mt-1 p-2 w-full border rounded-md focus:ring focus:ring-purple-300 focus:border-purple-300"
+              required
+            />
+          </label>
+        </div>
+      </div>
+      <button
+        type="submit"
+        class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+      >
+        Add Coupon
+      </button>
+    </div>
+  </form>
+</div>
+<% if(data && data.length> 0) { %>
+<div class="p-5 overflow-x-auto">
+  <table
+    class="w-full whitespace-no-wrap"
+    style="font-family: Arial, sans-serif; font-size: 14px"
+  >
+    <thead>
+      <tr
+        class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800"
+      >
+        <th class="px-4 py-3">Coupon Code</th>
+        <th class="px-4 py-3">Valid From</th>
+        <th class="px-4 py-3">Valid To</th>
+        <th class="px-4 py-3">Status</th>
+        <th class="px-4 py-3">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+      <% for(let i=0; i < data.length; i++) { %>
+      <tr class="text-gray-700 dark:text-gray-400">
+        <td class="px-4 py-3">
+          <div class="flex items-center text-sm">
+            <p class="font-semibold"><%= data[i].couponCode %></p>
+          </div>
+        </td>
+        <td class="px-4 py-3 text-sm">
+          <p class="font-semibold"><%= data[i].validFrom %></p>
+        </td>
+        <td class="px-4 py-3 text-sm">
+          <p class="font-semibold"><%= data[i].validUntil %></p>
+        </td>
+        <td class="px-4 py-3 text-sm">
+          <p class="font-semibold"><%= data[i].status %></p>
+        </td>
+        <td class="px-4 py-3">
+          <div class="flex items-center space-x-4 text-sm">
+            <a
+              href="/admin/coupon/list-coupon/<%=data[i].id%>"
+              class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+              aria-label="Edit"
+            >
+              <svg
+                class="w-5 h-5"
+                aria-hidden="true"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"
+                ></path>
+              </svg>
+            </a>
+          </div>
+        </td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+<% } else { %>
+<div class="p-5 text-center">
+  <h1 class="text-xl font-semibold text-gray-600">No coupons available</h1>
+</div>
+<% } %>
 
+<script>
+  const checkbox = document.getElementById("checkbox");
+  const displayDiv = document.getElementById("display");
 
-                <script>
-                    const checkbox = document.getElementById("checkbox");
-                    const displayDiv = document.getElementById("display");
+  checkbox.addEventListener("change", function () {
+    if (checkbox.checked) {
+      displayDiv.style.display = "block";
+    } else {
+      displayDiv.style.display = "none";
+    }
+  });
+</script>
+<script>
+  const price = document.getElementById("amount");
 
-                    checkbox.addEventListener("change", function () {
-                        if (checkbox.checked) {
-                            displayDiv.style.display = "block";
-                        } else {
-                            displayDiv.style.display = "none";
-                        }
-                    });
-                </script>
-                 <script>
-                 
-               
-                    const price = document.getElementById("amount");
-            
-                    const validationPrice= document.getElementById("validationAmount");
-            
-                   
-                    price.addEventListener("input", function () {
-                        const enteredValue = parseInt(price.value, 10);
-            
-                        // Check if the entered value is negative
-                        if (enteredValue < 30) {
-                            validationPrice.textContent = "Amount is less than minimum amount";
-                            price.setCustomValidity("Amount is less than minimum amount"); // Set a custom validation message
-                        } else {
-                            validationPrice.textContent = "";
-                            price.setCustomValidity(""); 
-                        }
-                    });
-                </script>
+  const validationPrice = document.getElementById("validationAmount");
 
-                <%- include("./layouts/footer.ejs") %>
+  price.addEventListener("input", function () {
+    const enteredValue = parseInt(price.value, 10);
+
+    if (enteredValue < 30) {
+      validationPrice.textContent = "Amount is less than minimum amount";
+      price.setCustomValidity("Amount is less than minimum amount");
+    } else {
+      validationPrice.textContent = "";
+      price.setCustomValidity("");
+    }
+  });
+</script>
+
+<%- include("./layouts/footer.ejs") %>

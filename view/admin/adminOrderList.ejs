@@ -1,96 +1,86 @@
 <%- include("./layouts/header.ejs") %>
 
+<style>
+  dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+  }
 
-    <style>
-        /* Style for the dialog overlay */
-        dialog::backdrop {
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-        }
+  #order-dialog {
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  #order-dialog h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
 
-        /* Style for the dialog content */
-        #order-dialog {
-            width: 80%;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
+  #order-dialog p {
+    margin: 5px 0;
+  }
 
-        /* Style for the heading */
-        #order-dialog h4 {
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
+  #close-order-dialog {
+    display: block;
+    margin-top: 15px;
+    padding: 8px 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+  }
 
-        /* Style for the order details */
-        #order-dialog p {
-            margin: 5px 0;
-        }
+  #close-order-dialog:hover {
+    background-color: #2980b9;
+  }
+</style>
 
-        /* Style for the close button */
-        #close-order-dialog {
-            display: block;
-            margin-top: 15px;
-            padding: 8px 15px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        /* Hover effect for the close button */
-        #close-order-dialog:hover {
-            background-color: #2980b9;
-        }
-    </style>
-
-
-
-    <div class="w-full overflow-hidden rounded-lg shadow-xs">
-        <div class="w-full h-full overflow-x-auto">
-            <div class="p-5">
-                <table class="w-full whitespace-no-wrap" style="font-family: Arial, sans-serif; font-size: 14px;">
-                    <thead>
-                        <tr
-                            class="text-sm font-semibold text-left text-gray-500 border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                            <th class="px-4 py-3">Sl No</th>
-                            <th class="px-4 py-3">Date Of Order</th>
-                            <th class="px-4 py-3">Order Id</th>
-                            <!-- <th class="px-4 py-3">Delivery Adress</th> -->
-                            <!-- <th class="px-4 py-3">Product Id</th> -->
-                            <th class="px-4 py-3">Status</th>
-                            <th class="px-4 py-3">View Details</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                        <% if(data) { %>
-                            <%let i=0%>
-                                <% for(let order of data) { %>
-                                    <tr class="text-gray-700 dark:text-gray-400">
-                                        <td class="px-4 py-3">
-                                            <div class="flex items-center text-sm">
-                                                <p class="font-semibold">
-                                                    <%= i + 1 %>
-                                                </p>
-                                            </div>
-                                        </td>
-                                        <td class="px-4 py-3 text-sm">
-                                            <p class="font-semibold">
-                                                <%= order.createdAt %>
-                                            </p>
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <a class="font-semibold cursor-pointer"
-                                                onclick="openOrderDialog('<%= order.orderId %>','<%= order.userId %>','<%= order.userMobile %>','<%= order.paymentMethod %>','<%=JSON.stringify(order.deliveryAddress)%>')">
-                                                <%= order.orderId %>
-                                            </a>
-                                        </td>
-                                        <!-- <td class="px-4 py-3 text-sm">
+<div class="w-full overflow-hidden rounded-lg shadow-xs">
+  <div class="w-full h-full overflow-x-auto">
+    <div class="p-5">
+      <table
+        class="w-full whitespace-no-wrap"
+        style="font-family: Arial, sans-serif; font-size: 14px"
+      >
+        <thead>
+          <tr
+            class="text-sm font-semibold text-left text-gray-500 border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800"
+          >
+            <th class="px-4 py-3">Sl No</th>
+            <th class="px-4 py-3">Date Of Order</th>
+            <th class="px-4 py-3">Order Id</th>
+            <!-- <th class="px-4 py-3">Delivery Adress</th> -->
+            <!-- <th class="px-4 py-3">Product Id</th> -->
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">View Details</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+          <% if(data) { %> <%let i=0%> <% for(let order of data) { %>
+          <tr class="text-gray-700 dark:text-gray-400">
+            <td class="px-4 py-3">
+              <div class="flex items-center text-sm">
+                <p class="font-semibold"><%= i + 1 %></p>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-sm">
+              <p class="font-semibold"><%= order.createdAt %></p>
+            </td>
+            <td class="px-4 py-3">
+              <a
+                class="font-semibold cursor-pointer"
+                onclick="openOrderDialog('<%= order.orderId %>','<%= order.userId %>','<%= order.userMobile %>','<%= order.paymentMethod %>','<%=JSON.stringify(order.deliveryAddress)%>')"
+              >
+                <%= order.orderId %>
+              </a>
+            </td>
+            <!-- <td class="px-4 py-3 text-sm">
                                             <p class="font-semibold">
                                                 <%= order.deliveryAddress %>
                                              
@@ -99,7 +89,7 @@
                                                 <%=order.userMobile%>
                                             </p>
                                         </td> -->
-                                        <!-- <td class="px-4 py-3 text-sm">
+            <!-- <td class="px-4 py-3 text-sm">
                                             <% for (let item of order.items) { %>
                                                 <div class="mt-4">
                                                     <a href="#"
@@ -115,157 +105,201 @@
 
                                         </td> -->
 
+            <td class="px-4 py-3 text-sm">
+              <% for (let item of order.items) { %> <% if
+              (item.status==="Delivered" ) { %>
+              <p class="font-semibold mt-4" style="color: green">
+                <%= item.status %>
+              </p>
+              <% } else if (item.status==="confirmed" ) { %>
+              <p class="font-semibold mt-4" style="color: rgb(142, 55, 70)">
+                <%= item.status %>
+              </p>
+              <% } else if (item.status==="Return" ) { %>
+              <p class="font-semibold mt-4" style="color: orange">
+                <%= item.status %>
+              </p>
+              <% } else if (item.status==="Cancel" ) { %>
+              <p class="font-semibold mt-4" style="color: red">
+                <%= item.status %>
+              </p>
+              <% }else{ %>
+              <p class="font-semibold mt-4" style="color: rgb(8, 148, 235)">
+                <%= item.status %>
+              </p>
 
-                                        <td class="px-4 py-3 text-sm">
-                                            <% for (let item of order.items) { %>
-                                                <% if (item.status==="Delivered" ) { %>
-                                                    <p class="font-semibold mt-4" style="color:green;">
-                                                        <%= item.status %>
-                                                    </p>
-                                                    <% } else if (item.status==="confirmed" ) { %>
-                                                        <p class="font-semibold mt-4" style="color: rgb(142, 55, 70)">
-                                                            <!-- Apply the desired color -->
-                                                            <%= item.status %>
-                                                        </p>
-                                                        <% } else if (item.status==="Return" ) { %>
-                                                            <p class="font-semibold mt-4" style="color: orange;">
-                                                                <!-- Apply the desired color -->
-                                                                <%= item.status %>
-                                                            </p>
-                                                            <% } else if (item.status==="Cancel" ) { %>
-                                                                <p class="font-semibold mt-4" style="color: red;">
-                                                                    <!-- Apply the desired color -->
-                                                                    <%= item.status %>
-                                                                </p>
-                                                                <% }else{ %>
-                                                                    <p class="font-semibold mt-4" style="color: rgb(8, 148, 235);">
-                                                                        <!-- Apply the desired color -->
-                                                                        <%= item.status %>
-                                                                    </p>
-                                                                
-                                                                    <% } }%>
-                                        </td>
+              <% } }%>
+            </td>
 
-                                        <td class="px-4 py-3 text-sm">
-                                            <a href="/admin/order/<%= order.orderId%>" class="font-semibold " 
-                                                style="cursor: pointer; color: red;text-decoration: underline;">
-                                                View Order
-                                            </a>
-                                        </td>
-                                        <% i++; %>
-                                            <% } %>
-                                                <% } %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <td class="px-4 py-3 text-sm">
+              <a
+                href="/admin/order/<%= order.orderId%>"
+                class="font-semibold"
+                style="cursor: pointer; color: red; text-decoration: underline"
+              >
+                View Order
+              </a>
+            </td>
+            <% i++; %> <% } %> <% } %>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <dialog id="order-dialog">
-        <div>
-            <h4>Order Details</h4>
-            <p><strong>Order ID:</strong> <span id="order-id"></span></p>
-            <p><strong>User ID:</strong> <span id="user-id"></span></p>
-            <p><strong>User Mobile:</strong> <span id="user-mobile"></span></p>
+  </div>
+</div>
+<dialog id="order-dialog">
+  <div>
+    <h4>Order Details</h4>
+    <p><strong>Order ID:</strong> <span id="order-id"></span></p>
+    <p><strong>User ID:</strong> <span id="user-id"></span></p>
+    <p><strong>User Mobile:</strong> <span id="user-mobile"></span></p>
 
+    <p><strong>Payment Method:</strong> <span id="payment-method"></span></p>
+    <p><strong>delivery Address:</strong> <span id="deliveryAddress"></span></p>
 
-            <p><strong>Payment Method:</strong> <span id="payment-method"></span></p>
-            <p><strong>delivery Address:</strong> <span id="deliveryAddress"></span></p>
-            <!-- Add more fields as needed -->
-            <button class="genric-btn primary small mt-3" id="close-order-dialog">Close</button>
-        </div>
-    </dialog>
+    <button class="genric-btn primary small mt-3" id="close-order-dialog">
+      Close
+    </button>
+  </div>
+</dialog>
 
+<dialog
+  id="product-dialog"
+  style="
+    width: 80%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  "
+>
+  <div>
+    <h4 style="margin-bottom: 10px; font-size: 18px">Product Details</h4>
+    <p><strong>Product ID:</strong> <span id="product-id"></span></p>
+    <p><strong>Quantity:</strong> <span id="product-quantity"></span></p>
+    <p><strong>Price:</strong> <span id="product-price"></span></p>
 
-    <dialog id="product-dialog"
-        style="width: 80%; max-width: 400px; padding: 20px; background-color: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);">
-        <div>
-            <h4 style="margin-bottom: 10px; font-size: 18px;">Product Details</h4>
-            <p><strong>Product ID:</strong> <span id="product-id"></span></p>
-            <p><strong>Quantity:</strong> <span id="product-quantity"></span></p>
-            <p><strong>Price:</strong> <span id="product-price"></span></p>
+    <div
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
+      <a
+        id="toShipped"
+        href=""
+        class="genric-btn"
+        style="
+          padding: 6px 12px;
+          font-size: 12px;
+          background-color: #f2fa08;
+          color: rgb(7, 7, 7);
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        "
+        id="mark-shipped-button"
+        onclick="markShipped('<%= data._id %>')"
+        >Mark Shipped</a
+      >
+      <a
+        id="changestatus"
+        href=""
+        class="genric-btn"
+        style="
+          padding: 6px 12px;
+          font-size: 12px;
+          background-color: #07f90c;
+          color: rgb(8, 8, 8);
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        "
+        id="mark-delivered-button"
+        onclick="markDelivered('<%= data._id %>')"
+        >Mark Delivered</a
+      >
+    </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <a id="toShipped" href="" class="genric-btn"
-                    style="padding: 6px 12px; font-size: 12px; background-color: #f2fa08; color: rgb(7, 7, 7); border: none; border-radius: 5px; cursor: pointer;"
-                    id="mark-shipped-button" onclick="markShipped('<%= data._id %>')">Mark Shipped</a>
-                <a id="changestatus" href="" class="genric-btn"
-                    style="padding: 6px 12px; font-size: 12px; background-color: #07f90c; color: rgb(8, 8, 8); border: none; border-radius: 5px; cursor: pointer;"
-                    id="mark-delivered-button" onclick="markDelivered('<%= data._id %>')">Mark Delivered</a>
-            </div>
+    <button
+      class="genric-btn primary small mt-3"
+      id="close-product-dialog"
+      style="
+        display: block;
+        padding: 8px 15px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+      "
+    >
+      Close
+    </button>
+  </div>
+</dialog>
 
-            <button class="genric-btn primary small mt-3" id="close-product-dialog"
-                style="display: block; padding: 8px 15px; background-color: #3498db; color: white; border: none; border-radius: 5px; font-size: 14px; cursor: pointer;">Close</button>
-        </div>
-    </dialog>
+<script>
+  function viewOrders(orderId) {
+    console.log("OrderId: ", orderId);
+  }
 
+  function openOrderDialog(
+    orderId,
+    userId,
+    userMobile,
+    paymentMethod,
+    deliveryAddress
+  ) {
+    console.log(deliveryAddress);
+    const dialog = document.getElementById("order-dialog");
+    const orderIdSpan = document.getElementById("order-id");
+    const userIdSpan = document.getElementById("user-id");
+    const userMobileSpan = document.getElementById("user-mobile");
+    const paymentMethodSpan = document.getElementById("payment-method");
+    const deliveryAddressSpan = document.getElementById("deliveryAddress");
 
+    orderIdSpan.textContent = orderId;
+    userIdSpan.textContent = userId;
+    userMobileSpan.textContent = userMobile;
+    paymentMethodSpan.textContent = paymentMethod;
+    deliveryAddressSpan.textContent = deliveryAddress;
 
+    dialog.showModal();
+  }
 
+  document
+    .getElementById("close-order-dialog")
+    .addEventListener("click", () => {
+      const dialog = document.getElementById("order-dialog");
+      dialog.close();
+    });
+</script>
 
+<script>
+  function openProductDialog(productId, quantity, price, orderId) {
+    console.log(productId, quantity, price);
+    const dialog = document.getElementById("product-dialog");
+    const productIdSpan = document.getElementById("product-id");
+    const productQuantitySpan = document.getElementById("product-quantity");
+    const productPriceSpan = document.getElementById("product-price");
+    const changeStatus = document.getElementById("changestatus");
+    const toShipped = document.getElementById("toShipped");
 
+    productIdSpan.textContent = productId;
+    productQuantitySpan.textContent = quantity;
+    productPriceSpan.textContent = price;
+    changeStatus.href = `/admin/delivered/${orderId}/${productId}`;
+    toShipped.href = `/admin/shipped/${orderId}/${productId} `;
 
-    <script>
-        function viewOrders(orderId){
-            console.log("OrderId: ",orderId)
+    dialog.showModal();
+  }
 
+  document
+    .getElementById("close-product-dialog")
+    .addEventListener("click", () => {
+      const dialog = document.getElementById("product-dialog");
+      dialog.close();
+    });
+</script>
 
-
-        }
-
-
-
-
-        function openOrderDialog(orderId, userId, userMobile, paymentMethod, deliveryAddress) {
-            console.log(deliveryAddress)
-            const dialog = document.getElementById('order-dialog');
-            const orderIdSpan = document.getElementById('order-id');
-            const userIdSpan = document.getElementById('user-id');
-            const userMobileSpan = document.getElementById('user-mobile');
-            const paymentMethodSpan = document.getElementById('payment-method');
-            const deliveryAddressSpan = document.getElementById('deliveryAddress');
-
-
-            orderIdSpan.textContent = orderId;
-            userIdSpan.textContent = userId;
-            userMobileSpan.textContent = userMobile;
-            paymentMethodSpan.textContent = paymentMethod;
-            deliveryAddressSpan.textContent = deliveryAddress;
-
-
-            dialog.showModal();
-        }
-
-        document.getElementById('close-order-dialog').addEventListener('click', () => {
-            const dialog = document.getElementById('order-dialog');
-            dialog.close();
-        });
-    </script>
-
-    <script>
-        function openProductDialog(productId, quantity, price, orderId) {
-            console.log(productId, quantity, price)
-            const dialog = document.getElementById('product-dialog');
-            const productIdSpan = document.getElementById('product-id');
-            const productQuantitySpan = document.getElementById('product-quantity');
-            const productPriceSpan = document.getElementById('product-price');
-            const changeStatus = document.getElementById("changestatus")
-            const toShipped = document.getElementById("toShipped")
-
-            productIdSpan.textContent = productId;
-            productQuantitySpan.textContent = quantity;
-            productPriceSpan.textContent = price;
-            changeStatus.href = `/admin/delivered/${orderId}/${productId}`
-            toShipped.href = `/admin/shipped/${orderId}/${productId} `
-
-            dialog.showModal();
-        }
-
-        document.getElementById('close-product-dialog').addEventListener('click', () => {
-            const dialog = document.getElementById('product-dialog');
-            dialog.close();
-        });
-    </script>
-
-
-
-    <%- include("./layouts/footer.ejs") %>
+<%- include("./layouts/footer.ejs") %>

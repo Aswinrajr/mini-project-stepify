@@ -496,7 +496,6 @@
     confirmDialog.show();
   }
 
-  // Ensure the modal can be closed
   document.addEventListener("DOMContentLoaded", function () {
     const modal = document.getElementById("confirm-dialog");
     const closeButtons = modal.querySelectorAll('[data-bs-dismiss="modal"]');
@@ -607,7 +606,6 @@
     }
   }
 
-  // Initialize tooltips
   var tooltipTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="tooltip"]')
   );
@@ -615,7 +613,6 @@
     return new bootstrap.Tooltip(tooltipTriggerEl);
   });
 
-  // Initialize popovers
   var popoverTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="popover"]')
   );

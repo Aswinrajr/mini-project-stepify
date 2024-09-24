@@ -1,74 +1,63 @@
 <%- include("./layouts/header.ejs") %>
-    <style>
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            appearance: none;
-            margin: 0;
-        }
-    </style>
+<style>
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+  }
+</style>
 
-   e
-   
+<script>
+  const quantityInput = document.getElementById("size");
+  const quantity = document.getElementById("quantity");
+  const price = document.getElementById("price");
 
+  const validationMessage = document.getElementById("validationMessage");
+  const validationQuantity = document.getElementById("validationQuantity");
+  const validationPrice = document.getElementById("validationPrice");
 
-    <script>
-        // Get a reference to the input field and error message element
-        const quantityInput = document.getElementById("size");
-        const quantity = document.getElementById("quantity");
-        const price = document.getElementById("price");
+  quantityInput.addEventListener("input", function () {
+    const enteredValue = parseInt(quantityInput.value, 10);
 
-        const validationMessage = document.getElementById("validationMessage");
-        const validationQuantity = document.getElementById("validationQuantity");
-        const validationPrice= document.getElementById("validationPrice");
+    if (enteredValue < 0) {
+      validationMessage.textContent = "size cannot be negative.";
+      quantityInput.setCustomValidity("size cannot be negative.");
+    } else {
+      validationMessage.textContent = "";
+      quantityInput.setCustomValidity("");
+    }
+  });
 
-        // Add an event listener to the input field to validate the value
-        quantityInput.addEventListener("input", function () {
-            const enteredValue = parseInt(quantityInput.value, 10);
+  quantity.addEventListener("input", function () {
+    const enteredValue = parseInt(quantity.value, 10);
 
-            // Check if the entered value is negative
-            if (enteredValue < 0) {
-                validationMessage.textContent = "size cannot be negative.";
-                quantityInput.setCustomValidity("size cannot be negative."); // Set a custom validation message
-            } else {
-                validationMessage.textContent = ""; // Clear the validation message
-                quantityInput.setCustomValidity(""); // Clear the custom validation message
-            }
-        });
+    if (enteredValue < 1) {
+      validationQuantity.textContent = "Quantity cannot be less than 1";
+      quantity.setCustomValidity("Quantity cannot be lessthan 1.");
+    } else {
+      validationQuantity.textContent = "";
+      quantity.setCustomValidity("");
+    }
+  });
 
-        quantity.addEventListener("input", function () {
-            const enteredValue = parseInt(quantity.value, 10);
+  price.addEventListener("input", function () {
+    const enteredValue = parseInt(price.value, 10);
 
-            // Check if the entered value is negative
-            if (enteredValue < 1) {
-                validationQuantity.textContent = "Quantity cannot be less than 1";
-                quantity.setCustomValidity("Quantity cannot be lessthan 1."); // Set a custom validation message
-            } else {
-                validationQuantity.textContent = ""; // Clear the validation message
-                quantity.setCustomValidity(""); // Clear the custom validation message
-            }
-        });
+    if (enteredValue < 100) {
+      validationPrice.textContent = "Price cannot be less than minimum price";
+      price.setCustomValidity("Price cannot be less than minimum price");
+    } else {
+      validationPrice.textContent = "";
+      price.setCustomValidity("");
+    }
+  });
+</script>
 
-        price.addEventListener("input", function () {
-            const enteredValue = parseInt(price.value, 10);
-
-            // Check if the entered value is negative
-            if (enteredValue < 100) {
-                validationPrice.textContent = "Price cannot be less than minimum price";
-                price.setCustomValidity("Price cannot be less than minimum price"); // Set a custom validation message
-            } else {
-                validationPrice.textContent = ""; // Clear the validation message
-                price.setCustomValidity(""); // Clear the custom validation message
-            }
-        });
-    </script>
-
-
-
-    <script>
-        function conform() {
-            const arr = document.getElementById("image").files
-            console.log(arr.length)
-        }
-    </script>
-    <%- include("./layouts/footer.ejs") %>
+<script>
+  function conform() {
+    const arr = document.getElementById("image").files;
+    console.log(arr.length);
+  }
+</script>
+<%- include("./layouts/footer.ejs") %>

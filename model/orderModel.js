@@ -36,7 +36,7 @@ const orderData = mongoose.Schema({
 
         status: {
             type: String,
-            //enum: ["pending", "processing", "delivered","Req-for-return","returned"],
+        
             default:"confirmed"
             
         },

@@ -21,8 +21,10 @@
         <div class="login_form_inner mt-5">
           <h3>Verify OTP</h3>
 
-          <!-- OTP Display for 8 seconds -->
-          <div id="otpMessage" style="font-size: 18px; color: #333; margin-bottom: 20px;">
+          <div
+            id="otpMessage"
+            style="font-size: 18px; color: #333; margin-bottom: 20px"
+          >
             Your OTP is: <strong id="otpDisplay"><%= otp %></strong>
           </div>
 
@@ -42,7 +44,13 @@
             <div class="col-md-12 form-group mt-5">
               <div
                 id="timer"
-                style="font-size: 14px; color: #666; text-align: center; margin-top: 10px;">
+                style="
+                  font-size: 14px;
+                  color: #666;
+                  text-align: center;
+                  margin-top: 10px;
+                "
+              >
                 Time remaining: 2:00
               </div>
 
@@ -61,21 +69,19 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-  // Function to hide the OTP after 8 seconds
   function hideOTP() {
-    const otpMessageElement = document.getElementById('otpMessage');
+    const otpMessageElement = document.getElementById("otpMessage");
     if (otpMessageElement) {
       setTimeout(() => {
-        otpMessageElement.style.display = 'none';
-      }, 8000); // Hide after 8 seconds
+        otpMessageElement.style.display = "none";
+      }, 8000);
     }
   }
 
   window.onload = function () {
     hideOTP();
 
-    // OTP Countdown Timer
-    let timeLeft = 120; // 2 minutes countdown
+    let timeLeft = 120;
 
     const timerElement = document.getElementById("timer");
     const otpInput = document.getElementById("otp");
@@ -84,7 +90,9 @@
     function updateTimer() {
       const minutes = Math.floor(timeLeft / 60);
       const seconds = timeLeft % 60;
-      timerElement.textContent = `Time remaining: ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+      timerElement.textContent = `Time remaining: ${minutes}:${
+        seconds < 10 ? "0" : ""
+      }${seconds}`;
     }
 
     function disableInputAndSubmit() {
