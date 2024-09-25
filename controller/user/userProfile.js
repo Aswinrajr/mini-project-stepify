@@ -1316,7 +1316,7 @@ const buyNow = async (req, res) => {
       const walletProduct = [];
       walletProduct.push(Products);
       user.cart= Products
-      user.save()
+      await user.save()
       
 
 
