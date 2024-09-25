@@ -1305,15 +1305,24 @@ const buyNow = async (req, res) => {
       const subtotal = parseInt(product.price);
       console.log("Adress in buy now: ", userAdress, subtotal, validCoupon);
       const Products = {
+        productId:product._id,
         productName: product.categoryName,
         productPrice: product.price,
         productQuantity: 1,
         totalPrice: 1 * product.price,
+        image: product.image[0]
+
       };
       const walletProduct = [];
       walletProduct.push(Products);
+      user.cart= Products
+      user.save()
+      
+
 
       console.log("Product for buy: ", walletProduct);
+      
+
       res.render("userCheckoutpage", {
         data: walletProduct,
         userAdress,

@@ -1,362 +1,374 @@
 <%- include("./layouts/userheader.ejs") %>
 
-<div class="container mt-5">
-  <div class="row">
-    <div class="col-xl-3 col-lg-4 col-md-5 mt-5">
-      <div class="sidebar-categories mt-5">
-        <div class="head">Browse Categories</div>
 
-        <ul class="main-categories">
-          <% for (category of categories) { %>
-          <li class="main-nav-list">
-            <label class="mt-3">
-              <input
-                id="categories"
-                type="checkbox"
-                name="category"
-                onclick='getCategory(this, "<%=category%>")'
-                value="<%= category %>"
-              />
 
-              <%= category %>
-            </label>
-          </li>
-          <% } %>
-        </ul>
-      </div>
-      <div class="sidebar-categories mt-5">
-        <div class="head">Popular Brands</div>
-        <ul class="main-categories">
-          <% for (brand of brands) { %>
-          <li class="main-nav-list">
-            <label class="mt-3">
-              <input
-                id="brand"
-                type="checkbox"
-                onclick='getBrand(this, "<%=brand%>")'
-                name="brand"
-                value="<%= brand %>"
-              />
-              <%= brand %>
-            </label>
-          </li>
-          <% } %>
-        </ul>
-      </div>
-    </div>
+    <div class="container mt-5">
 
-    <div class="col-xl-9 col-lg-8 col-md-7 mt-5">
-      <div
-        class="filter-bar d-flex flex-wrap align-items-center mt-5 justify-content-between"
-      >
-        <div class="sorting">
-          <select id="sortOptions" onchange="updateSortValue()">
-            <option value="default">Default</option>
-            <option value="lowToHigh">Price: Low to High</option>
-            <option value="highToLow">Price: High to Low</option>
-          </select>
-        </div>
+        <div class="row ">
+            <div class="col-xl-3 col-lg-4 col-md-5 mt-5">
+                <div class="sidebar-categories mt-5">
+                    <div class="head">Browse Categories</div>
 
-        <div class="pagination row" id="filterNextBar">
-          <div class="pagination">
-            <nav aria-label="Page navigation">
-              <ul class="pagination justify-content-center">
-                <% if (currentPage> 1) { %>
-                <li class="page-item">
-                  <a
-                    class="page-link"
-                    href="#"
-                    onclick='getPage("<%= currentPage - 1 %>")'
-                    aria-label="Previous"
-                  >
-                    <span aria-hidden="true">&laquo;</span>
-                    <span class="sr-only">Previous</span>
-                  </a>
-                </li>
-                <% } %> <% for (let i=1; i <=totalPage; i++) { %>
-                <li
-                  class="page-item <%= i === currentPage ? &quot; active&quot; : &quot;&quot; %>"
-                >
-                  <a class="page-link" href="#" onclick='getPage("<%= i %>")'>
-                    <%= i %>
-                  </a>
-                </li>
-                <% } %> <% if (currentPage < totalPage) { %>
-                <li class="page-item">
-                  <a
-                    class="page-link"
-                    href="#"
-                    onclick='getPage("<%= currentPage + 1 %>")'
-                    aria-label="Next"
-                  >
-                    <span aria-hidden="true">&raquo;</span>
-                    <span class="sr-only">Next</span>
-                  </a>
-                </li>
-                <% } %>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </div>
-      <section class="lattest-product-area pb-40 category-list">
-        <div class="row">
-          <% for(const product of products) { %>
-          <div class="col-lg-4 col-md-6">
-            <div class="single-product">
-              <a href="/productview?id=<%=product._id%>"
-                ><img
-                  class="img-fluid"
-                  style="width: 300px; height: 300px"
-                  src="/public/uploads/<%= product.image[0] %>"
-                  alt=""
-              /></a>
-              <div class="product-details">
-                <h6><%=product.categoryName%></h6>
-                <div class="price">
-                  <h6><%=product.price%></h6>
+                    <ul class="main-categories">
+                        <% for (category of categories) { %>
+                            <li class="main-nav-list">
+                                <label class="mt-3">
+                                    <input id="categories" type="checkbox" name="category"
+                                        onclick='getCategory(this, "<%=category%>")' value="<%= category %>">
+
+                                    <%= category %>
+                                </label>
+                            </li>
+                            <% } %>
+                    </ul>
+                </div>
+                <div class="sidebar-categories mt-5">
+                    <div class="head">Popular Brands</div>
+                    <ul class="main-categories">
+                        <% for (brand of brands) { %>
+                            <li class="main-nav-list">
+                                <label class="mt-3">
+                                    <input id="brand" type="checkbox" onclick='getBrand(this, "<%=brand%>")'
+                                        name="brand" value="<%= brand %>">
+                                    <%= brand %>
+                                </label>
+                            </li>
+                            <% } %>
+                    </ul>
                 </div>
 
-                <span> <%=product.description%> </span>
-
-                <div class="prd-bottom">
-                  <a
-                    href="#"
-                    class="social-info"
-                    id="addToCart"
-                    onclick="addtocart('<%- product._id %>')"
-                  >
-                    <span class="ti-bag"></span>
-                    <p class="hover-text">add to bag</p>
-                  </a>
-
-                  <a
-                    href="#"
-                    class="social-info"
-                    id=""
-                    onclick='wishList("<%=product._id%>")'
-                  >
-                    <span class="lnr lnr lnr-heart"></span>
-                    <p class="hover-text">Wishlist</p>
-                  </a>
-
-                  <a
-                    href="/productview?id=<%=product._id%>"
-                    class="social-info"
-                  >
-                    <span class="lnr lnr-move"></span>
-                    <p class="hover-text">view more</p>
-                  </a>
-                </div>
-              </div>
             </div>
-          </div>
-          <%}%>
+
+            <div class="col-xl-9 col-lg-8 col-md-7 mt-5 ">
+                <!-- Start Filter Bar -->
+                <div class="filter-bar d-flex flex-wrap align-items-center mt-5 justify-content-between">
+                    <div class="sorting">
+                        <select id="sortOptions" onchange="updateSortValue()">
+                            <option value="default">Default</option>
+                            <option value="lowToHigh">Price: Low to High</option>
+                            <option value="highToLow">Price: High to Low</option>
+                        </select>
+                    </div>
+
+                    <div class="pagination row" id="filterNextBar">
+                        <div class="pagination">
+
+
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+                                    <% if (currentPage> 1) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#" onclick='getPage("<%= currentPage - 1 %>")'
+                                                aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                                <span class="sr-only">Previous</span>
+                                            </a>
+                                        </li>
+                                        <% } %>
+
+                                            <% for (let i=1; i <=totalPage; i++) { %>
+                                                <li class='page-item <%= i === currentPage ? " active" : "" %>'>
+                                                    <a class="page-link" href="#" onclick='getPage("<%= i %>")'>
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+
+                                                    <% if (currentPage < totalPage) { %>
+                                                        <li class="page-item">
+                                                            <a class="page-link" href="#"
+                                                                onclick='getPage("<%= currentPage + 1 %>")'
+                                                                aria-label="Next">
+                                                                <span aria-hidden="true">&raquo;</span>
+                                                                <span class="sr-only">Next</span>
+                                                            </a>
+                                                        </li>
+                                                        <% } %>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <section class="lattest-product-area pb-40 category-list">
+                    <div class="row">
+                        <!-- single product -->
+                        <% for(const product of products) { %>
+                            <div class="col-lg-4 col-md-6">
+                                <div class="single-product">
+                                    <a href="/productview?id=<%=product._id%>"><img class="img-fluid"
+                                            style="width: 300px;height: 300px;"
+                                            src="/public/uploads/<%= product.image[0] %>" alt=""></a>
+                                    <div class="product-details">
+                                        <h6>
+                                            <%=product.categoryName%>
+                                        </h6>
+                                        <div class="price">
+                                            <h6>
+                                                <%=product.price%>
+                                            </h6>
+                                        </div>
+
+                                        <span>
+                                            <%=product.description%>
+                                        </span>
+
+                                        <div class="prd-bottom">
+
+                                            <a href="#" class="social-info" id="addToCart"
+                                                onclick="addtocart('<%- product._id %>')">
+                                                <span class="ti-bag"></span>
+                                                <p class="hover-text">add to bag</p>
+                                            </a>
+
+                                            <a href="#" class="social-info" id=""
+                                                onclick='wishList("<%=product._id%>")'>
+                                                <span class="lnr lnr lnr-heart"></span>
+                                                <p class="hover-text">Wishlist</p>
+                                            </a>
+
+                                            <a href="/productview?id=<%=product._id%>" class="social-info">
+                                                <span class="lnr lnr-move"></span>
+                                                <p class="hover-text">view more</p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <%}%>
+                    </div>
+                </section>
+                <!-- Pagination Section -->
+                <div id="paginationContainer">
+
+                </div>
+            </div>
         </div>
-      </section>
 
-      <div id="paginationContainer"></div>
     </div>
-  </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-  const selectedCategories = [];
-  const selectedBrand = [];
-  let sortValue = 0;
-  let pages = 1;
-  let checked = false;
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const selectedCategories = [];
+        const selectedBrand = [];
+        let sortValue = 0;
+        let pages = 1;
+        let checked = false;
 
-  function getCategory(checkbox, category) {
-    pages = 1;
-    if (checkbox.checked) {
-      console.log(`Checkbox for category "${category}" is checked`);
-      if (!selectedCategories.includes(category)) {
-        selectedCategories.push(category);
-      }
-    } else {
-      console.log(`Checkbox for category "${category}" is unchecked`);
-      const index = selectedCategories.indexOf(category);
-      if (index !== -1) {
-        selectedCategories.splice(index, 1);
-      }
-    }
 
-    console.log("Selected Categories:", selectedCategories);
-    logData();
-  }
 
-  function wishList(proId) {
-    console.log("Product id in wishlist: ", proId);
-    const url = "/wishlist";
-    const options = {
-      method: "post",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ proId }),
-    };
+        function getCategory(checkbox, category) {
+            pages = 1;
+            if (checkbox.checked) {
+                console.log(`Checkbox for category "${category}" is checked`);
+                if (!selectedCategories.includes(category)) {
+                    selectedCategories.push(category);
+                }
+            } else {
+                console.log(`Checkbox for category "${category}" is unchecked`);
+                const index = selectedCategories.indexOf(category);
+                if (index !== -1) {
+                    selectedCategories.splice(index, 1);
+                }
+            }
 
-    fetch(url, options)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.message) {
-          console.log("Message: ", data.message);
-
-          showMessage(data.message);
-        } else {
-          console.log("Error: ");
+            console.log("Selected Categories:", selectedCategories);
+            logData();
         }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  }
-  function showMessage(message) {
-    const toast = Swal.mixin({
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-    });
 
-    toast.fire({
-      icon: "success",
-      title: message,
-    });
-  }
+        function wishList(proId) {
+            console.log("Product id in wishlist: ", proId);
+            const url = "/wishlist";
+            const options = {
+                method: "post",
+                headers: {
+                    "Content-type": "application/json",
+                },
+                body: JSON.stringify({ proId }),
+            };
 
-  function getBrand(checkbox, brand) {
-    if (checkbox.checked) {
-      console.log(`Checkbox for brand "${brand}" is checked`);
-      if (!selectedBrand.includes(brand)) {
-        selectedBrand.push(brand);
-      }
-    } else {
-      console.log(`Checkbox for brand "${brand}" is unchecked`);
-      const index = selectedBrand.indexOf(brand);
-      if (index !== -1) {
-        selectedBrand.splice(index, 1);
-      }
-    }
+            fetch(url, options)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.message) {
+                        console.log("Message: ", data.message)
 
-    console.log("Selected brand:", selectedBrand);
-    pages = 1;
-    logData();
-  }
-  function addtocart(proid) {
-    console.log("Product ID:", proid);
-    const url = "/add-to-cart";
-    const options = {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        proid,
-      }),
-    };
+                        showMessage(data.message);
+                    } else {
+                        console.log("Error: ")
 
-    fetch(url, options)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Response in add to cart: ", data);
 
-        if (data === "Added..") {
-          Swal.fire("Item Added to the cart");
-        } else if (data === "Product is already in cart") {
-          Swal.fire("Product is already in cart");
-        } else {
-          Swal.fire("Something went wrong!! please try again");
+                    }
+                })
+                .catch((error) => {
+
+                    console.error("Error:", error);
+                });
+
         }
-      })
-      .catch((error) => {
-        console.error("Error in add to cart:", error);
-      });
-  }
+        function showMessage(message) {
 
-  function updateSortValue() {
-    const sortOptions = document.getElementById("sortOptions");
-    const selectedValue = sortOptions.value;
+            const toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
 
-    if (selectedValue === "default") {
-      sortValue = 0;
-    } else if (selectedValue === "lowToHigh") {
-      sortValue = 1;
-    } else if (selectedValue === "highToLow") {
-      sortValue = -1;
-    }
+            // Show the Toast with the message
+            toast.fire({
+                icon: 'success',
+                title: message
+            });
+        }
 
-    console.log("Sort Value:", sortValue);
-    pages = 1;
-    logData();
-  }
 
-  function getPage(nums) {
-    pages = parseInt(nums);
-    console.log(pages);
-    logData(nums);
-  }
 
-  function logData(nums) {
-    const data = {
-      selectedCategories,
-      selectedBrand,
-      sortValue,
-      pages,
-    };
 
-    console.log("Data", data);
-    fetch("/shop/update-filters", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((responseData) => {
-        console.log("Response from backend:", responseData);
-        updateProductList(responseData.filteredProducts);
-        updatePagination(responseData.totalPages);
-        const currentPage = document.getElementById(`${nums}`);
-        currentPage.style.backgroundColor = "white";
-        currentPage.style.color = "black";
-      })
-      .catch((error) => {
-        console.error("Error sending data to backend:", error);
-      });
-  }
+        function getBrand(checkbox, brand) {
 
-  function updatePagination(page) {
-    console.log("Total pages in updation pagination", page);
-    const change = document.getElementById("filterNextBar");
-    change.innerHTML = "";
-    productListContainer = document.querySelector("#filterNextBar");
-    totalPage = page;
-    for (let i = 1; i <= page; i++) {
-      const productDiv = document.createElement("div");
-      productDiv.className = "pagination ";
-      productDiv.innerHTML = ` 
+            if (checkbox.checked) {
+                console.log(`Checkbox for brand "${brand}" is checked`);
+                if (!selectedBrand.includes(brand)) {
+                    selectedBrand.push(brand);
+                }
+            } else {
+                console.log(`Checkbox for brand "${brand}" is unchecked`);
+                const index = selectedBrand.indexOf(brand);
+                if (index !== -1) {
+                    selectedBrand.splice(index, 1);
+                }
+            }
+
+            console.log("Selected brand:", selectedBrand);
+            pages = 1;
+            logData();
+        }
+        function addtocart(proid) {
+            console.log("Product ID:", proid)
+            const url = "/add-to-cart"
+            const options = {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    proid
+                })
+            }
+
+            // Send the request and handle the response
+            fetch(url, options)
+                .then(response => response.json()) // Parse the response JSON
+                .then(data => {
+                    console.log("Response in add to cart: ", data);
+
+                    // Check the response and show SweetAlert accordingly
+                    if (data === "Added..") {
+
+                        Swal.fire('Item Added to the cart')
+                    } else if (data === "Product is already in cart") {
+                        Swal.fire('Product is already in cart')
+                    } else {
+                        Swal.fire('Something went wrong!! please try again')
+                    }
+                })
+                .catch(error => {
+                    console.error("Error in add to cart:", error);
+                });
+        }
+
+        function updateSortValue() {
+
+            const sortOptions = document.getElementById("sortOptions");
+            const selectedValue = sortOptions.value;
+
+            if (selectedValue === "default") {
+                sortValue = 0;
+            } else if (selectedValue === "lowToHigh") {
+                sortValue = 1;
+            } else if (selectedValue === "highToLow") {
+                sortValue = -1;
+            }
+
+            console.log("Sort Value:", sortValue);
+            pages = 1;
+            logData();
+        }
+
+        function getPage(nums) {
+
+
+            pages = parseInt(nums)
+            console.log(pages)
+            logData(nums)
+        }
+
+        function logData(nums) {
+
+            const data = {
+                selectedCategories,
+                selectedBrand,
+                sortValue,
+                pages
+            };
+
+            console.log("Data", data);
+            fetch('/shop/update-filters', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(responseData => {
+
+                    console.log('Response from backend:', responseData);
+                    updateProductList(responseData.filteredProducts);
+                    updatePagination(responseData.totalPages)
+                    const currentPage = document.getElementById(`${nums}`)
+                    currentPage.style.backgroundColor = "white";
+                    currentPage.style.color = "black";
+                })
+                .catch(error => {
+                    console.error('Error sending data to backend:', error);
+                });
+        }
+
+        function updatePagination(page) {
+
+
+            console.log("Total pages in updation pagination", page);
+            const change = document.getElementById("filterNextBar");
+            change.innerHTML = '';
+            productListContainer = document.querySelector('#filterNextBar');
+            totalPage = page;
+            for (let i = 1; i <= page; i++) {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'pagination ';
+                productDiv.innerHTML =
+                    ` 
                 <a class=" " onclick='getPage(${i})' value="${i}"  id="${i}" style="line-height: 40px;color:black" >
                     ${i} 
                 </a>
         
-                `;
-      productListContainer.appendChild(productDiv);
-    }
-  }
+                `
+                productListContainer.appendChild(productDiv);
+            }
+        }
 
-  function updateProductList(products) {
-    const productListContainer = document.querySelector(
-      ".lattest-product-area .row"
-    );
-    productListContainer.innerHTML = "";
 
-    products.forEach((product) => {
-      const productDiv = document.createElement("div");
-      productDiv.className = "col-lg-4 col-md-6";
-      productDiv.innerHTML = `
+
+
+
+
+        function updateProductList(products) {
+            const productListContainer = document.querySelector('.lattest-product-area .row');
+            productListContainer.innerHTML = '';
+
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'col-lg-4 col-md-6';
+                productDiv.innerHTML = `
             <div class="single-product">
               
                 <a href="/productview?id=${product._id}"> <img class="img-fluid" style="width: 300px;height: 300px;" src="/public/uploads/${product.image[0]}" alt=""></a>
@@ -386,9 +398,11 @@
                     </div>
                 </div>
             </div>`;
-      productListContainer.appendChild(productDiv);
-    });
-  }
-</script>
+                productListContainer.appendChild(productDiv);
+            });
+        }
+    </script>
 
-<%- include("./layouts/footer.ejs") %>
+
+
+    <%- include("./layouts/footer.ejs") %>
